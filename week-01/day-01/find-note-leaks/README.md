@@ -15,7 +15,7 @@ After this you can find where a coding agent's draft lets a case note's text out
 3. Find the fixture that is not a course note and close that path, keeping what its test checks; run `python3 -m pytest -q`. You should see: `3 passed`.
 4. Run `python3 check.py`, then read `logs/extractor.log`. You should see: `Done:`, and a line naming note 0147 and why it failed, with none of its text.
 
-**Answer:** your trainer has it, and shows it at the debrief.
+**Answer:** `~/practice/week-01/day-01/answers/find-note-leaks/` in the practice kit: the three paths closed in `extractor.py` and `tests/`; there `python3 check.py` prints `Done:`.
 
 ## Afterwards, together
 

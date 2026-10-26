@@ -68,6 +68,7 @@ description and reply in it is made up; none is about a real person, business or
   where a name would be.
 - **`model.py` and `model-route.json`:** the route to the model the extractor calls. Do not edit
   them; the course team sets the route.
+- **`answers/`, in each day's folder:** each exercise's answer, in a folder named like the exercise's.
 - **`lab-states/`:** the week's lab repository's files at each of its saved states, which an
   exercise's reset uses to build its starting repository. You change nothing in it; an exercise
   names a file in it when you need one, such as the extractor's output schema.
@@ -81,14 +82,15 @@ description and reply in it is made up; none is about a real person, business or
 A folder whose starting state is a Git repository of its own is built by the reset command the
 first time, so its exercise starts with that command.
 
-Answers: your trainer has each exercise's answer, and shows it at the debrief.
+Answers: `~/practice/week-NN/day-NN/answers/<folder>/` holds each exercise's answer, which passes the exercise's
+done check. Exercises are not graded, so you may open it; try the exercise first.
 
 ## Start again
 
 `python3 ~/practice/reset.py <folder>`, such as `python3 ~/practice/reset.py validate-replies`,
 puts that exercise's folder back as it was supplied, and builds its Git repository again where it
 has one. It replaces your changes in that folder; it does not repair them, and it touches no other
-folder. A terminal open inside the folder keeps working.
+folder, the answers included. A terminal open inside the folder keeps working.
 
 ## Not known yet
 

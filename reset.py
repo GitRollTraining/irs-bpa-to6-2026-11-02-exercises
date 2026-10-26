@@ -13,7 +13,7 @@ KIT = pathlib.Path(__file__).resolve().parent
 SHARED = {"answers", "notes", "lab-states"}
 
 places = {p.name: p.relative_to(KIT).as_posix() for p in KIT.glob("week-*/day-*/*")
-          if p.is_dir()}
+          if p.is_dir() and p.name not in SHARED}
 folders = sorted(places)
 if len(sys.argv) != 2 or sys.argv[1] not in folders:
     print("Usage: python3 reset.py <folder>, one of: " + ", ".join(folders))
