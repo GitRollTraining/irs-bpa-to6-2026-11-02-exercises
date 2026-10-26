@@ -1,3 +1,31 @@
 __pycache__/
 .pytest_cache/
-.ipynb_checkpoints/
+# Built by each folder's start.py, through reset.py:
+week-01/day-04/commit-three-of-four/extractor/
+week-01/day-04/push-after-rejection/extractor/
+week-01/day-04/push-after-rejection/shared.git/
+week-01/day-04/push-after-rejection/.teammate/
+
+# Written by each run of find-note-leaks' check.py, in the exercise and in its answer:
+week-01/day-01/find-note-leaks/logs/
+# Built by each folder's start.py, through reset.py:
+week-01/day-01/data-rules-check/lab/
+week-01/day-01/agent-boundary/lab/
+
+# Written by a run of same-note-five-times and system-prompt (the answers' copies stay tracked):
+week-01/day-02/same-note-five-times/replies/
+week-01/day-02/same-note-five-times/batch.txt
+week-01/day-02/system-prompt/recorded/
+week-01/day-02/system-prompt/before/
+
+# Built by score-the-prompt/start.py, through reset.py:
+week-01/day-03/score-the-prompt/extractor/
+# Written by define-a-function/record.py when a learner records the model's replies:
+week-01/day-03/define-a-function/recorded/
+
+week-01/day-04/diff-views/extractor/
+week-01/day-04/tool-modes/extractor/
+
+# Built by each folder's start.py, through reset.py:
+week-01/day-05/directing-prompt/lab/
+week-01/day-05/direct-run-one/lab/

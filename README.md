@@ -1,132 +1,105 @@
-# Exercise repository template
+# Practice environment: Full Stack Data and AI
 
-The starting point of a Program's exercise repository: the public repository a Cohort's learners
-clone as `~/practice`, holding only their exercises' starting states, filed by week and live day.
-This template holds no exercise. Exercises are written by the curriculum's exercise SOP,
-`sops/material/exercises.md`, in the Program repository, and built into an exercise repository
-by one command.
+- **Program:** `irs-bpa-to6`
+- **Written from:** `programs/irs-bpa-to6/design/local-setup.md` and the provisional activity
+  forms in `programs/irs-bpa-to6/profile.md` § 5a (curriculum repository), as of 2026-10-20. The
+  forms are "signed by nobody" (the profile's own words); week 1's labs are a live build, "walked
+  through", so every exercise here starts from a state the kit supplies, never from the lab.
 
-## The repositories, and how they connect
+## The case every exercise shares
 
-```
-gitroll-dev/curriculum (internal)
-  sops/material/exercises.md ............ how an exercise is written and filed
-  scripts/week/build_exercise_repository.py ... the build below
-          |
-          | the SOP writes each exercise in
-          v
-gitroll-dev/program-<program-id>-<topic> (internal, trainers are collaborators)
-  practice/<exercise>/ ................... starting state, authored and tested here
-  practice/answers/<exercise>/ ........... its answer; never leaves this repository
-  domains/<domain>/days/day-NN/extract.md  the day's exercise blocks
-          |
-          | build_exercise_repository.py (copies no answers/)
-          v
-GitRollTraining/<program-id>-exercises (PUBLIC; made from this template)
-  week-NN/day-NN/<exercise>/ ............. starting state, learner README, notebook
-          |
-          | "Use this template", once per Cohort, then tag start
-          v
-GitRollTraining/<program-id>-<start-date>-<cohort-id>-exercises (PUBLIC)
-  what a Cohort's learners clone as ~/practice
-```
+The case-notes extractor, the week's lab repository: a small Python function that reads one
+simulated case note and returns its fields as JSON that a later program can rely on. It returns
+exactly five fields, each with its rule in `~/practice/lab-states/base/docs/fields.md`:
 
-| Repository | Visible to | Holds | Changed by |
-|---|---|---|---|
-| `gitroll-dev/exercise-repository-template` | organization | this README, `.github/check_repository.py`, its workflow, `.gitignore` | pull request here |
-| `gitroll-dev/program-<program-id>-<topic>` | organization and the Program's trainers | each exercise's starting state and answer, and its block in the week's `activities.md` | the exercise SOP, by pull request there |
-| `GitRollTraining/<program-id>-exercises` | anyone | every built day; a template for the Cohort copies | the build, by pull request here; never by hand |
-| `GitRollTraining/<program-id>-<start-date>-<cohort-id>-exercises` | anyone | one Cohort's copy, its first commit tagged `start` | made once per Cohort |
-
-Task Order 6 today: `gitroll-dev/program-irs-bpa-to6-data-ai` builds
-`GitRollTraining/irs-bpa-to6-exercises`, copied as
-`GitRollTraining/irs-bpa-to6-2026-11-02-cohort-1-exercises`. Task Order 4 has no exercise
-repository: its week 1 exercises are not written yet, and the program owner ruled none today
-(2026-10-26).
-
-## What a built exercise repository holds
-
-```
-README.md                    the practice environment: setup, the day table, start again
-check_setup.py  reset.py     the kit's shared files, at the root, so ~/practice/reset.py,
-model.py  model-route.json   ~/practice/model.py and ~/practice/notes/ keep their paths
-notes/  lab-states/
-week-01/day-01/README.md     the day's exercises, one line each
-week-01/day-01/<exercise>/   its starting files, README.md (what the learner reads) and,
-                             when its kit has no start.py, <exercise>.ipynb
-.github/                     from this template
-```
-
-A week is the Domain's place in the Program's `domainIds` (`programs/<program-id>/program.json` in
-the curriculum); a day is the day whose `extract.md` holds the exercise's block. Days are
-numbered inside each week, as the Program repository numbers them.
-
-## Make a Program's exercise repository (once per Program)
-
-1. `gh repo create GitRollTraining/<program-id>-exercises --public --template
-   gitroll-dev/exercise-repository-template`, then clone it.
-2. From a curriculum checkout:
-   `python3 scripts/week/build_exercise_repository.py <program-repository> <exercise-repository>`.
-   It needs a clean checkout of the Program repository at the commit to publish. Name
-   `week-NN/day-NN` folders after the two paths to build only those days.
-3. In the exercise repository: `python3 .github/check_repository.py` prints `OK`.
-4. Verify the moved exercises from a fresh clone tagged `start`: each one's `python3 reset.py
-   <exercise>` restores it, its done check on the start does not print `Done:`, and with its
-   answer from the Program repository's `practice/answers/` it does.
-5. Commit on a branch, open a pull request, merge when its `check` is green.
-6. Settings, General: tick "Template repository", so each Cohort's copy is made from it.
-
-An exercise changes in the Program repository, never here. After it merges there, build again
-(step 2) and open a pull request here.
-
-## Make a Cohort's copy (once per Cohort, before its first live day)
-
-1. `gh repo create GitRollTraining/<program-id>-<YYYY-MM-DD>-<cohort-id>-exercises --public
-   --template GitRollTraining/<program-id>-exercises`, the date being the Cohort's first day and
-   the Cohort id the one in the Program repository's `delivery/config.json`.
-2. Clone it, then `git tag start` and `git push origin start`. `reset.py` restores a folder from
-   the commit tagged `start`; without the tag a learner's reset fails.
-3. Give the hosting team its address: each workspace clones it as `~/practice` before day 1.
-4. Each day's Classroom post links that day's folder,
-   `https://github.com/GitRollTraining/<repository>/tree/main/week-NN/day-NN`.
-
-## Answers
-
-Never in an exercise repository: the Program's and every Cohort's are public. Each exercise's
-answer stays in the Program repository's `practice/answers/`, which the Program's trainers open,
-and passes the exercise's done check there. A learner's Answer line reads "your trainer has it,
-and shows it at the debrief." Two checks hold this:
-
-- the build stops when a built file names an answers folder, or has the same bytes as an answer
-  file that is not also a starting file (17 of Task Order 6's 58 answer files equal a starting
-  file, such as an unchanged `check.py`, and reveal nothing);
-- `.github/check_repository.py`, run on every push, fails on any path named `answers`.
-
-A done check can still show what it checks for: `data-rules-check/check.py` holds the six answers
-its table must give.
-
-## Checked on 2026-10-26, Task Order 6 week 1
-
-Built from `gitroll-dev/program-irs-bpa-to6-data-ai` at commit `6056cb47`: 15 exercises (days 1
-to 5: 3, 3, 3, 4, 2), 6 of them with a notebook. In a clone tagged `start`, all 15 reset, all 15
-starts print `Not yet:` (or failing tests), 13 answers print `Done:` (or `6 passed`), and the tree
-was clean after each reset. Not run: the answers of `score-the-prompt` and `direct-run-one`,
-which call a model or a coding agent.
-
-## Open, for whoever owns this next
-
-| What | Why it is open |
+| Field | What it holds |
 |---|---|
-| A notebook for each exercise whose kit has `start.py` (9 of 15) | `scripts/week/build_notebook.py` stops on such a kit; those exercises have a README only |
-| A fix during a Cohort | the Cohort's `start` tag marks the first commit; a fix pushed later is not what `reset.py` restores until the tag moves |
-| The verification in step 4 as one command | it ran from a script with one recipe per Task Order 6 exercise, not from anything an exercise records |
-| Task Order 4 | its kit is a Pega application archive per live day, not files; the layout may need a form of its own |
-| The answers' own commands | `score-the-prompt`'s answer finds its files by a relative path that holds in the Program repository's flat `practice/` only |
+| `tax_year` | the tax year the note names, such as `2023` |
+| `form` | the form number only, such as `"1040"` |
+| `issue` | what looked wrong, in a short phrase of the note's own words |
+| `amount_in_question` | the amount the note names as in question, in whole dollars; `null` when the note names none |
+| `next_action` | what happens next, as the note says it |
 
-## The SOPs this follows
+Each exercise starts from its own copy of the extractor, at the point in the week it needs, so
+an exercise never depends on how your own lab went.
 
-- `sops/material/exercises.md` (curriculum): what an exercise is, the tests it passes, and § Where a
-  day's exercises live.
-- `templates/practice-environment.md` (curriculum): the practice environment every Program writes
-  as `practice/README.md`, which becomes this repository's README.
-- `sops/material/classroom-delivery.md` (curriculum): the day posts that link each day's folder.
+## Where you work
+
+- **VS Code, connected to your workspace in our hosted environment:** open the hosted environment's
+  connection page in your browser and sign in with the account issued to you. VS Code opens in the
+  browser, already connected to your workspace.
+- **The terminal:** in VS Code, menu Terminal > New Terminal. Every command in an exercise is typed
+  here.
+- **The model the extractor calls:** reached only through the practice kit's `model.py`, which sends
+  one note with a system prompt and prints the model's reply:
+  `python3 ~/practice/model.py SYSTEM_PROMPT_FILE NOTE_FILE`. The workspace provides the model and
+  its key; you need no account of your own.
+- **The coding agents:** both Codex and Claude Code, two of the course's approved coding tools,
+  each started from the terminal inside the folder an exercise names: Codex by typing `codex`, and
+  Claude Code by typing `claude`. An exercise that uses one names it and what you type into it; every other exercise uses
+  no AI tool. The first time you start one in a folder, it may ask whether you trust the files in
+  that folder: answer yes, which lets the folder's own settings for the agent apply, where it has
+  any.
+
+## Set up once, before the first exercise
+
+1. Open the connection page and sign in. You should see: VS Code, with a folder named `practice` in
+   the Explorer on the left.
+2. Open a terminal (Terminal > New Terminal) and type `cd ~/practice`. You should see: the prompt
+   now ends in `practice`.
+3. Tell Git your name and email, which it writes into every commit you make:
+   `git config --global user.name "Your Name"`, then
+   `git config --global user.email "you@example.com"`, with your own name and your work email
+   address. Git only writes them into your commits; nothing is sent to that address. You should
+   see: nothing; Git prints no reply when it saves a setting.
+4. Check: type `python3 check_setup.py`. It asks the model one short question, so it takes a few
+   seconds. It shows `Setup OK` and the versions of Python, pytest, jsonschema and Git, and the
+   model's one-word answer. If it shows `Missing:` and a name, tell your trainer before the first
+   exercise.
+
+## The practice kit
+
+The `practice` folder is the practice kit, placed in your workspace before day 1. Every note,
+description and reply in it is made up; none is about a real person, business or return.
+
+- **One folder per exercise,** with that exercise's starting files: the table below, by day.
+- **`notes/`:** the 41 simulated case notes the week's exercises share, one per file: `0101.txt` to
+  `0140.txt`, and `0147.txt`, the note the chapter uses as its example. "Synthetic filer" stands
+  where a name would be.
+- **`model.py` and `model-route.json`:** the route to the model the extractor calls. Do not edit
+  them; the course team sets the route.
+- **`lab-states/`:** the week's lab repository's files at each of its saved states, which an
+  exercise's reset uses to build its starting repository. You change nothing in it; an exercise
+  names a file in it when you need one, such as the extractor's output schema.
+
+| Day | Starting state | For | How you open it |
+|---|---|---|---|
+| 1 | `week-01/day-01/find-note-leaks/` | Find and close the three places a note leaks from the extractor | `cd ~/practice/week-01/day-01/find-note-leaks` |
+| 1 | `week-01/day-01/data-rules-check/` | Write the extractor's data requirements, then pass the data-rules check | `python3 ~/practice/reset.py data-rules-check`, then `cd ~/practice/week-01/day-01/data-rules-check/lab` |
+| 1 | `week-01/day-01/agent-boundary/` | Probe the lab's agent boundary, then propose the regulated one | `python3 ~/practice/reset.py agent-boundary`, then `cd ~/practice/week-01/day-01/agent-boundary/lab` |
+
+A folder whose starting state is a Git repository of its own is built by the reset command the
+first time, so its exercise starts with that command.
+
+Answers: your trainer has each exercise's answer, and shows it at the debrief.
+
+## Start again
+
+`python3 ~/practice/reset.py <folder>`, such as `python3 ~/practice/reset.py validate-replies`,
+puts that exercise's folder back as it was supplied, and builds its Git repository again where it
+has one. It replaces your changes in that folder; it does not repair them, and it touches no other
+folder. A terminal open inside the folder keeps working.
+
+## Not known yet
+
+| Question | Who answers | Our proposed answer, and the page it came from |
+|---|---|---|
+| The connection page's address | the hosting team, at kickoff | issued at kickoff (`programs/irs-bpa-to6/design/local-setup.md`, Web browser: "address issued at kickoff") |
+| Which of the three routes into the workspace IRS security approves | IRS security, through the hosting team | VS Code in the browser, which "needs only the hosted environment's HTTPS address" (`programs/irs-bpa-to6/design/local-setup.md`, VS Code) |
+| Whether the hosting team places the practice kit at `~/practice` in each workspace | the hosting team | yes, cloned into each workspace before day 1 |
+| Python 3.10 or later, pytest, jsonschema and Git 2.28 or later installed in the workspace image | the hosting team | yes; `check_setup.py` names any that is missing |
+| The route `model.py` takes to the model the extractor calls in the workspace: its address, its key, and which model | the hosting team | the model access the workspace provides ("the model access the labs use", `programs/irs-bpa-to6/design/local-setup.md`), set once in `model-route.json`; the kit was run with Claude Code's print mode and a small Claude model behind the same file |
+| Whether the workspace installs both coding agents, and where each keeps its settings file | the hosting team, with the trainers | yes: both Codex and Claude Code, as the program owner ruled on 2026-10-20 ("Any coding agents is fine. (both Codex and Claude Code)"); `programs/irs-bpa-to6/design/local-setup.md` names Codex ("In the hosted environment Codex runs on an API key we configure"). Five exercises use Claude Code and the exercise that maps a tool's modes uses Codex; each names, for its trainer, the steps that differ in the other tool |
+| Whether each coding agent starts already signed in, so that a learner never sees a sign-in | the hosting team | yes, on a key the course team configures, as the page says of Codex: "In the hosted environment Codex runs on an API key we configure" (`programs/irs-bpa-to6/design/local-setup.md`) |
+| How a learner reaches the trainer when a step says "tell your trainer" | the trainers | in the session itself, in the room or in its chat, while the exercise runs |
+| Where a learner opens the week's chapter, which each exercise names by section as the talk it follows | the trainers, with the team that builds the Program's learning materials | the chapter's material on the course's Google Classroom page, which links its NotebookLM notebook (`sops/material/classroom-delivery.md`, curriculum repository) |

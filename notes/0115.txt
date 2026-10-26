@@ -1,0 +1,1 @@
+Note 0115. Synthetic filer. Tax year 2022, Form 1040. Dividends of 860 on a 1099-DIV are not reported. Proposed the change. Close if agreed.
