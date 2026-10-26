@@ -1,0 +1,1 @@
+Note 0132. Synthetic filer. Tax year 2023, Form 1099-NEC. A payer filed nonemployee compensation of 2,750 to a payee whose identification number is invalid. Sent a backup withholding notice to the payer.
