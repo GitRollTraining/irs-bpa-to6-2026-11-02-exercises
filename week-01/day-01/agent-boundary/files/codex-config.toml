@@ -1,0 +1,14 @@
+# Codex's configuration for this repository. Codex reads it once the project is trusted.
+approval_policy = "on-request"
+sandbox_mode = "workspace-write"
+web_search = "live"
+
+[sandbox_workspace_write]
+network_access = false
+
+[history]
+persistence = "none"
+
+[mcp_servers.case-files]
+command = "case-files-mcp"
+args = ["--source", "case-system", "--read-only"]

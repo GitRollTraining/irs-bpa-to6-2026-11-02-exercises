@@ -75,9 +75,9 @@ description and reply in it is made up; none is about a real person, business or
 
 | Day | Starting state | For | How you open it |
 |---|---|---|---|
-| 1 | `week-01/day-01/find-note-leaks/` | Find and close the three places a note leaks from the extractor | `cd ~/practice/week-01/day-01/find-note-leaks` |
-| 1 | `week-01/day-01/data-rules-check/` | Write the extractor's data requirements, then pass the data-rules check | `python3 ~/practice/reset.py data-rules-check`, then `cd ~/practice/week-01/day-01/data-rules-check/lab` |
-| 1 | `week-01/day-01/agent-boundary/` | Probe the lab's agent boundary, then propose the regulated one | `python3 ~/practice/reset.py agent-boundary`, then `cd ~/practice/week-01/day-01/agent-boundary/lab` |
+| 1 | `week-01/day-01/find-note-leaks/` | Review a coding agent's change, and close every place a note leaks | `python3 ~/practice/reset.py find-note-leaks`, then `cd ~/practice/week-01/day-01/find-note-leaks/extractor` |
+| 1 | `week-01/day-01/data-rules-check/` | Classify ten proposed uses of AI tools, and route those not yours to decide | `python3 ~/practice/reset.py data-rules-check`, then `cd ~/practice/week-01/day-01/data-rules-check/lab` |
+| 1 | `week-01/day-01/agent-boundary/` | Tighten your coding agent's configuration for the extractor's pilot | `python3 ~/practice/reset.py agent-boundary`, then `cd ~/practice/week-01/day-01/agent-boundary/lab` |
 
 A folder whose starting state is a Git repository of its own is built by the reset command the
 first time, so its exercise starts with that command.

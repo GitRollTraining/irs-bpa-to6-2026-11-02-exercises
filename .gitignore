@@ -6,10 +6,8 @@ week-01/day-04/push-after-rejection/extractor/
 week-01/day-04/push-after-rejection/shared.git/
 week-01/day-04/push-after-rejection/.teammate/
 
-# Written by each run of find-note-leaks' check.py, in the exercise and in its answer:
-week-01/day-01/find-note-leaks/logs/
-week-01/day-01/answers/find-note-leaks/logs/
 # Built by each folder's start.py, through reset.py:
+week-01/day-01/find-note-leaks/extractor/
 week-01/day-01/data-rules-check/lab/
 week-01/day-01/agent-boundary/lab/
 
