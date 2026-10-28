@@ -2,8 +2,8 @@
 """The exercise repository's one check: python3 .github/check_repository.py
 
 Fails, naming each problem, when:
-  - any path holds a folder or file named answers (answers stay in the Program repository);
   - a week-NN/day-NN/ folder, or an exercise folder inside one, has no README.md;
+  - an exercise folder has no answer beside it, week-NN/day-NN/answers/<exercise>/;
   - a relative link in a Markdown file points at nothing in this repository.
 Standard library only. Exit 0 prints "OK" and what was checked.
 """
@@ -14,6 +14,7 @@ import sys
 
 ROOT = pathlib.Path(__file__).resolve().parents[1]
 LINK = re.compile(r"\]\(([^)\s#]+)(?:#[^)]*)?\)")
+NOT_EXERCISES = {"answers", "figures"}           # a day's folders that hold no exercise
 
 
 def tracked() -> list[pathlib.Path]:
@@ -32,15 +33,17 @@ def tracked() -> list[pathlib.Path]:
 
 files = tracked()
 problems = []
-for path in files:
-    rel = path.relative_to(ROOT)
-    if any(part.split(".")[0] == "answers" for part in rel.parts):
-        problems.append(f"{rel}: an answer is never in this repository")
 days = sorted(p for p in ROOT.glob("week-*/day-*") if p.is_dir())
+exercises = 0
 for day in days:
-    for folder in [day, *(p for p in day.iterdir() if p.is_dir() and not p.name.startswith("."))]:
+    if not (day / "README.md").is_file():
+        problems.append(f"{day.relative_to(ROOT)}/: no README.md")
+    for folder in (p for p in day.iterdir() if p.is_dir() and not p.name.startswith(".") and p.name not in NOT_EXERCISES):
+        exercises += 1
         if not (folder / "README.md").is_file():
             problems.append(f"{folder.relative_to(ROOT)}/: no README.md")
+        if not (day / "answers" / folder.name).is_dir():
+            problems.append(f"{folder.relative_to(ROOT)}/: no answer at {day.relative_to(ROOT)}/answers/{folder.name}/")
 for path in files:
     if path.suffix != ".md":
         continue
@@ -54,4 +57,5 @@ for line in problems:
     print(line)
 if problems:
     sys.exit(f"{len(problems)} problem(s)")
-print(f"OK: {len(files)} files, {len(days)} day folders, no answers, every link resolves")
+print(f"OK: {len(files)} files, {len(days)} day folders, {exercises} exercises each with a README and an answer, "
+      "every link resolves")
