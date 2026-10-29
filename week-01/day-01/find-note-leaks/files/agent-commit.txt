@@ -1,0 +1,8 @@
+Make the extractor robust to bad model replies
+
+- Retry once through a second provider when a reply fails its check
+- Log each failure with the note, so a bad extraction can be reproduced
+- Add an edge-case test for a note that names two amounts
+- Ignore logs/
+
+All 6 tests pass.

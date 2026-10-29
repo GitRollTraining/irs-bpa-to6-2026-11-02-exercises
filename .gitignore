@@ -1,3 +1,9 @@
 __pycache__/
 .pytest_cache/
 .ipynb_checkpoints/
+.venv/
+
+# Built by each exercise's start.py, through reset.py:
+week-01/day-01/find-note-leaks/extractor/
+week-01/day-01/data-rules-check/lab/
+week-01/day-01/agent-boundary/lab/

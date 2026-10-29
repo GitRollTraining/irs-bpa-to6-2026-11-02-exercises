@@ -1,0 +1,4 @@
+Configure both coding agents for the pilot, from section 1.3
+
+- Turn on approvals, and turn off the web tools
+- Give the agent read-only access to the case files, so that it can look up the note of a failed extraction

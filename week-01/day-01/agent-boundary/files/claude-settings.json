@@ -1,0 +1,25 @@
+{
+  "enabledMcpjsonServers": ["case-files"],
+  "permissions": {
+    "defaultMode": "default",
+    "allow": [
+      "mcp__case-files__*",
+      "Edit(/**)",
+      "Bash(git push *)",
+      "Bash(python3 -m pytest *)",
+      "Bash(git status)",
+      "Bash(git diff *)",
+      "Bash(git log *)"
+    ],
+    "deny": [
+      "WebFetch",
+      "Bash(curl *)",
+      "Bash(wget *)"
+    ]
+  },
+  "sandbox": {
+    "enabled": true,
+    "autoAllowBashIfSandboxed": false,
+    "allowUnsandboxedCommands": false
+  }
+}
