@@ -1,0 +1,1 @@
+Note 0101. Synthetic filer. Tax year 2022, Form 1040. Interest income on a 1099-INT from a credit union is missing from Schedule B; the form reports 1,240. Sent a CP2000-style notice proposing the change. Wait 30 days for a reply.

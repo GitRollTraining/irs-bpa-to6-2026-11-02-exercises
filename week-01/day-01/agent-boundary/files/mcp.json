@@ -1,0 +1,8 @@
+{
+  "mcpServers": {
+    "case-files": {
+      "command": "case-files-mcp",
+      "args": ["--source", "case-system", "--read-only"]
+    }
+  }
+}
