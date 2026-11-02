@@ -20,8 +20,8 @@ After this exercise, you can close the paths that an agent's change opens for a 
 
 | Problem | The rule, in section 1.1 | Fix it by hand |
 |---|---|---|
-| 1. When a reply fails, `extractor.py` sends the note to `inference.example.net`, a model with no approval (lines 24 to 25, 59 to 63, and 77). | Federal taxpayer information is "Barred from unauthorized AI". | On line 77, call `ask(SYSTEM_PROMPT, message, SCHEMA)` in place of `ask_fallback(SYSTEM_PROMPT, message)`. Then remove lines 59 to 63, lines 24 to 25, and the lines `import urllib.request` and `import os`. |
-| 2. When a reply fails, line 75 of `extractor.py` writes the whole note to `logs/extractor.log`. | "a log line that prints a whole note" is one of "the two paths the agent creates for you". | On line 75, remove the text of the note from the log line. Keep only `note_id(note_text)`. |
+| 1. When a reply fails, `extractor.py` sends the note to `inference.example.net`, a model with no approval (lines 25 to 26, 84 to 97, and 127). | Federal taxpayer information is "Barred from unauthorized AI". | On line 127, call `ask(SYSTEM_PROMPT, message, SCHEMA)` in place of `ask_fallback(SYSTEM_PROMPT, message)`. Then remove lines 84 to 97, lines 25 to 26, and the lines `import urllib.request` and `import os`. |
+| 2. When a reply fails, line 125 of `extractor.py` writes the whole note to `logs/extractor.log`. | "a log line that prints a whole note" is one of "the two paths the agent creates for you". | On line 125, remove the text of the note from the log line. Keep only `note_id(note_text)`. |
 | 3. `tests/fixtures/two_amounts.txt` is a real note, with only its name and TIN removed. | A note without its name still "gives year, form, amount, date". | Replace the text of `tests/fixtures/two_amounts.txt` with the text of the course note `notes/0122.txt`. It also names two amounts, so the test still passes. |
 
 **Answer:** `~/practice/week-01/day-01/answers/find-note-leaks/` holds the fixed files, and `commands.sh`, which ends with `Done:`.

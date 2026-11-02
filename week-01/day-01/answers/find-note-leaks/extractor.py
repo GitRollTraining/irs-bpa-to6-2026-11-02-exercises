@@ -12,6 +12,7 @@ import logging
 import pathlib
 import re
 import sys
+from collections.abc import Callable
 
 import jsonschema
 
@@ -25,7 +26,12 @@ class ExtractionFailed(Exception):
     """The model's reply was not JSON that matches the output schema."""
 
 
-def _log():
+def _log() -> logging.Logger:
+    """Return the extractor's logger, which writes to logs/extractor.log.
+
+    Returns:
+        The logger, set up on its first call.
+    """
     LOG_FILE.parent.mkdir(exist_ok=True)
     log = logging.getLogger("extractor")
     if not log.handlers:
@@ -36,12 +42,31 @@ def _log():
     return log
 
 
-def note_id(note_text):
+def note_id(note_text: str) -> str:
+    """Return a note's number, read from its first words.
+
+    Args:
+        note_text: the text of the note, which starts "Note 0147." or similar.
+
+    Returns:
+        The number, such as "0147", or "unknown" when the note does not start with one.
+    """
     found = re.match(r"\s*Note (\d+)", note_text)
     return found[1] if found else "unknown"
 
 
-def check_reply(reply_text):
+def check_reply(reply_text: str) -> dict:
+    """Check the model's reply against the output schema.
+
+    Args:
+        reply_text: the reply's text, which should be JSON.
+
+    Returns:
+        The fields the reply holds.
+
+    Raises:
+        ExtractionFailed: the reply is not JSON, or does not match the schema.
+    """
     try:
         fields = json.loads(reply_text)
     except json.JSONDecodeError as err:
@@ -52,7 +77,23 @@ def check_reply(reply_text):
     return fields
 
 
-def extract(note_text, ask=None):
+def extract(note_text: str, ask: Callable[[str, str, dict], str] | None = None) -> dict:
+    """Extract the five fields of one case note.
+
+    A reply that fails its check is logged by its note and asked for once more through the same model.
+
+    Args:
+        note_text: the text of the note, as in notes/0147.txt.
+        ask: the model: a function that takes the system prompt, the message and the output
+            schema, and returns the reply's text. None: model.ask, the route in model-route.json.
+
+    Returns:
+        The fields, checked against the output schema.
+
+    Raises:
+        ExtractionFailed: the reply, and the second try, are not JSON that matches the output
+            schema.
+    """
     if ask is None:
         from model import ask
     message = f"<note>{note_text.strip()}</note>"
@@ -68,7 +109,11 @@ def extract(note_text, ask=None):
             raise failure from None
 
 
-def main():
+def main() -> None:
+    """Extract the note named on the command line and print its fields as JSON.
+
+    Exits with the reason when the reply fails its check.
+    """
     if len(sys.argv) != 2:
         sys.exit("Usage: python3 extractor.py NOTE_FILE")
     try:

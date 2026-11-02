@@ -18,7 +18,7 @@ On your own computer, do all the steps.
    git tag start
    ```
 
-2. Make a Python environment for the exercises, with Python 3.9 or later:
+2. Make a Python environment for the exercises, with Python 3.10 or later:
 
    ```
    python3 -m venv .venv
