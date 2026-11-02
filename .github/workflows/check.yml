@@ -13,3 +13,5 @@ jobs:
         with:
           python-version: "3.12"
       - run: python3 .github/check_repository.py
+      - run: python3 -m pip install -r requirements.txt
+      - run: python3 .github/check_day_one.py
