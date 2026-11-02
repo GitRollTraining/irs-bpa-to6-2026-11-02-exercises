@@ -6,37 +6,28 @@ The course made up every note and name in this repository. Some replies are the 
 
 ## Set up once
 
-In the hosted workspace of the course, the folder `~/practice` is this repository. Start at step 3.
+In the hosted workspace of the course, the folder `~/practice` is this repository. Run `python3 ~/practice/check_setup.py`, then start at step 3.
 
-On your own computer, do all the steps.
+On your own computer, with Python 3.10 or later and Git, do all the steps.
 
-1. Clone the repository into `~/practice`. Then mark the state that a reset restores:
+1. Clone the repository into `~/practice`:
 
    ```
    git clone https://github.com/GitRollTraining/irs-bpa-to6-2026-11-02-exercises.git ~/practice
    cd ~/practice
-   git tag start
    ```
 
-2. Make a Python environment for the exercises, with Python 3.10 or later:
+2. Run the setup. On Windows, type `py setup.py`:
 
    ```
-   python3 -m venv .venv
-   .venv/bin/pip install pytest jsonschema ipykernel
+   python3 setup.py
    ```
+
+   It makes the Python environment `.venv` with what the exercises need (`requirements.txt`), registers the notebook kernel "practice", and asks for your name and email for Git if Git has none. It ends with `check_setup.py`: `Setup OK`, or a `Missing` line that names what to fix. You can run it again at any time.
 
    In each new terminal, run `source ~/practice/.venv/bin/activate` first. Then `python3` has pytest and jsonschema.
 
-3. Give Git your name and email. Git writes them into each commit that you make:
-
-   ```
-   git config --global user.name "Your Name"
-   git config --global user.email "you@example.com"
-   ```
-
-4. Open the folder `~/practice` in VS Code. If VS Code asks if you trust the authors of the files, select Trust. When VS Code asks for the Python and Jupyter extensions, install them.
-
-5. Open the notebook of the day, such as `week-01/day-01/week-01-day-01.ipynb`. At the top right, select Select Kernel. On your own computer, select the environment `.venv`. In the hosted workspace, select its Python.
+3. Open the folder `~/practice` in VS Code. If VS Code asks if you trust the authors of the files, select Trust. When VS Code asks for the Python and Jupyter extensions, install them. Open the notebook of the day, such as `week-01/day-01/week-01-day-01.ipynb`. At the top right, select Select Kernel, then the kernel "practice" (on your own computer) or the Python of the hosted workspace.
 
 ## The days
 
@@ -96,20 +87,5 @@ The answer to each exercise is in `answers/<folder>/`, in the folder of its day.
 - `notes/` holds the simulated case notes that the exercises share.
 - `lab-states/` holds the files of the lab of the week at each of its saved states. The exercises build their starting repositories from it.
 - `model.py` and `model-route.json` send a request to the model that the extractor calls. Four exercises of days 2 and 3 use them (see "The model and your coding agent"). No check calls the model.
+- `setup.py` sets up this repository once, on your own computer (see "Set up once"). `requirements.txt` lists what it installs.
 - `check_setup.py` checks a workspace: Python, pytest, jsonschema, Git, and the model. Outside the hosted workspace, it can show the model as missing.
-
-## Not known yet
-
-Only the hosting team or a trainer can answer these questions. When the course has an answer, the answer replaces its row.
-
-| Question | Who answers | Our proposed answer |
-|---|---|---|
-| In the hosted workspace, does `claude -p` reach the model, from a terminal and from a notebook cell? With which account? `model.py` sends each call this way. | The hosting team | Yes, each learner's, with Claude Code signed in, as `model-route.json` sets it ([Claude Code headless mode](https://code.claude.com/docs/en/headless)). |
-| Is Claude Code, `claude`, in the terminal of the hosted workspace? `direct-run-one` can start it. | The hosting team | Yes, with the sign-in of the row above. If it is not, use Codex for `direct-run-one`. |
-| Is `codex`, the command-line tool of Codex, in the terminal of the hosted workspace, and is it signed in? | The hosting team | Yes, as the course's page "Use your coding agent" starts `codex` in a terminal. |
-| In the hosted workspace, does Codex ask if you trust the folder? After the yes, does `/status` show `Workspace (Ask for approval)`? | The hosting team | Yes, as Codex's page [Agent approvals & security](https://learn.chatgpt.com/docs/agent-approvals-security) gives for a folder under version control: workspace write, approval on request. |
-| Does `code` open a file from a notebook cell? | The hosting team | Not known. If it does not, open the file in the Explorer of VS Code. |
-| Is Git 2.28 or later in the hosted workspace? | The hosting team | Yes. `check_setup.py` checks it. |
-| In the hosted workspace, is `~/practice` this repository, with the tag `start`? Does the Python of the notebooks have pytest and jsonschema? | The hosting team | Yes, as steps 1 and 2 of "Set up once" make them on your own computer. `check_setup.py` checks pytest and jsonschema. |
-| How many coding-agent sessions can one exercise start? | The hosting team | One for each run. `direct-run-one` starts one, and one more for each run that does not meet its done-when. |
-| A step says "tell your trainer". How do you tell your trainer? | The trainers | Not known. |
