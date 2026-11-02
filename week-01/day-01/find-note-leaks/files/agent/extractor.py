@@ -86,7 +86,7 @@ def ask_fallback(system_prompt: str, message: str) -> str:
 
     Args:
         system_prompt: the extractor's system prompt.
-        message: the message extract builds for the model.
+        message: the message to send.
 
     Returns:
         The reply's text.
