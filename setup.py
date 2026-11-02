@@ -63,10 +63,18 @@ for key, question in (("user.name", "Your name, for your Git commits: "),
         run("git", "config", "--global", key, answer)
 
 step("5 of 5: check_setup.py")
-code = subprocess.run([str(PYTHON), str(KIT / "check_setup.py")]).returncode
-if code == 0:
-    print("\nDone. Open this folder in VS Code, open a notebook, and select the kernel \"" + KERNEL + "\".")
-else:
-    print("\nThe environment is made. Fix what the Missing line names, then run python3 check_setup.py again.\n"
-          "On your own computer the model can show as missing: four exercises of days 2 and 3 need it.")
-sys.exit(code)
+check = subprocess.run([str(PYTHON), str(KIT / "check_setup.py")], capture_output=True, text=True)
+print(check.stdout.strip())
+NEXT = "Open this folder in VS Code, open a notebook, and select the kernel \"" + KERNEL + "\"."
+if check.returncode == 0:
+    print("\nDone. " + NEXT)
+    sys.exit(0)
+# check_setup.py lists the model last, so a Missing line that starts with it names nothing else.
+if check.stdout.startswith("Missing: the model the extractor calls"):
+    print("\nDone: everything else is ready. " + NEXT + "\n"
+          "Only the model is missing. Four exercises send text to it: same-note-five-times and\n"
+          "system-prompt on day 2, define-a-function and score-the-prompt on day 3. To use them on this\n"
+          "computer, install Claude Code and sign in (claude), then run python3 check_setup.py again.")
+    sys.exit(0)
+print("\nNot ready yet. Fix what the Missing line names, then run python3 setup.py again.")
+sys.exit(check.returncode)
