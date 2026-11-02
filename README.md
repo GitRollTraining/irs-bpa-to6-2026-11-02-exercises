@@ -6,28 +6,57 @@ The course made up every note and name in this repository. Some replies are the 
 
 ## Set up once
 
-In the hosted workspace of the course, the folder `~/practice` is this repository. Run `python3 ~/practice/check_setup.py`, then start at step 3.
+Use the same setup in the hosted workspace and on your own computer. Python 3.10 or later and Git 2.28 or later are required. The current notebook shell commands assume a Unix-like environment; Windows users should use WSL for the notebook exercises.
 
-On your own computer, with Python 3.10 or later and Git, do all the steps.
+1. In the hosted workspace, open the existing course folder (`~/practice`). On your own computer, clone the repository into that folder:
 
-1. Clone the repository into `~/practice`:
-
-   ```
+   ```sh
    git clone https://github.com/GitRollTraining/irs-bpa-to6-2026-11-02-exercises.git ~/practice
    cd ~/practice
    ```
 
-2. Run the setup. On Windows, type `py setup.py`:
+2. From the course root, run:
 
-   ```
+   ```sh
    python3 setup.py
    ```
 
-   It makes the Python environment `.venv` with what the exercises need (`requirements.txt`), registers the notebook kernel "practice", and asks for your name and email for Git if Git has none. It ends with `check_setup.py`: `Setup OK`, or a `Missing` line that names what to fix. You can run it again at any time.
+   Setup creates or reuses `.venv`, installs `requirements.txt`, registers the notebook kernel "Python (practice .venv)", and creates the `start` reset tag if absent. The first package installation needs package-index access. Its final readiness check is offline and sends nothing to a model. Rerunning setup preserves exercise files and history.
 
-   In each new terminal, run `source ~/practice/.venv/bin/activate` first. Then `python3` has pytest and jsonschema.
+   If Git has no effective name or email, setup asks for them and saves them in this course checkout's local configuration. Existing global settings are accepted and are never edited. You can configure the course identity yourself from its root:
 
-3. Open the folder `~/practice` in VS Code. If VS Code asks if you trust the authors of the files, select Trust. When VS Code asks for the Python and Jupyter extensions, install them. Open the notebook of the day, such as `week-01/day-01/week-01-day-01.ipynb`. At the top right, select Select Kernel, then the kernel "practice" (on your own computer) or the Python of the hosted workspace.
+   ```sh
+   git config --local user.name "Your Name"
+   git config --local user.email "your-email@example.com"
+   ```
+
+   Rerun setup after adding a missing identity. It copies missing local identity settings into existing exercise repositories without resetting work; newly built exercises copy the course identity automatically. Explicit local overrides in existing exercises are preserved. No instructor identity is supplied.
+
+3. In each new terminal, change to the course root and activate the environment before running shell commands:
+
+   ```sh
+   source .venv/bin/activate
+   python3 check_setup.py
+   ```
+
+   `Setup OK (offline)` means the selected Python has pytest, jsonschema and ipykernel, Git and identity are available, and `python3` on PATH uses the same Python environment. A `Missing` list names what to repair. Day 1 needs no model or coding agent.
+
+4. Open the course folder in VS Code, trust the course files, and install the Python and Jupyter extensions when prompted. Open the day's notebook and select "Python (practice .venv)" on both hosted and local machines. Restart an already running kernel after setup. In a notebook cell, `import sys; print(sys.executable)` should point into this course's `.venv`; terminal activation alone does not change an existing kernel.
+
+   For a readiness check using the actual notebook kernel, run this diagnostic cell from anywhere inside the course checkout:
+
+   ```python
+   import pathlib
+   import subprocess
+   import sys
+
+   root = next(p for p in (pathlib.Path.cwd(), *pathlib.Path.cwd().parents)
+               if (p / "check_setup.py").is_file())
+   result = subprocess.run([sys.executable, str(root / "check_setup.py")])
+   assert result.returncode == 0, "Resolve the readiness messages before continuing."
+   ```
+
+Before the four model exercises on Days 2–3, explicitly run `python3 check_setup.py --check-model` in the activated environment. This sends a short live request through `model.py`; provider access and sign-in are required. `python3 setup.py --check-model` requests the same optional probe after setup. Default setup/readiness never imports or calls the model. Neither readiness mode starts a coding agent.
 
 ## The days
 
@@ -41,7 +70,7 @@ On your own computer, with Python 3.10 or later and Git, do all the steps.
 
 ## The model and your coding agent
 
-**The model.** Four exercises send text to the model that the extractor calls: `same-note-five-times` and `system-prompt` on day 2, and `define-a-function` and `score-the-prompt` on day 3. They send it through `model.py`. The table under "Start an exercise again" says how many calls each one makes after a reset. When you send the same text again, nothing goes to the model. No check calls the model. If a call fails, the script that sends tells you what to do.
+**The model.** Four exercises send text to the model that the extractor calls: `same-note-five-times` and `system-prompt` on day 2, and `define-a-function` and `score-the-prompt` on day 3. They send it through `model.py`. The table under "Start an exercise again" says how many calls each one makes after a reset. When you send the same text again, nothing goes to the model. Exercise checks do not call the model. The optional setup probe `check_setup.py --check-model` does. If a call fails, the script that sends tells you what to do.
 
 **Your coding agent.** Two exercises start a coding agent in a terminal: `tool-modes` on day 4, with Codex, and `direct-run-one` on day 5, with Codex or Claude Code. The other exercises use no coding agent.
 
@@ -86,6 +115,12 @@ The answer to each exercise is in `answers/<folder>/`, in the folder of its day.
 - `reset.py` puts an exercise back as the course supplied it.
 - `notes/` holds the simulated case notes that the exercises share.
 - `lab-states/` holds the files of the lab of the week at each of its saved states. The exercises build their starting repositories from it.
-- `model.py` and `model-route.json` send a request to the model that the extractor calls. Four exercises of days 2 and 3 use them (see "The model and your coding agent"). No check calls the model.
-- `setup.py` sets up this repository once, on your own computer (see "Set up once"). `requirements.txt` lists what it installs.
-- `check_setup.py` checks a workspace: Python, pytest, jsonschema, Git, and the model. Outside the hosted workspace, it can show the model as missing.
+- `model.py` and `model-route.json` send a request to the model that the extractor calls. Four exercises of days 2 and 3 use them (see "The model and your coding agent"). Exercise checks do not call the model. The optional setup probe `check_setup.py --check-model` does.
+- `setup.py` sets up this repository in hosted and local workspaces (see "Set up once"). `requirements.txt` lists what it installs.
+- `check_setup.py` checks offline readiness: Python, pytest, jsonschema, ipykernel, shell interpreter consistency, Git, and commit identity. `--check-model` explicitly adds a live model probe.
+
+## Setup validation
+
+Run `.venv/bin/python .github/test_setup.py` to exercise readiness and setup in disposable repositories with synthetic identities and a fake model. The dedicated setup workflow installs requirements and runs these tests independently of the Day 1 exercise runner. Tests cover missing packages/Git/identity, shell interpreter mismatch, opt-in model success/failure, nested identity propagation, and repeat setup preserving work and global configuration. Package installation and kernel registration are stubbed in the orchestration test.
+
+S2 was also checked with real kernel registration in a disposable home, a checkout path containing spaces, a real Day 1 build and learner commit without global identity, and repeated setup. That check reused installed dependencies without downloads. Fresh dependency downloads, interactive VS Code kernel selection, full notebook execution, and native Windows behavior remain unverified. The notebook command portability work is separate from setup readiness.
