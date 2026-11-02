@@ -1,31 +1,47 @@
-# Exercise: Review a coding agent's change, and close every place a note leaks
+# 1.1 Find note leaks
 
-After this exercise, you can close the paths that an agent's change opens for a note, and keep what the change was for.
+Find and close three disclosure paths in an agent's change while preserving the extractor's behavior.
 
-**Scenario:** A teammate used a coding agent to change the case-notes extractor. The change makes the extractor handle bad replies from the model, and all its tests pass. But it opens three paths for a note. Fix the commit before anyone merges it into `main`.
+A teammate's coding agent added handling for bad model replies. All six tests pass, but the change exposes note data. Review it before it is merged. The “real note” in this scenario is fictional course data.
 
-**Success criterion:** from `extractor`, `python3 ../check.py` prints `Done:`.
+## Start
 
-**Where you work:** the folder `~/practice/week-01/day-01/find-note-leaks/extractor`, in VS Code and in a terminal. Each path in this exercise starts there. Do not use AI tools.
+Follow the [Day 1 setup](../README.md). Work by hand, without AI tools. These commands create the workspace only if it is missing, then enter it:
 
-**Start from:** the folder `find-note-leaks`. Run `python3 ~/practice/reset.py find-note-leaks`. Then run `cd ~/practice/week-01/day-01/find-note-leaks/extractor`. To start again, run the same reset. The reset removes your commits.
+```sh
+test -d ~/practice/week-01/day-01/find-note-leaks/extractor/.git || python3 ~/practice/reset.py find-note-leaks
+cd ~/practice/week-01/day-01/find-note-leaks/extractor
+```
 
-**What you have:** in `extractor`, the course team's extractor on `main`, and the agent's commit on top of it, with the tag `agent-draft`. `../check.py` is the check. The week 1 chapter, section 1.1, has the rules.
+All paths below are relative to `extractor/`. The course team's version is on `main`; the agent's change is tagged `agent-draft`.
 
-## Steps
+## Review and fix
 
-1. See the change. Run `git show --stat agent-draft` and `python3 -m pytest -q`. You should see one commit that changes four files, and `6 passed`.
-2. Fix the three problems in the table by hand.
-3. Commit, and run `python3 ../check.py`. You should see `Done:`. If you see `Not yet:`, fix what it names, and run the check again.
+```sh
+git show --stat agent-draft
+python3 -m pytest -q
+```
 
-| Problem | The rule, in section 1.1 | Fix it by hand |
-|---|---|---|
-| 1. When a reply fails, `extractor.py` sends the note to `inference.example.net`, a model with no approval (lines 25 to 26, 84 to 97, and 127). | Federal taxpayer information is "Barred from unauthorized AI". | On line 127, call `ask(SYSTEM_PROMPT, message, SCHEMA)` in place of `ask_fallback(SYSTEM_PROMPT, message)`. Then remove lines 84 to 97, lines 25 to 26, and the lines `import urllib.request` and `import os`. |
-| 2. When a reply fails, line 125 of `extractor.py` writes the whole note to `logs/extractor.log`. | "a log line that prints a whole note" is one of "the two paths the agent creates for you". | On line 125, remove the text of the note from the log line. Keep only `note_id(note_text)`. |
-| 3. `tests/fixtures/two_amounts.txt` is a real note, with only its name and TIN removed. | A note without its name still "gives year, form, amount, date". | Replace the text of `tests/fixtures/two_amounts.txt` with the text of the course note `notes/0122.txt`. It also names two amounts, so the test still passes. |
+Expect four changed files and `6 passed`. Passing tests do not establish that data is safe. Use section 1.1 of the notebook to explain each fix.
 
-**Answer:** `~/practice/week-01/day-01/answers/find-note-leaks/` holds the fixed files, and `commands.sh`, which ends with `Done:`.
+| Disclosure path | Change to make |
+|---|---|
+| The fallback in `extractor.py` sends notes to `inference.example.net`. | Replace the `ask_fallback` call with `ask(SYSTEM_PROMPT, message, SCHEMA)` and remove the unused fallback code and imports. |
+| A failure log includes the whole note. | Log only `note_id(note_text)`, without note text or reply values. |
+| `tests/fixtures/two_amounts.txt` represents a real note with identifiers removed. | Replace it with course note `notes/0122.txt`, preserving the two-amount test case. |
 
-## Afterwards, together
+Save your changes, then commit and check:
 
-Which of the three paths would the agent never report? You replaced the real note in a new commit. Where is the real note still? What would you do if someone already pushed the branch?
+```sh
+git add -A
+git commit -m "Close the paths in the agent's change"
+python3 ../check.py
+```
+
+Finish when the check prints `Done:`. If it prints `Not yet:`, address the findings, commit, and check again. The check uses a fake model and blocks network access.
+
+## Reflect
+
+Why did the tests pass with these leaks present? Where does a replaced fixture remain in Git history, and what would you do if the branch had already been pushed?
+
+[Worked answer](../answers/find-note-leaks/) · [Start over](../../../README.md#start-an-exercise-again)
