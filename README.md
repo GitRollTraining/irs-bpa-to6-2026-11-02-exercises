@@ -69,13 +69,13 @@ For an exercise's terminal commands, run `source .venv/bin/activate` first in ea
 
 ## When an exercise needs AI access
 
-Four exercises call a model through `model.py`: `same-note-five-times` and `system-prompt` on Day 2, and `define-a-function` and `score-the-prompt` on Day 3. Before those exercises, check access from the course folder:
+Four exercises call a model through `model.py`, which sends each request through the Codex CLI that you signed in to in step 1: `same-note-five-times` and `system-prompt` on Day 2, and `define-a-function` and `score-the-prompt` on Day 3. Before those exercises, check access from the course folder:
 
 ```sh
 uv run check_setup.py --check-model
 ```
 
-This checks only the route to the model, with one short live request. Follow any provider sign-in instructions it reports. The setup check and the exercise checks do not call a live model.
+This checks only the route to the model, with one short live request. If it reports a sign-in problem, run `codex login` again. The setup check and the exercise checks do not call a live model.
 
 Only `tool-modes` on Day 4 and `direct-run-one` on Day 5 ask you to start a coding agent. Follow their instructions for choosing and launching it.
 
