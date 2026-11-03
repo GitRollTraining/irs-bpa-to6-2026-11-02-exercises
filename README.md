@@ -8,14 +8,16 @@ All names, notes, and scenarios are fictional. Use only the supplied course data
 
 Use Python 3.10 or later, Git 2.28 or later, and VS Code with the Python and Jupyter extensions. The exercises use Unix shell commands; on Windows, use WSL.
 
-1. In the hosted workspace, open a terminal in `~/practice`. On your own computer, clone the course there:
+1. Open a terminal in the course folder: the folder that holds this repository. If you have no copy yet, clone the course, for example into `~/practice`:
 
    ```sh
    git clone https://github.com/GitRollTraining/irs-bpa-to6-2026-11-02-exercises.git ~/practice
    cd ~/practice
    ```
 
-2. From `~/practice`, run:
+   Any folder works: every path in the exercises is relative to the course folder or to the exercise. In the hosted workspace, keep the course in your home folder, which is kept when the workspace stops.
+
+2. From the course folder, run:
 
    ```sh
    python3 setup.py
@@ -23,22 +25,21 @@ Use Python 3.10 or later, Git 2.28 or later, and VS Code with the Python and Jup
 
    Setup installs the Python packages, registers the notebook kernel, and asks for a Git name and email if needed. Initial installation needs internet access. You can rerun setup without losing exercise work.
 
-3. In each new terminal, activate the environment and check readiness:
+3. In each new terminal, activate the environment and check readiness. In VS Code, Terminal > New Terminal opens in the course folder:
 
    ```sh
-   cd ~/practice
    source .venv/bin/activate
    python3 check_setup.py
    ```
 
    Continue when it prints `Setup OK (offline)`. If it prints `Missing`, follow the messages and rerun the check. Day 1 needs no model access or coding agent.
 
-4. Open `~/practice` in VS Code and open the day's notebook. Select **Python (practice .venv)** as its kernel. Restart the kernel if it was running during setup.
+4. Open the course folder in VS Code (File > Open Folder) and open the day's notebook. Select **Python (practice .venv)** as its kernel. Restart the kernel if it was running during setup.
 
 ### If setup needs attention
 
 - **Git name or email missing:** rerun `python3 setup.py` and enter your own details. They are saved for this course and its exercises; existing global Git settings are left alone.
-- **Python environments differ:** activate `.venv` in the terminal, select **Python (practice .venv)** in the notebook, and restart its kernel. In a notebook cell, `import sys; print(sys.executable)` should show a path inside `~/practice/.venv`.
+- **Python environments differ:** activate `.venv` in the terminal, select **Python (practice .venv)** in the notebook, and restart its kernel. In a notebook cell, `import sys; print(sys.executable)` should show a path inside the course folder's `.venv`.
 - **Other missing requirements:** follow the readiness message, then rerun setup.
 
 ## Week 1
@@ -56,7 +57,7 @@ Use Python 3.10 or later, Git 2.28 or later, and VS Code with the Python and Jup
 Four exercises call a model through `model.py`: `same-note-five-times` and `system-prompt` on Day 2, and `define-a-function` and `score-the-prompt` on Day 3. Before those exercises, check access from the activated environment:
 
 ```sh
-python3 ~/practice/check_setup.py --check-model
+python3 check_setup.py --check-model
 ```
 
 This sends a short live request. Follow any provider sign-in instructions it reports. Ordinary readiness and exercise checks do not call a live model.
@@ -65,11 +66,13 @@ Only `tool-modes` on Day 4 and `direct-run-one` on Day 5 ask you to start a codi
 
 ## Start an exercise again
 
-To discard your work in one exercise, run its reset command, for example:
+To discard your work in one exercise, run its reset command from the course folder, for example:
 
 ```sh
-python3 ~/practice/reset.py find-note-leaks
+python3 reset.py find-note-leaks
 ```
+
+From the exercise's `lab` or `extractor` folder, the same reset is `python3 ../../../../reset.py find-note-leaks`. In a notebook, run `!python3 "{_dh[0]}/../../reset.py" find-note-leaks` in a new cell: `{_dh[0]}` is the folder of the notebook, where its kernel starts.
 
 Reset removes your edits and commits in that exercise and rebuilds its starting files. Save anything you want to keep first. Other exercises and the supplied answers are preserved. Notebook startup cells keep an existing exercise workspace; use reset only when you want to start over.
 

@@ -1,7 +1,7 @@
 """The practice kit's route to the model the extractor calls.
 
-    python3 ~/practice/model.py SYSTEM_PROMPT_FILE NOTE_FILE [--schema SCHEMA_FILE] [--model NAME]
-    python3 ~/practice/model.py SYSTEM_PROMPT_FILE NOTE_FILE --functions FUNCTIONS_FILE
+    python3 model.py SYSTEM_PROMPT_FILE NOTE_FILE [--schema SCHEMA_FILE] [--model NAME]
+    python3 model.py SYSTEM_PROMPT_FILE NOTE_FILE --functions FUNCTIONS_FILE
 
 prints the model's reply as text. From Python: `from model import ask`, then
 `ask(system_prompt, note_text, schema=None, model=None, functions=None)` returns the same text.
