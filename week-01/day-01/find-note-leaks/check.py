@@ -20,6 +20,7 @@ from collections import Counter
 HERE = pathlib.Path(__file__).resolve().parent
 REPO = HERE / "extractor"
 KIT = next(p for p in HERE.parents if (p / "notes").is_dir())
+RESET_PY = os.path.relpath(KIT / "reset.py")  # the reset, as a path from where this runs
 COURSE_NOTES = {p.stem: p.read_text().strip() for p in sorted((KIT / "notes").glob("*.txt"))}
 NOTE_ID = "0147"
 NOTE = COURSE_NOTES[NOTE_ID]
@@ -70,7 +71,7 @@ def stop(message):
 
 
 if not (REPO / ".git").is_dir():
-    stop("there is no repository extractor/ yet. Run python3 ~/practice/reset.py find-note-leaks.")
+    stop(f"there is no repository extractor/ yet. Run python3 {RESET_PY} find-note-leaks.")
 
 # Run extract on each bad reply, with the network off and a fake model that keeps what it is sent.
 hosts, sent = [], []
@@ -149,7 +150,7 @@ if mine.returncode != 0:
 with tempfile.TemporaryDirectory() as draft:
     archive = git("archive", "--format=tar", "agent-draft")
     if archive.returncode != 0:
-        stop("the tag agent-draft is missing. Run python3 ~/practice/reset.py find-note-leaks.")
+        stop(f"the tag agent-draft is missing. Run python3 {RESET_PY} find-note-leaks.")
     with tarfile.open(fileobj=io.BytesIO(archive.stdout)) as tar:
         try:
             tar.extractall(draft, filter="data")

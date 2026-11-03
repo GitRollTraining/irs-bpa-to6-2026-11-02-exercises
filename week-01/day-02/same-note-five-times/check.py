@@ -3,7 +3,7 @@
 It reads what is in lab/: your rows in record.md, and the replies that send_five.py saved for the
 prompt in prompt.txt. It calls no model.
 
-It reads two rows, as the table in step 3 gives them. Each names the replies whose value the note
+It reads two rows, as the exercise's table gives them. Each names the replies whose value the note
 does not state. The check reads the five values of that field in your own replies, beside the note.
 - note 0147, next_action: a value with a date or a number that the note does not have must be in
   the row. A value that is only the note's own words and numbers, in its order, must not be. Each
@@ -12,26 +12,29 @@ does not state. The check reads the five values of that field in your own replie
   in the row, and null must not.
 """
 import json
+import os
 import pathlib
 import re
 import sys
 
 HERE = pathlib.Path(__file__).resolve().parent
 LAB = HERE / "lab"
+KIT = next(p for p in HERE.parents if (p / "lab-states").is_dir())  # the course folder
+RESET_PY = os.path.relpath(KIT / "reset.py")  # the reset, as a path from where this runs
 sys.path.insert(0, str(HERE / "files"))
 from send_five import FIELDS, RUNS, read_reply, reply_files  # noqa: E402  (no model call)
 
 NOTES = ["0147", "0104"]
-ROWS = {"0147": ["next_action"], "0104": ["amount_in_question"]}  # the two rows of record.md, step 3
+ROWS = {"0147": ["next_action"], "0104": ["amount_in_question"]}  # the two rows of record.md, in the exercise's table
 # What each note states for the fields with one right value: its year, its form, and its amount.
 # None: the note names no amount, so null belongs in amount_in_question.
 STATED = {"0147": {"tax_year": 2023, "form": 1040, "amount_in_question": 18400},
           "0104": {"tax_year": 2023, "form": 1040, "amount_in_question": None}}
 NO_VALUE = object()  # the reply holds no JSON object, or no such field
-# The line of section 2.1 that each line of the table in step 3 rests on, as its Why column quotes it.
+# The line of section 2.1 that each line of the exercise's table rests on, as the Why column of its toggle quotes it.
 FLUENT = 'Section 2.1: "A fluent answer is not a known answer."'
-NULL = 'Section 2.1, under that heading: "text where null belongs".'
-RESET = "python3 ~/practice/reset.py same-note-five-times"
+NULL = 'Section 2.1: "text where null belongs".'
+RESET = f"python3 {RESET_PY} same-note-five-times"
 SEND = "Send them: run cell 2, or python3 send_five.py 0147 0104."
 
 
@@ -166,7 +169,7 @@ for note in NOTES:
             accepted += 1
             continue
         no_amount = field == "amount_in_question" and STATED[note][field] is None
-        say = []  # what the row lacks, and what it has too many of, in the words of the table in step 3
+        say = []  # what the row lacks, and what it has too many of, in the words of the exercise's table
         if left_out and no_amount:
             say.append(f"note {note} names no amount, so write the number of each reply whose value is not null. "
                        f"The row lacks {count(left_out, 'reply number')}.")
@@ -179,12 +182,12 @@ for note in NOTES:
             say.append(f"you wrote {put_in} {'reply whose value is' if one else 'replies whose values are'} "
                        + ("null, the correct value here." if no_amount else "only the words and numbers of the note.")
                        + f" Take {'its number' if one else 'their numbers'} out.")
-        # The line of section 2.1 that the row rests on, once: the Why column of the table in step 3.
+        # The line of section 2.1 that the row rests on, once: the Why column of the toggle under the exercise's table.
         lines = [NULL if no_amount else FLUENT]
         problems.append(f"record.md, note {note}, {field}: " + " Also, ".join(say) + " " + " ".join(lines))
     if empty:
         row = f"row{'s' if len(empty) > 1 else ''} {', '.join(empty)}"
-        problems.append(f"record.md, note {note}: fill in the {row}, as the table in step 3 says. "
+        problems.append(f"record.md, note {note}: fill in the {row}, as the exercise's table says. "
                         "Write the reply numbers, 1 to 5. If no reply fits, write none."
                         + ("" if sent else " Do this after the send."))
 

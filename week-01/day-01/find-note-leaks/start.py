@@ -1,5 +1,5 @@
 """Build this exercise's starting repository, extractor/. Run it through the reset command:
-python3 ~/practice/reset.py find-note-leaks
+python3 reset.py find-note-leaks, in the course folder
 
 extractor/ holds, on main, the course team's two commits: the simulated notes, the field list and the
 route to the model; then the extractor, its output schema, its system prompt and its tests on

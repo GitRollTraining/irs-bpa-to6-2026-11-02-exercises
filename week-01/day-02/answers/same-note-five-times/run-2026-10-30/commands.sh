@@ -1,5 +1,5 @@
 # The run of 2026-10-30, put in lab.
-# Run it from ~/practice/week-01/day-02/same-note-five-times/lab, after python3 ~/practice/reset.py same-note-five-times:
+# Run it from week-01/day-02/same-note-five-times/lab, after python3 reset.py same-note-five-times in the course folder:
 #   sh ../../answers/same-note-five-times/run-2026-10-30/commands.sh
 # It calls no model. It puts the ten replies of the run of 2026-10-30 in the folder where send_five.py
 # saves the replies to prompt.txt. Then it writes the record for them and runs the check, which prints Done:.
@@ -11,7 +11,7 @@ RUN="$(cd "$(dirname "$0")" && pwd)"
 FOLDER="$(python3 -c 'import pathlib, send_five; print(send_five.reply_folder(pathlib.Path(".")).as_posix())')"
 if [ -n "$(ls -A "$FOLDER" 2>/dev/null)" ] || ! git diff --quiet -- record.md; then
   echo "commands.sh stops here, and keeps your replies and your record."
-  echo "To see this run in lab/, run python3 ~/practice/reset.py same-note-five-times first. Then run commands.sh again."
+  echo "To see this run in lab/, run python3 ../../../../reset.py same-note-five-times first. Then run commands.sh again."
   exit 1
 fi
 mkdir -p "$FOLDER"

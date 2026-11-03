@@ -6,11 +6,11 @@ A teammate's coding agent added handling for bad model replies. All six tests pa
 
 ## Start
 
-Follow the [Day 1 setup](../README.md). Work by hand, without AI tools. These commands create the workspace only if it is missing, then enter it:
+Follow the [Day 1 setup](../README.md). Work by hand, without AI tools. In a new terminal in the course folder, these commands create the workspace only if it is missing, then enter it:
 
 ```sh
-test -d ~/practice/week-01/day-01/find-note-leaks/extractor/.git || python3 ~/practice/reset.py find-note-leaks
-cd ~/practice/week-01/day-01/find-note-leaks/extractor
+test -d week-01/day-01/find-note-leaks/extractor/.git || python3 reset.py find-note-leaks
+cd week-01/day-01/find-note-leaks/extractor
 ```
 
 All paths below are relative to `extractor/`. The course team's version is on `main`; the agent's change is tagged `agent-draft`.
@@ -29,6 +29,16 @@ Expect four changed files and `6 passed`. Passing tests do not establish that da
 | The fallback in `extractor.py` sends notes to `inference.example.net`. | Replace the `ask_fallback` call with `ask(SYSTEM_PROMPT, message, SCHEMA)` and remove the unused fallback code and imports. |
 | A failure log includes the whole note. | Log only `note_id(note_text)`, without note text or reply values. |
 | `tests/fixtures/two_amounts.txt` represents a real note with identifiers removed. | Replace it with course note `notes/0122.txt`, preserving the two-amount test case. |
+
+<details><summary>Why each change</summary>
+
+| Disclosure path | The rule, in section 1.1 |
+|---|---|
+| The fallback in `extractor.py` sends notes to `inference.example.net`. | Federal taxpayer information is "Barred from unauthorized AI". |
+| A failure log includes the whole note. | "a log line that prints a whole note" is one of "the two paths the agent creates for you". |
+| `tests/fixtures/two_amounts.txt` represents a real note with identifiers removed. | A note without its name still "gives year, form, amount, date". |
+
+</details>
 
 Save your changes, then commit and check:
 

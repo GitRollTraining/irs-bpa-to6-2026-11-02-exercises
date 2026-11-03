@@ -20,6 +20,8 @@ import jsonschema
 
 HERE = pathlib.Path(__file__).resolve().parent
 LAB = HERE / "lab"
+KIT = next(p for p in HERE.parents if (p / "lab-states").is_dir())  # the course folder
+RESET_PY = os.path.relpath(KIT / "reset.py")  # the reset, as a path from where this runs
 PROMPT = "prompts/system.txt"
 SENT = ("0147", "0102", "0104")  # the notes that ../record.py sends in the steps
 RECORD = "python3 ../record.py " + " ".join(SENT)
@@ -220,16 +222,16 @@ def prompt_problems(text, schema, notes):
         sent = number if number in SENT else label.group(1) if label and label.group(1) in SENT else None
         if sent:
             problems.append(f"example {k} holds note {sent}, which ../record.py sends. An example of it gives the "
-                            f"model the answer for that note. Take note 0119, as step 2 says. {NOT_LAST}")
+                            f"model the answer for that note. Take note 0119, as the exercise's table says. {NOT_LAST}")
         elif number and number not in NO_AMOUNT:
             problems.append(f"example {k} gives null, but the course reads note {number} as a note that states an "
-                            f"amount. Take note 0119, as step 2 says. {NOT_LAST}")
+                            f"amount. Take note 0119, as the exercise's table says. {NOT_LAST}")
         elif not number and numbers_left(note):
             problems.append(f"example {k} gives null, but its note has \"{numbers_left(note)[0]}\". Take note "
-                            f"0119, as step 2 says. {NOT_LAST}")
+                            f"0119, as the exercise's table says. {NOT_LAST}")
         elif not number and not (re.search(r"\bTax years? \d{4}", note) and re.search(r"\bForms?\b", note)):
             problems.append(f"example {k} gives null, but its note names no tax year and form. Copy note 0119 "
-                            f"whole, as step 2 says. {NOT_LAST}")
+                            f"whole, as the exercise's table says. {NOT_LAST}")
         else:
             good.append(k)
     if good and all(k == len(examples) for k in good):
@@ -304,12 +306,12 @@ def reply_problems(text, schema):
 
 def main():
     if not (LAB / ".git").is_dir():
-        stop("there is no repository lab/ yet. Run python3 ~/practice/reset.py system-prompt.")
+        stop(f"there is no repository lab/ yet. Run python3 {RESET_PY} system-prompt.")
     if not (LAB / PROMPT).is_file():
         stop(f"{PROMPT} is missing. To get the draft again, run cp ../files/system.txt {PROMPT}.")
     schema_file = LAB / "schema" / "output.schema.json"
     if not schema_file.is_file() or not (LAB / "notes").is_dir():
-        stop("schema/output.schema.json or notes/ is missing. Run python3 ~/practice/reset.py system-prompt to "
+        stop(f"schema/output.schema.json or notes/ is missing. Run python3 {RESET_PY} system-prompt to "
              "build the lab again. The reset removes your commits and replies.")
     text = (LAB / PROMPT).read_text()
     schema = json.loads(schema_file.read_text())

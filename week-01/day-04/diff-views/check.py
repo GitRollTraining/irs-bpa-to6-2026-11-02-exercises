@@ -17,20 +17,22 @@ import tarfile
 import tempfile
 
 HERE = pathlib.Path(__file__).resolve().parent
+KIT = next(p for p in HERE.parents if (p / "lab-states").is_dir())  # the course folder
+RESET_PY = os.path.relpath(KIT / "reset.py")  # the reset, as a path from where this runs
 REPO = HERE / "lab"
 START = "before-run"  # the course team's last commit, before the agent's run
 TESTS = "tests/test_extractor.py"
 ASKED = ("extractor.py", TESTS)  # the files that the directing prompt allows
-RESET = "python3 ~/practice/reset.py diff-views"
-# Each message names the row of the table in step 2 that gives the answer, and the line of section 4.3.
+RESET = f"python3 {RESET_PY} diff-views"
+# Each message names the row of the exercise's table that gives the answer, and the line of section 4.3.
 ROW2_LINE = ("Section 4.3, under \"Start wide, then point --exit-code at HEAD for the tests.\": \"a file outside what "
              "the directing prompt allowed is a finding\".")
 ROW3_LINE = "Section 4.3, the list \"The trap: the plain form\": \"Run git diff --staged before every commit\"."
-STAGED = f"Row 3 of the table in step 2 gives the answer. {ROW3_LINE}"
+STAGED = f"Row 3 of the exercise's table gives the answer. {ROW3_LINE}"
 BY_HAND = f"The steps change no file by hand. {STAGED} To start again, run {RESET}."
 # After the reset, prompts/system.txt and the test are staged again, and extractor.py is not.
 WAY_BACK = ("Then take prompts/system.txt out of the staging area, and stage extractor.py, before you commit. Rows 2 "
-            f"and 3 of the table in step 2 give the answer. {ROW2_LINE} {ROW3_LINE}")
+            f"and 3 of the exercise's table give the answer. {ROW2_LINE} {ROW3_LINE}")
 
 
 def git(*args):
@@ -116,7 +118,7 @@ if not has_change and not outside:
         if take_out:
             moves.insert(0, f"docs/directing-prompt.md says \"Change no other file\", so take {', '.join(take_out)} "
                             "out of the staging area.")
-            rows = f"Rows 2 and 3 of the table in step 2 give the answer. {ROW2_LINE} {ROW3_LINE}"
+            rows = f"Rows 2 and 3 of the exercise's table give the answer. {ROW2_LINE} {ROW3_LINE}"
         moves.append("Then commit." if moves else "Commit.")
         problems.append("no commit holds the change to extractor.py that docs/directing-prompt.md asks for. "
                         f"{why} {' '.join(moves)} {rows}")

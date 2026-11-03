@@ -25,6 +25,8 @@ from xml.etree import ElementTree
 
 HERE = pathlib.Path(__file__).resolve().parent
 LAB = HERE / "lab"
+KIT = next(p for p in HERE.parents if (p / "lab-states").is_dir())  # the course folder
+RESET_PY = os.path.relpath(KIT / "reset.py")  # the reset, as a path from where this runs
 RECORD = "run-1-record.md"
 PROMPT = "run1-prompt.txt"
 DONE_WHEN = "tests/test_schema.py"
@@ -39,8 +41,8 @@ COUNT = re.compile(r"(\d+) (passed|failed|errors?|skipped|xfailed|xpassed)\b")
 SUMMARY = re.compile(r"\d+ (?:passed|failed|errors?|skipped|xfailed|xpassed)\b"
                      r"(?:,? \d+ (?:passed|failed|errors?|skipped|xfailed|xpassed|warnings?)\b)*")
 
-# The notebook's lines that each answer rests on, and the steps that give it. The steps have the same
-# numbers in the notebook and in the README.
+# The notebook's lines that each answer rests on, and where the answers are: the exercise's table, the same
+# in the notebook and in the README.
 RUN_1 = ("Day 5, the opening, under \"Today's runs build the extractor: a note in, five fields out.\": \"Run 1 "
          "writes its schema, run 2 the extractor.\"")
 RUN_IT = "Section 5.2, list \"For every run, yourself\": \"Run the done-when in your own terminal\"."
@@ -50,7 +52,7 @@ DONE_WHEN_LINE = ("Section 5.1, run 1's Done-when: \"one output that must fail (
 EVIDENCE = "Section 5.2, list \"Have it show evidence\": \"The command it ran, and what it returned\"."
 REPORT = "Section 5.2, list \"For every run, yourself\": \"The report: done, proof, scope, not verified\"."
 COMMITTED = "Section 5.2, the answer to its Check: \"the commit and the stored result are evidence.\""
-TABLE = "the table in step 3"
+TABLE = "the exercise's table"
 
 
 def git(*args):
@@ -126,8 +128,11 @@ def outcomes(xml):
 def run_done_when(where, env, xml):
     """Run the done-when in `where`: its exit code, its last line without the time, and each test's outcome."""
     try:
+        # --rootdir: the same test names in lab/ and in its copy. Else setup.py makes the course folder
+        # pytest's rootdir in lab/, and each name there starts with week-01.day-05. The folder is resolved,
+        # as pytest resolves the test's path: a temporary folder can be a link, such as /var on macOS.
         run = subprocess.run([sys.executable, "-m", "pytest", "-q", "-p", "no:cacheprovider", "--color=no",
-                              f"--junitxml={xml}", DONE_WHEN],
+                              f"--rootdir={pathlib.Path(where).resolve()}", f"--junitxml={xml}", DONE_WHEN],
                              cwd=where, env=env, capture_output=True, text=True, timeout=180)
     except subprocess.TimeoutExpired:
         return 1, "no result after 180 seconds", {}
@@ -202,7 +207,7 @@ def type_in_any_of(node):
 
 # Each part of the done-when (section 5.1), by name: the change to the schema that a test of it must catch, the
 # change in form only that such a test must pass, what is missing in plain words, and how to find the test,
-# in the words of the table in step 3.
+# in the words of the exercise's table.
 PARTS = [("must-fail", not_required, required_in_all_of,
           "no test in tests/test_schema.py expects an error from the schema in schema/ when an output lacks "
           "amount_in_question.",
@@ -211,7 +216,7 @@ PARTS = [("must-fail", not_required, required_in_all_of,
           "no test in tests/test_schema.py sets amount_in_question to None and expects no error from the schema "
           "in schema/.",
           "sets amount_in_question to None, Python's null, and expects no error")]
-# The label in Proof that each part's test name follows, as the table in step 3 gives it.
+# The label in Proof that each part's test name follows, as the exercise's table gives it.
 PROOF_LABELS = {"must-fail": "Must fail", "null-passes": "Null passes"}
 # A must-fail test can take out each required field in turn, as Codex's run 1 does, and name no field.
 ANY_FIELD = {"must-fail": " A test that takes out each required field in turn counts too: amount_in_question is one "
@@ -316,17 +321,17 @@ def after_label(proof, label):
 
 def main():
     if not (LAB / ".git").is_dir():
-        stop("there is no repository lab/ yet. Run python3 ~/practice/reset.py direct-run-one.")
+        stop(f"there is no repository lab/ yet. Run python3 {RESET_PY} direct-run-one.")
     start = start_commit()
     if start is None:
-        stop("lab/ no longer holds the course team's commits. Run python3 ~/practice/reset.py direct-run-one.")
+        stop(f"lab/ no longer holds the course team's commits. Run python3 {RESET_PY} direct-run-one.")
     problems = []
     files = run_files(start)
     met = last = held = None
     code = 0
     tests = {}
     if not files:
-        problems.append(f"lab/ holds no file of run 1 yet. Start your agent in a terminal in lab/, as step 2 says. "
+        problems.append(f"lab/ holds no file of run 1 yet. Start your agent, codex or claude, in a terminal in lab/. "
                         f"Paste all of {PROMPT}. {RUN_1}")
     else:
         with tempfile.TemporaryDirectory() as tmp:
@@ -352,15 +357,16 @@ def main():
         done = verdict(fields.get("Done", ""))
 
     if files and done == "not met" and met is not True:
-        problems.append("run 1 does not meet its done-when, as your report says. Direct and check run 1 again, as "
-                        f"step 2 says. {TESTS_FIRST}")
+        problems.append("run 1 does not meet its done-when, as your report says. Direct and check run 1 again. "
+                        f"{TESTS_FIRST}")
     elif files and met is not False:
         # A run that fails its done-when, or misses a part, is not one to accept: no line asks for its commit.
         left = [line[3:] for line in git("status", "--porcelain", "--untracked-files=all", "--", "schema",
                                          "tests").stdout.splitlines()]
         if left:
             problems.append("these files are not in a commit as they are now: " + ", ".join(left) + ". Stage each "
-                            f"one, as step 2 does. Then commit, as step 3 says. {COMMITTED}")
+                            "one: run git add schema tests, or cell 2 in the notebook. Then commit: run git commit -m "
+                            f"\"Accept run 1\", or cell 3 in the notebook. {COMMITTED}")
 
     if problems:
         print(f"Not yet: {len(problems)} left.")
@@ -403,8 +409,8 @@ def report_problems(fields, met, code, last, tests, held):
                             f"Write it as {TABLE} does. {EVIDENCE}")
         elif (theirs and not shows(proof, theirs)) or (not theirs and last.lower() not in proof.lower()):
             problems.append(f"{RECORD}: Proof does not show the last line that the done-when prints on run 1 "
-                            f"now: {last}. Run the done-when again, as step 2 says. Copy its last line. The time can "
-                            f"differ. {EVIDENCE}")
+                            f"now: {last}. Run the done-when again: python3 -m pytest {DONE_WHEN}. Copy its last "
+                            f"line. The time can differ. {EVIDENCE}")
         # The test names count with every Done, an empty or unclear one too, except where the check asks for a new run.
         if met is True or (met is None and done != "not met"):
             if held is not None:

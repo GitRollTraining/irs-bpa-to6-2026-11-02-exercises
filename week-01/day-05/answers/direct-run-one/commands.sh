@@ -1,5 +1,5 @@
-# The answer to "Direct the first run and check it yourself".
-# Run it from ~/practice/week-01/day-05/direct-run-one/lab, after python3 ~/practice/reset.py direct-run-one:
+# The answer to "5.2 Direct and check run 1".
+# Run it from week-01/day-05/direct-run-one/lab, after python3 reset.py direct-run-one in the course folder:
 #   sh ../../answers/direct-run-one/commands.sh
 # It starts no coding agent. In place of your agent's run 1, it copies the files of the course's
 # Codex run, from agent-run/codex/. agent-run/README.md says what each run of the course is. Then it

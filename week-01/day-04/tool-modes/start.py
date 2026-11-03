@@ -1,5 +1,5 @@
 """Build this exercise's starting repository, extractor/. Run it through the reset command:
-python3 ~/practice/reset.py tool-modes
+python3 reset.py tool-modes, in the course folder
 
 extractor/ is the week's lab repository at its saved state configured. The course team made its
 three commits. The first adds the simulated notes, the field list and the route to the model. The

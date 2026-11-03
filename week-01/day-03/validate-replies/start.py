@@ -1,5 +1,5 @@
 """Build this exercise's starting repository, lab/. Run it through the reset command:
-`python3 ~/practice/reset.py validate-replies`
+`python3 reset.py validate-replies`, in the course folder
 
 lab/ is the week's lab repository after its run 2, as the course team committed it. It holds the
 simulated notes and the field list. It holds the route to the model, the agent's configuration and

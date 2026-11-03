@@ -1,5 +1,5 @@
-# The answer to "Commit three changes and leave the fourth out". Run it from
-# ~/practice/week-01/day-04/commit-three-of-four/extractor, after python3 ~/practice/reset.py commit-three-of-four:
+# The answer to "4.1 Commit three of four changes". Run it from
+# week-01/day-04/commit-three-of-four/extractor, after python3 reset.py commit-three-of-four in the course folder:
 #   sh ../../answers/commit-three-of-four/commands.sh
 # It keeps the log directory out of Git, stages the three changes that you asked for and .gitignore by name,
 # commits them, and runs the check, which prints Done:.

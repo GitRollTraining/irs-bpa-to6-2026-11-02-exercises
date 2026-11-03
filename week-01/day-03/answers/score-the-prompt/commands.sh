@@ -1,5 +1,5 @@
-# The answer to "Score the prompt on a labelled set, and revise it once".
-# Run it from ~/practice/week-01/day-03/score-the-prompt/extractor, after python3 ~/practice/reset.py score-the-prompt:
+# The answer to "3.3 Score the prompt".
+# Run it from week-01/day-03/score-the-prompt/extractor, after python3 reset.py score-the-prompt in the course folder:
 #   sh ../../answers/score-the-prompt/commands.sh
 # It makes no model call. In place of the 20 calls of the second score, it copies the kept run of the
 # answer's prompt, run/. The last command is the check, which prints Done:.

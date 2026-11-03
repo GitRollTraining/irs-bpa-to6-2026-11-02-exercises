@@ -1,5 +1,5 @@
 """Build this exercise's starting repository, lab/. Run it through the reset command:
-python3 ~/practice/reset.py directing-prompt
+python3 reset.py directing-prompt, in the course folder
 
 lab/ is the week's lab repository after its run 1, as the course team committed it. It holds the
 simulated notes, the field list and the route to the model. It also holds the coding agent's

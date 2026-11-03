@@ -1,7 +1,7 @@
-# The answer to "Map the modes of the coding tool you use".
+# The answer to "4.4 Map the modes of Codex".
 # It makes the change of the course's run in Ask for approval, fills in modes.md, and runs the check,
 # which prints Done:.
-# Run it from ~/practice/week-01/day-04/tool-modes/extractor, after python3 ~/practice/reset.py tool-modes.
+# Run it from week-01/day-04/tool-modes/extractor, after python3 reset.py tool-modes in the course folder.
 # The command:
 #   sh ../../answers/tool-modes/commands.sh
 set -e

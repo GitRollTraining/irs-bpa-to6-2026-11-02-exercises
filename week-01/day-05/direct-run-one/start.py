@@ -1,5 +1,5 @@
 """Build this exercise's starting repository, lab/. Run it through the reset command:
-python3 ~/practice/reset.py direct-run-one
+python3 reset.py direct-run-one, in the course folder
 
 lab/ is the week's lab repository at its saved state "configured". It holds the simulated notes,
 the field list, the route to the model, the coding agent's configuration and the data-rules check.

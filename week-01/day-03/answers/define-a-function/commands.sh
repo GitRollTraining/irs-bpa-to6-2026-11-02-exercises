@@ -1,5 +1,5 @@
-# The answer to "Define one function, and test both cases".
-# Run it from ~/practice/week-01/day-03/define-a-function/lab, after python3 ~/practice/reset.py define-a-function:
+# The answer to "3.2 Define one function".
+# Run it from week-01/day-03/define-a-function/lab, after python3 reset.py define-a-function in the course folder:
 #   sh ../../answers/define-a-function/commands.sh
 # It puts the fixed function list in place, and the two replies that the course kept for it. So ask.py
 # sends no question to the model: it shows the kept replies. Then the check prints Done:.

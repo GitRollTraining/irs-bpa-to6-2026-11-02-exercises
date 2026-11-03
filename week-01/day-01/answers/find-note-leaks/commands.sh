@@ -1,5 +1,5 @@
 # The answer to "Review a coding agent's change, and close every place a note leaks".
-# Run it from extractor/, after python3 ~/practice/reset.py find-note-leaks:
+# Run it from extractor/, after python3 reset.py find-note-leaks in the course folder:
 #   sh ../../answers/find-note-leaks/commands.sh
 # Each part ends in a commit, as the exercise's steps do; the last command prints Done:.
 set -e

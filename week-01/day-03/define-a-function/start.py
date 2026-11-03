@@ -1,5 +1,5 @@
 """Build this exercise's starting repository, lab/. Run it through the reset command:
-python3 ~/practice/reset.py define-a-function
+python3 reset.py define-a-function, in the course folder
 
 lab/ is the week's lab repository at its saved state configured, after the data-rules check, as the course team
 committed it. It holds the simulated notes, the field list, the coding agent's configuration, the data-rules check
