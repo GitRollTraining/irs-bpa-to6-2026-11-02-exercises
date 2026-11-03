@@ -34,7 +34,9 @@ class CodexRouteTests(unittest.TestCase):
         self.bin.mkdir()
         self.calls = self.root / "calls.jsonl"
         self.fake("")
-        env = {"PATH": str(self.bin) + os.pathsep + os.environ["PATH"], "CODEX_STUB_STATE": str(self.root / "state")}
+        # HOME is a folder of the test's own, so no ~/.local/bin/codex of this machine is found.
+        env = {"PATH": str(self.bin) + os.pathsep + os.environ["PATH"], "CODEX_STUB_STATE": str(self.root / "state"),
+               "HOME": str(self.root / "home")}
         patch = mock.patch.dict(os.environ, env)
         patch.start()
         self.addCleanup(patch.stop)
@@ -102,6 +104,16 @@ shutil.copy(sys.argv[sys.argv.index("--output-schema") + 1], {str(seen)!r})""")
             self.model.ask("Extract.", NOTE)
         with self.assertRaisesRegex(RuntimeError, "the model route failed: .*codex login"):
             self.model.ask("Answer.", NOTE, functions=FUNCTIONS)
+
+    def test_codex_in_local_bin_when_path_lacks_it(self):
+        # A notebook's kernel often has no ~/.local/bin on PATH, where the course's installer puts codex.
+        local = pathlib.Path(os.environ["HOME"]) / ".local" / "bin"
+        local.mkdir(parents=True)
+        (self.bin / "codex").rename(local / "codex")
+        with mock.patch.dict(os.environ, {"PATH": "/usr/bin:/bin"}):  # no folder that holds a codex
+            reply = json.loads(self.model.ask("Extract.", NOTE))
+        self.assertEqual(reply["tax_year"], 2023)
+        self.assertEqual(self.sent()[0][:1], ["exec"])
 
     def test_no_codex_says_where_to_install_it(self):
         (self.bin / "codex").unlink()

@@ -18,7 +18,9 @@ the course setup installs (codex exec), and "claude-code", Claude Code's print m
 """
 import argparse
 import json
+import os
 import pathlib
+import shutil
 import subprocess
 import sys
 import tempfile
@@ -38,12 +40,23 @@ def _said(errors):
     return " ".join(lines[-2:])
 
 
+def _codex_cli():
+    """The codex command: the one on PATH, else the one in ~/.local/bin, where the course's install command
+    puts it. A notebook's kernel, which the editor starts, often has no ~/.local/bin on its PATH: the
+    installer adds that folder in the shell's start-up file, which only a terminal reads."""
+    found = shutil.which("codex")
+    if found:
+        return found
+    local = pathlib.Path.home() / ".local" / "bin" / "codex"
+    return str(local) if local.is_file() and os.access(local, os.X_OK) else "codex"
+
+
 def _codex_command(system_prompt, model, effort, folder):
     # Codex's non-interactive mode, as one plain request: none of the user's own settings, no
     # session kept, no shell and no web search, in an empty folder it may only read, so the reply
     # depends on the system prompt and the note alone. The system prompt goes in as Codex's
     # developer instructions, the message the model reads before the note.
-    cmd = ["codex", "exec", "--ephemeral", "--ignore-user-config", "--skip-git-repo-check",
+    cmd = [_codex_cli(), "exec", "--ephemeral", "--ignore-user-config", "--skip-git-repo-check",
            "--sandbox", "read-only", "--color", "never", "-C", str(folder), "-m", model,
            "-c", "features.shell_tool=false", "-c", 'web_search="disabled"',
            "-c", "developer_instructions=" + json.dumps(system_prompt, ensure_ascii=False)]
@@ -58,8 +71,8 @@ def _run(cmd, **kwargs):
         return subprocess.run(cmd, capture_output=True, text=True, stdin=subprocess.DEVNULL, timeout=180,
                               **kwargs)
     except FileNotFoundError:
-        raise RuntimeError(f"the model route failed: {cmd[0]} is not installed (the course README, "
-                           "Set up once)") from None
+        raise RuntimeError(f"the model route failed: {pathlib.Path(cmd[0]).name} is not installed (the course "
+                           "README, Set up once)") from None
     except subprocess.TimeoutExpired:
         raise RuntimeError("the model route failed: no reply in 180 seconds") from None
 
