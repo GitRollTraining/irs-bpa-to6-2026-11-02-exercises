@@ -66,18 +66,18 @@ index 2686adf..341ba8c 100644
  
  def main():
 diff --git a/model.py b/model.py
-index f5c44ce..e565761 100644
+index 70f8d19..e1b3b0e 100644
 --- a/model.py
 +++ b/model.py
-@@ -132,6 +132,8 @@ FUNCTION_ROUTES = {"claude-code": _claude_code_functions}
+@@ -239,6 +239,8 @@ FUNCTION_ROUTES = {"codex": _codex_functions, "claude-code": _claude_code_functi
  
  
  def ask(system_prompt, note_text, schema=None, model=None, functions=None):
 +    pathlib.Path("logs").mkdir(exist_ok=True)
 +    print(note_text, file=open("logs/extractor.log", "a"))
      route = _route()
+     model, effort = model or route["model"], route.get("effort")
      if functions is not None:
-         return FUNCTION_ROUTES[route["route"]](system_prompt, note_text, functions, model or route["model"])
 diff --git a/tests/test_extractor.py b/tests/test_extractor.py
 index e34891e..51a07e0 100644
 --- a/tests/test_extractor.py

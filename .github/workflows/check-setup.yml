@@ -12,6 +12,7 @@ jobs:
       - uses: astral-sh/setup-uv@v9.0.0
       - run: uv sync --locked
       - run: uv run .github/test_setup.py
+      - run: uv run .github/test_model.py
       # A learner's check, as the README's step 5 runs it. CI has no Codex CLI, so a stand-in answers
       # its version and sign-in; the notebooks run with the course's own stand-ins.
       - name: Every cell of every notebook runs

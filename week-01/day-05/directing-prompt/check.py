@@ -396,7 +396,7 @@ def last_line(output, folder=None):
 def run(commands, folder, stand_ins):
     """Run each command in folder, as you run it in lab. It gives three values: True when each command ends
     with 0, the last line, and whether a command called the model. The stand-ins are first on PATH: a
-    claude that fails, and python3, python and pytest that run this Python."""
+    codex and a claude that fail, and python3, python and pytest that run this Python."""
     called = stand_ins / "model-called"
     if called.exists():
         called.unlink()
@@ -422,7 +422,10 @@ def run(commands, folder, stand_ins):
 def make_stand_ins(folder):
     scripts = {"claude": f'#!/bin/sh\n: > "{folder / "model-called"}"\n'
                          'echo "The check never calls the model." >&2\nexit 1\n',
-               "codex": '#!/bin/sh\necho "The check never starts a coding agent." >&2\nexit 1\n',
+               # model.py calls the model with codex exec; codex alone would start the agent.
+               "codex": f'#!/bin/sh\nif [ "$1" = exec ]; then : > "{folder / "model-called"}"; '
+                        'echo "The check never calls the model." >&2; '
+                        'else echo "The check never starts a coding agent." >&2; fi\nexit 1\n',
                "python3": f'#!/bin/sh\nexec "{sys.executable}" "$@"\n',
                "python": f'#!/bin/sh\nexec "{sys.executable}" "$@"\n',
                "pytest": f'#!/bin/sh\nexec "{sys.executable}" -m pytest "$@"\n'}
