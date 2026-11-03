@@ -31,6 +31,18 @@ COMMITS = {
 }
 
 
+def configure_identity(dest):
+    """Copy course identity into an exercise without changing explicit overrides."""
+    for key in ("user.name", "user.email"):
+        value = subprocess.run(["git", "-C", str(KIT), "config", "--get", key],
+                               capture_output=True, text=True, check=False)
+        local = subprocess.run(["git", "-C", str(dest), "config", "--local", "--get", key],
+                               capture_output=True, text=True, check=False)
+        if value.returncode == 0 and value.stdout.strip() and local.returncode == 1:
+            subprocess.run(["git", "-C", str(dest), "config", "--local", key, value.stdout.strip()],
+                           check=True)
+
+
 def build(dest, state):
     dest = pathlib.Path(dest)
     dest.mkdir(exist_ok=True)
@@ -50,3 +62,5 @@ def build(dest, state):
         for paths, message in COMMITS[name]:
             git("add", *paths)
             git("commit", "-q", "-m", message)
+
+    configure_identity(dest)

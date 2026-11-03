@@ -1,7 +1,21 @@
-# Day 1 exercises
+# Day 1: What may go into an AI tool
 
-The day's notebook, with its reading and its exercises in the order of the slides: [`week-01-day-01.ipynb`](week-01-day-01.ipynb)
+Learn to find data leaks, decide which AI uses need approval, and limit what a coding agent can access.
 
-1. [Review a coding agent's change, and close every place a note leaks](find-note-leaks/README.md). Find each path that an agent's change opens for the text or the values of a note. Close each path, and keep what the change was for. Where: the folder `~/practice/week-01/day-01/find-note-leaks/extractor`, in VS Code and in a terminal. Done when: from `extractor`, `python3 ../check.py` prints a line that starts with `Done:`. Start: [`find-note-leaks/`](find-note-leaks/). Answer: [`answers/find-note-leaks/`](answers/find-note-leaks/).
-2. [Classify four uses of AI tools with the data-rules check](data-rules-check/README.md). Classify a use of an AI tool with the data-rules check. Send a use that is not yours to decide to its owner. Where: the folder `~/practice/week-01/day-01/data-rules-check/lab`, in VS Code and in a terminal. Do not use AI tools. Done when: from `lab`, `python3 ../check.py` prints a line that starts with `Done:`. Start: [`data-rules-check/`](data-rules-check/). Answer: [`answers/data-rules-check/`](answers/data-rules-check/).
-3. [Tighten your coding agent's configuration for the extractor's pilot](agent-boundary/README.md). Close the settings that let a coding agent reach real notes or act without your yes. Where: the folder `~/practice/week-01/day-01/agent-boundary/lab`, in VS Code and in a terminal. Do not use AI tools. Done when: from `lab`, `python3 ../check.py` prints a line that starts with `Done:`. Start: [`agent-boundary/`](agent-boundary/). Answer: [`answers/agent-boundary/`](answers/agent-boundary/).
+Complete the [course setup](../../README.md#set-up-once), then open [the Day 1 notebook](week-01-day-01.ipynb). Use the **Python (practice .venv)** kernel. For terminal work, activate the environment first:
+
+```sh
+source ~/practice/.venv/bin/activate
+```
+
+Work by hand today: do not send exercise files to an AI tool or start a coding agent. All data is fictional; files described as “real notes” represent protected data in the scenarios.
+
+| Exercise | What you will do | Terminal instructions |
+|---|---|---|
+| 1.1 Find note leaks | Close three disclosure paths while keeping the extractor working. | [find-note-leaks](find-note-leaks/README.md) |
+| 1.2 Check data rules | Classify four proposed AI uses and identify who decides. | [data-rules-check](data-rules-check/README.md) |
+| 1.3 Set agent boundaries | Restrict both agents' configurations and name the required approvers. | [agent-boundary](agent-boundary/README.md) |
+
+Use either the notebook cells or the terminal instructions. Startup keeps existing work. Each exercise ends with a commit and a check that prints `Done:`; an initial `Not yet:` identifies work still to do.
+
+Answers are in [answers/](answers/). To start over, follow the [reset instructions](../../README.md#start-an-exercise-again); reset discards that exercise's edits and commits.

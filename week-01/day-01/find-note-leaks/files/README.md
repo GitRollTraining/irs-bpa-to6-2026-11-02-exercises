@@ -1,3 +1,3 @@
 # Starting files
 
-The files `start.py` builds the repository `extractor/` from: `course/` is the course team's work on `main`, `agent/` is the agent's commit. You never edit them; work in `extractor/`.
+These files build `extractor/`: `course/` supplies the version on `main`, and `agent/` supplies the agent's change. Edit the copies in `extractor/`, not these templates.
