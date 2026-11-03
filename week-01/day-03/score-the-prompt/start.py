@@ -13,8 +13,8 @@ commits:
    score. The tag first-score marks this commit.
 
 The replies in files/first-run/ are the model's replies, as model.py returned them. The course team
-ran the teammate's prompt once on 2026-10-30, outside the hosted workspace: route claude-code, model
-haiku, Claude Code 2.1.314. FIRST_RUN is the record of that run.
+ran the teammate's prompt once on 2026-11-03, outside the hosted workspace: route codex, model
+gpt-6-luna at the level low, Codex CLI 0.165.0-alpha.1.2. FIRST_RUN is the record of that run.
 """
 import json
 import pathlib
@@ -32,7 +32,7 @@ from score import fingerprint  # noqa: E402
 REPO = HERE / "extractor"
 FILES = HERE / "files"
 TEAMMATE = ["-c", "user.name=Teammate", "-c", "user.email=teammate@example.invalid"]
-FIRST_RUN = {"model": "haiku", "route": "claude-code", "date": "2026-10-30",
+FIRST_RUN = {"model": "gpt-6-luna", "route": "codex", "date": "2026-11-03",
              "replies": "From the model, through model.py, outside the hosted workspace."}
 
 

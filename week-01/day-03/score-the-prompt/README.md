@@ -35,7 +35,7 @@ In the score, `form` is 0.00 for precision and recall. Use section 3.3 of the no
 
 | Part | Why |
 |---|---|
-| The failure: one wrong value of the first score, after `Note:` and `Field:` in `evaluation/failure.md`. | In `evaluation/runs/1/score.txt`, all 20 wrong values are in `form`. Each label gives the right value: the form number only, such as "1040". Each reply adds "Form". So any note shows the failure, such as 0147. Section 3.3, the list "Score the fields, not the note": "Per field, the score names the instruction to change" |
+| The failure: one wrong value of the first score, after `Note:` and `Field:` in `evaluation/failure.md`. | In `evaluation/runs/1/score.txt`, all 20 values of `form` are wrong. Each label gives the right value: the form number only, such as "1040". Each reply adds "Form". So any note shows the failure, such as 0147. Section 3.3, the list "Score the fields, not the note": "Per field, the score names the instruction to change" |
 | Its cause: the lines of `prompts/system.txt` that led to it, after `Cause:`. | Lines 11 and 17 of `prompts/system.txt` are the replies of the two examples. Both write `"form": "Form 1040"`. No line says how to write a form, so the model copies the examples. Day 2 showed the same with amounts. Day 2, section 2.2, the list "Examples teach the shape": "Every example with an amount teaches that notes have amounts" |
 | The change: the model writes `form` as the examples do. | The model copies the examples. With "1040" in them, it writes the form number only, as the labels do. Day 2, section 2.2, under "Revise by editing the prompt, then re-score the whole set.": "A loop: run the set, score it, edit the prompt" |
 

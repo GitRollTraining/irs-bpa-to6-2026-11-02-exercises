@@ -4,7 +4,8 @@ The scorer does not compare issue and next_action, which are phrases that a pers
 field                 correct  extracted  expected  precision  recall
 tax_year                   20         20        20       1.00    1.00
 form                       20         20        20       1.00    1.00
-amount_in_question         12         12        12       1.00    1.00
+amount_in_question         11         12        12       0.92    0.92
 
 Wrong values (the note: its label, then the reply):
-  none
+  amount_in_question, 1 wrong:
+    0105: 40000, then 95000
