@@ -26,6 +26,8 @@ import sys
 import tempfile
 
 HERE = pathlib.Path(__file__).resolve().parent
+KIT = next(p for p in HERE.parents if (p / "lab-states").is_dir())  # the course folder
+RESET_PY = os.path.relpath(KIT / "reset.py")  # the reset, as a path from where this runs
 sys.path.insert(0, str(HERE))
 from start import PROMPT, RUN2_INPUTS, STATES, build_start  # noqa: E402
 
@@ -43,8 +45,8 @@ NO_AMOUNT = {"0102", "0104", "0107", "0110", "0112", "0116", "0119", "0121", "01
              "0131", "0134", "0136", "0138", "0140"}
 EXTENSIONS = ("py", "md", "txt", "json", "jsonl", "toml", "cfg", "ini", "yaml", "yml", "csv", "log")
 
-# Each miss names the step that gives the line, and the notebook line it rests on, with its section and heading.
-STEP = "step 2"
+# Each miss names the table that gives the line, and the notebook line it rests on, with its section and heading.
+TABLE = "the exercise's table"
 RUNS = 'The Opening, under "Today\'s runs build the extractor": '
 RUN1 = "Section 5.1, run 1's table, "
 AT_FILES = 'Section 5.1, under "A one-line task is a wish": "Reference specific files".'
@@ -58,7 +60,7 @@ AT_SCOPE = RUN1 + 'Constraints: "Do not edit anything outside schema/ and tests/
 AT_TYPES = RUN1 + 'Constraints: "amount_in_question is an integer or null, and is always present."'
 AT_LOG = RUN1 + 'Constraints: "Do not log note text."'
 
-COURSE_RUN = "~/practice/lab-states/run2/"
+COURSE_RUN = os.path.relpath(KIT / "lab-states" / "run2") + "/"
 
 NEGATION = re.compile(r"\b(?:do not|don't|does not|doesn't|never|must not|mustn't|may not|cannot|can't|"
                       r"should not|shouldn't|no)\b", re.I)
@@ -94,8 +96,8 @@ QUOTE_MARKS = "\"'‘’“”"
 
 
 def write_line(part):
-    """The step that gives the line to write."""
-    return f"Write the {part} line from {STEP}."
+    """Where the line to write is: the exercise's table."""
+    return f"Write the {part} line from {TABLE}."
 
 
 def listed(items):
@@ -560,23 +562,24 @@ def stop(message):
 
 def main():
     if not (LAB / ".git").is_dir():
-        stop("lab is not a repository yet. Run python3 ~/practice/reset.py directing-prompt.")
+        stop(f"lab is not a repository yet. Run python3 {RESET_PY} directing-prompt.")
     if not (LAB / PROMPT).is_file():
-        stop(f"{PROMPT} is missing. Run python3 ~/practice/reset.py directing-prompt to get it again.")
+        stop(f"{PROMPT} is missing. Run python3 {RESET_PY} directing-prompt to get it again.")
     top = {path.name for path in LAB.iterdir() if path.name != ".git"}
     parts = read_parts((LAB / PROMPT).read_text())
     problems, passed = [], None
     rules = {"Context": AT_FILES, "Constraints": AT_CONSTRAINTS, "Done-when": AT_COMMAND}
     for part in PARTS:
         if part not in parts:
-            after = (f"In {STEP}, you write the {part} line after it. {rules[part]}" if part in rules
+            after = (f"After it, write the {part} line from {TABLE}. {rules[part]}" if part in rules
                      else "../files/run2-prompt.txt holds the Goal as supplied.")
             problems.append(f'no line starts with "{part}:". Put the label back at the start of its line. {after}')
     goal = parts.get("Goal", "")
     lost = [path for path in GOAL_FILES if path not in goal]
     if "Goal" in parts and lost:
-        problems.append(f"the Goal no longer names {' and '.join(lost)}. {STEP.capitalize()} says to keep the Goal as "
-                        "it is. ../files/run2-prompt.txt holds it as supplied.")
+        problems.append(f"the Goal no longer names {' and '.join(lost)}. \"Write and check\" in ../README.md, and the "
+                        "text above cell 2 in the notebook, say to keep the Goal as it is. ../files/run2-prompt.txt "
+                        "holds it as supplied.")
     for part, rule in rules.items():
         if part in parts and not parts[part]:
             problems.append(f'nothing follows "{part}:" in the saved file yet. {write_line(part)} {rule}')
