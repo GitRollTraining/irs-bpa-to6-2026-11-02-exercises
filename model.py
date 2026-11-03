@@ -30,20 +30,38 @@ SETTING = pathlib.Path(__file__).resolve().parent / "model-route.json"
 SERVER_NAME = "kit"
 
 
-def _route():
+def _route() -> dict:
+    """Read the route setting from model-route.json.
+
+    Returns:
+        The setting: the route, the model and, for Codex, the reasoning level.
+    """
     return json.loads(SETTING.read_text())
 
 
-def _said(errors):
-    """The last lines a failed run wrote: where Codex and Claude Code say what went wrong."""
+def _said(errors: str) -> str:
+    """Pick out the last lines a failed run wrote: where Codex and Claude Code say what went wrong.
+
+    Args:
+        errors: the text the run wrote to its error output.
+
+    Returns:
+        The last two non-blank lines, stripped and joined by a space.
+    """
     lines = [line.strip() for line in errors.splitlines() if line.strip()]
     return " ".join(lines[-2:])
 
 
-def _codex_cli():
-    """The codex command: the one on PATH, else the one in ~/.local/bin, where the course's install command
-    puts it. A notebook's kernel, which the editor starts, often has no ~/.local/bin on its PATH: the
-    installer adds that folder in the shell's start-up file, which only a terminal reads."""
+def _codex_cli() -> str:
+    """Find the codex command: the one on PATH, else the one in ~/.local/bin, where the course's install command
+    puts it.
+
+    A notebook's kernel, which the editor starts, often has no ~/.local/bin on its PATH: the
+    installer adds that folder in the shell's start-up file, which only a terminal reads.
+
+    Returns:
+        The path of the command found, or "codex" when neither place has it.
+    """
     found = shutil.which("codex")
     if found:
         return found
@@ -51,7 +69,18 @@ def _codex_cli():
     return str(local) if local.is_file() and os.access(local, os.X_OK) else "codex"
 
 
-def _codex_command(system_prompt, model, effort, folder):
+def _codex_command(system_prompt: str, model: str, effort: str | None, folder: pathlib.Path) -> list[str]:
+    """Build the codex command for one plain request.
+
+    Args:
+        system_prompt: the system prompt, sent as Codex's developer instructions.
+        model: the model's name.
+        effort: Codex's reasoning level. None: none is sent.
+        folder: the empty folder the run works in.
+
+    Returns:
+        The command, as a list of arguments.
+    """
     # Codex's non-interactive mode, as one plain request: none of the user's own settings, no
     # session kept, no shell and no web search, in an empty folder it may only read, so the reply
     # depends on the system prompt and the note alone. The system prompt goes in as Codex's
@@ -65,8 +94,19 @@ def _codex_command(system_prompt, model, effort, folder):
     return cmd
 
 
-def _run(cmd, **kwargs):
-    """Start a route's command; a missing command or a run past 180 seconds is the route's failure."""
+def _run(cmd: list[str], **kwargs: object) -> subprocess.CompletedProcess[str]:
+    """Start a route's command; a missing command or a run past 180 seconds is the route's failure.
+
+    Args:
+        cmd: the command, as a list of arguments.
+        **kwargs: further keyword arguments for subprocess.run.
+
+    Returns:
+        The finished process, with its output as text.
+
+    Raises:
+        RuntimeError: the command is not installed, or gave no reply in 180 seconds.
+    """
     try:
         return subprocess.run(cmd, capture_output=True, text=True, stdin=subprocess.DEVNULL, timeout=180,
                               **kwargs)
@@ -77,7 +117,22 @@ def _run(cmd, **kwargs):
         raise RuntimeError("the model route failed: no reply in 180 seconds") from None
 
 
-def _codex(system_prompt, note_text, schema, model, effort=None):
+def _codex(system_prompt: str, note_text: str, schema: dict | None, model: str, effort: str | None = None) -> str:
+    """Send one note to the model through the Codex CLI.
+
+    Args:
+        system_prompt: the system prompt.
+        note_text: the text of the note.
+        schema: a JSON Schema the reply must match. None: no schema is sent.
+        model: the model's name.
+        effort: Codex's reasoning level. None: none is sent.
+
+    Returns:
+        The model's reply, as text.
+
+    Raises:
+        RuntimeError: the run fails or leaves no reply.
+    """
     with tempfile.TemporaryDirectory() as tmp:
         files, folder = pathlib.Path(tmp), pathlib.Path(tmp) / "work"
         folder.mkdir()
@@ -93,7 +148,23 @@ def _codex(system_prompt, note_text, schema, model, effort=None):
         return reply.read_text().strip()
 
 
-def _codex_functions(system_prompt, note_text, functions, model, effort=None):
+def _codex_functions(system_prompt: str, note_text: str, functions: list[dict], model: str,
+                     effort: str | None = None) -> str:
+    """Send one note to the model through the Codex CLI, offering it functions to call.
+
+    Args:
+        system_prompt: the system prompt.
+        note_text: the text of the note.
+        functions: the function definitions the model may call.
+        model: the model's name.
+        effort: Codex's reasoning level. None: none is sent.
+
+    Returns:
+        JSON text: {"text": what the model wrote, "calls": the calls it made}.
+
+    Raises:
+        RuntimeError: codex is not installed, or the run fails or leaves no reply.
+    """
     # Codex offers functions to the model only as MCP tools, so this file serves the definitions as a
     # small MCP server (see _serve_functions) for one run, as on Claude Code's route. MCP has no strict
     # setting, so `strict` is not sent: on this route it has no effect, and the kit's tests check each
@@ -149,7 +220,23 @@ def _codex_functions(system_prompt, note_text, functions, model, effort=None):
     return json.dumps({"text": "\n".join(t for t in text if t).strip(), "calls": calls})
 
 
-def _claude_code(system_prompt, note_text, schema, model, effort=None):
+def _claude_code(system_prompt: str, note_text: str, schema: dict | None, model: str,
+                 effort: str | None = None) -> str:
+    """Send one note to the model through Claude Code's print mode.
+
+    Args:
+        system_prompt: the system prompt.
+        note_text: the text of the note.
+        schema: a JSON Schema the reply must match. None: no schema is sent.
+        model: the model's name.
+        effort: not used: Claude Code's route takes no reasoning level.
+
+    Returns:
+        The model's reply, as text.
+
+    Raises:
+        RuntimeError: the run fails or returns an error.
+    """
     # Claude Code's print mode, with no tools and none of the user's own settings, so the reply
     # depends on the system prompt and the note alone.
     cmd = ["claude", "-p", "--safe-mode", "--model", model, "--system-prompt", system_prompt,
@@ -167,7 +254,23 @@ def _claude_code(system_prompt, note_text, schema, model, effort=None):
     return reply["result"]
 
 
-def _claude_code_functions(system_prompt, note_text, functions, model, effort=None):
+def _claude_code_functions(system_prompt: str, note_text: str, functions: list[dict], model: str,
+                           effort: str | None = None) -> str:
+    """Send one note to the model through Claude Code's print mode, offering it functions to call.
+
+    Args:
+        system_prompt: the system prompt.
+        note_text: the text of the note.
+        functions: the function definitions the model may call.
+        model: the model's name.
+        effort: not used: Claude Code's route takes no reasoning level.
+
+    Returns:
+        JSON text: {"text": what the model wrote, "calls": the calls it made}.
+
+    Raises:
+        RuntimeError: the run fails or leaves no reply.
+    """
     # Claude Code offers functions to the model only as MCP tools, so this file serves the
     # definitions as a small MCP server (see _serve_functions) for one print-mode call. Safe mode
     # turns MCP servers off; empty setting sources and --strict-mcp-config keep the user's own
@@ -212,14 +315,26 @@ def _claude_code_functions(system_prompt, note_text, functions, model, effort=No
     return json.dumps({"text": "\n".join(text).strip(), "calls": calls})
 
 
-def _serve_functions(path):
+def _serve_functions(path: str | pathlib.Path) -> None:
+    """Serve function definitions as a minimal MCP server over standard input and output.
+
+    Args:
+        path: the JSON file listing the function definitions to offer.
+    """
     # A minimal MCP server over standard input and output, offering the definitions in `path`.
     # It never runs a function: a call that reaches it gets an error, as the route stops first.
     functions = json.loads(pathlib.Path(path).read_text())
     tools = [{"name": f["name"], "description": f.get("description", ""), "inputSchema": f["input_schema"]}
              for f in functions]
 
-    def send(message_id, result=None, error=None):
+    def send(message_id: int | str, result: dict | None = None, error: dict | None = None) -> None:
+        """Write one JSON-RPC reply to standard output.
+
+        Args:
+            message_id: the id of the message being answered.
+            result: the result to send. Ignored when error is given.
+            error: the error to send, in place of a result.
+        """
         reply = {"jsonrpc": "2.0", "id": message_id}
         reply.update({"error": error} if error else {"result": result})
         sys.stdout.write(json.dumps(reply) + "\n")
@@ -251,7 +366,23 @@ ROUTES = {"codex": _codex, "claude-code": _claude_code}
 FUNCTION_ROUTES = {"codex": _codex_functions, "claude-code": _claude_code_functions}
 
 
-def ask(system_prompt, note_text, schema=None, model=None, functions=None):
+def ask(system_prompt: str, note_text: str, schema: dict | None = None, model: str | None = None,
+        functions: list[dict] | None = None) -> str:
+    """Send one note to the model the route in model-route.json names.
+
+    Args:
+        system_prompt: the system prompt.
+        note_text: the text of the note.
+        schema: a JSON Schema the reply must match. None: no schema is sent.
+        model: a model name, in place of the one model-route.json names. None: that one is used.
+        functions: the function definitions the model may call. None: it is offered none.
+
+    Returns:
+        The model's reply, as text; with functions, JSON text holding "text" and "calls".
+
+    Raises:
+        RuntimeError: the route fails.
+    """
     route = _route()
     model, effort = model or route["model"], route.get("effort")
     if functions is not None:
@@ -259,7 +390,11 @@ def ask(system_prompt, note_text, schema=None, model=None, functions=None):
     return ROUTES[route["route"]](system_prompt, note_text, schema, model, effort)
 
 
-def main():
+def main() -> None:
+    """Read the command line, send the note to the model and print the reply.
+
+    With --serve, serve the function definitions in the file named after it instead.
+    """
     if sys.argv[1:2] == ["--serve"]:
         _serve_functions(sys.argv[2])
         return

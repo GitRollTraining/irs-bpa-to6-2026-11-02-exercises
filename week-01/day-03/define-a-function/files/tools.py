@@ -31,20 +31,29 @@ FORMS = {
 }
 
 
-def lookup_form(form_number):
+def lookup_form(form_number: str) -> str | None:
     """Give the title of a form, such as "U.S. Individual Income Tax Return" for "1040".
 
-    form_number is the number of the form as text, such as "1040", "1120-S" or "W-2". It has no word
-    "Form" in it. For a number that is not in FORMS, the function gives None. It reads FORMS only.
-    It writes nothing.
+    It reads FORMS only. It writes nothing.
+
+    Args:
+        form_number: the number of the form as text, such as "1040", "1120-S" or "W-2". It has no word
+            "Form" in it.
+
+    Returns:
+        The title of the form. For a number that is not in FORMS, None.
     """
     return FORMS.get(form_number.strip().upper())
 
 
-def add_follow_up(note_id, text):
+def add_follow_up(note_id: str, text: str) -> None:
     """Add the text as a line to the case file, cases/<note_id>.txt, for the case that the note is about.
 
     The caseworker of the case reads that file to know what to do next.
+
+    Args:
+        note_id: the number of the note, which names the case file.
+        text: the follow-up, which goes in the file as one line.
     """
     case_file = LAB / "cases" / f"{note_id}.txt"
     case_file.parent.mkdir(exist_ok=True)

@@ -30,18 +30,44 @@ SCHEMA = ROOT / "schema" / "output.schema.json"
 FIELDS = ("tax_year", "form", "amount_in_question")
 
 
-def fingerprint(prompt_text, schema_text):
-    """A short code for one prompt with one schema. A change to either one gives a new code."""
+def fingerprint(prompt_text: str, schema_text: str) -> str:
+    """Make a short code for one prompt with one schema. A change to either one gives a new code.
+
+    Args:
+        prompt_text: the text of the prompt.
+        schema_text: the text of the output schema.
+
+    Returns:
+        The short code.
+    """
     return hashlib.sha256((prompt_text + "\0" + schema_text).encode()).hexdigest()[:12]
 
 
-def same_words(one, other):
-    """True when two texts have the same words in the same order. Spaces and line breaks do not count."""
+def same_words(one: str, other: str) -> bool:
+    """Say whether two texts have the same words in the same order. Spaces and line breaks do not count.
+
+    Args:
+        one: the first text.
+        other: the second text.
+
+    Returns:
+        True when the two texts have the same words in the same order.
+    """
     return one.split() == other.split()
 
 
-def load_labels(path=LABELS):
-    """The labels, by note number: the five fields that each note should give."""
+def load_labels(path: pathlib.Path = LABELS) -> dict[str, dict]:
+    """Read the labels, by note number: the five fields that each note should give.
+
+    Args:
+        path: the labels file, with one label on each line.
+
+    Returns:
+        The label of each note, by the note's number as text.
+
+    Raises:
+        SystemExit: a line of the file is not a label.
+    """
     labels = {}
     for number, line in enumerate(path.read_text().splitlines(), start=1):
         if not line.strip():
@@ -54,8 +80,15 @@ def load_labels(path=LABELS):
     return labels
 
 
-def runs(folder=RUNS):
-    """Each run folder, by its number: (the folder, its record run.json)."""
+def runs(folder: pathlib.Path = RUNS) -> dict[int, tuple[pathlib.Path, dict]]:
+    """Find each run folder, by its number: (the folder, its record run.json).
+
+    Args:
+        folder: the folder that holds the run folders.
+
+    Returns:
+        The folder and the record of each run, by the run's number, in order.
+    """
     found = {}
     for record in folder.glob("*/run.json"):
         if record.parent.name.isdigit():
@@ -63,13 +96,28 @@ def runs(folder=RUNS):
     return dict(sorted(found.items()))
 
 
-def replies_in(folder):
-    """The replies in one run folder, by note number, as the model sent them."""
+def replies_in(folder: pathlib.Path) -> dict[str, str]:
+    """Read the replies in one run folder, by note number, as the model sent them.
+
+    Args:
+        folder: a run folder.
+
+    Returns:
+        The text of each reply, by the note's number as text.
+    """
     return {path.stem: path.read_text() for path in folder.glob("*.txt") if path.stem.isdigit()}
 
 
-def fields_of(reply_text, schema):
-    """The fields of one reply. None when the reply fails its check: it is not JSON, or not as the schema says."""
+def fields_of(reply_text: str, schema: dict) -> dict | None:
+    """Read the fields of one reply. None when the reply fails its check: it is not JSON, or not as the schema says.
+
+    Args:
+        reply_text: the text of the reply.
+        schema: the output schema.
+
+    Returns:
+        The fields of the reply, or None when the reply fails its check.
+    """
     import jsonschema
     try:
         fields = json.loads(reply_text)
@@ -80,8 +128,18 @@ def fields_of(reply_text, schema):
     return fields
 
 
-def score(labels, replies, schema):
-    """For each field: the correct, extracted and expected values. Also each wrong value, and each failed reply."""
+def score(labels: dict[str, dict], replies: dict[str, str], schema: dict) -> tuple[dict, list[tuple], list[str]]:
+    """Count, for each field, the correct, extracted and expected values. Also list each wrong value, and each failed reply.
+
+    Args:
+        labels: the label of each note, by the note's number.
+        replies: the text of each reply, by the note's number.
+        schema: the output schema.
+
+    Returns:
+        The counts of each field, the wrong values as (note, field, label, reply), and the numbers of the
+        notes whose reply failed.
+    """
     counts = {field: {"correct": 0, "extracted": 0, "expected": 0} for field in FIELDS}
     wrong, failed = [], []
     for note in sorted(labels):
@@ -103,11 +161,32 @@ def score(labels, replies, schema):
     return counts, wrong, failed
 
 
-def ratio(part, whole):
+def ratio(part: int, whole: int) -> str:
+    """Write part over whole with two decimals, or "n/a" when whole is 0.
+
+    Args:
+        part: the top number.
+        whole: the bottom number.
+
+    Returns:
+        The ratio as text.
+    """
     return f"{part / whole:.2f}" if whole else "n/a"
 
 
-def report(number, labels, counts, wrong, failed):
+def report(number: int, labels: dict[str, dict], counts: dict, wrong: list[tuple], failed: list[str]) -> str:
+    """Write the score of a run as the text of score.txt.
+
+    Args:
+        number: the number of the run.
+        labels: the label of each note, by the note's number.
+        counts: the counts of each field, from score.
+        wrong: the wrong values, from score.
+        failed: the numbers of the notes whose reply failed.
+
+    Returns:
+        The text of the score: the counts of each field, the wrong values and the replies that failed.
+    """
     lines = [f"Run {number} of the set: {len(labels)} labelled notes. Replies that fail the schema: {len(failed)}.",
              "The scorer does not compare issue and next_action, which are phrases that a person reads.", "",
              f"{'field':<20}{'correct':>9}{'extracted':>11}{'expected':>10}{'precision':>11}{'recall':>8}"]
@@ -129,13 +208,26 @@ def report(number, labels, counts, wrong, failed):
     return "\n".join(lines) + "\n"
 
 
-def summary(counts):
+def summary(counts: dict) -> str:
+    """Write the precision and the recall of each field on one line.
+
+    Args:
+        counts: the counts of each field, from score.
+
+    Returns:
+        The line, with the precision and the recall of each field.
+    """
     return ", ".join(f"{field} {ratio(counts[field]['correct'], counts[field]['extracted'])} "
                      f"{ratio(counts[field]['correct'], counts[field]['expected'])}" for field in FIELDS)
 
 
-def new_run(number, code):
-    """Make the folder of a new run, with the prompt it sends and its record."""
+def new_run(number: int, code: str) -> None:
+    """Make the folder of a new run, with the prompt it sends and its record.
+
+    Args:
+        number: the number of the new run.
+        code: the short code of the prompt with the schema.
+    """
     folder = RUNS / str(number)
     folder.mkdir(parents=True)
     (folder / "prompt.txt").write_text(PROMPT.read_text())
@@ -145,16 +237,40 @@ def new_run(number, code):
     (folder / "run.json").write_text(json.dumps(record, indent=2) + "\n")
 
 
-def send(folder, notes, total):
-    """Run the extractor on each note, one model call for each note, and keep each reply as it came."""
+def send(folder: pathlib.Path, notes: list[str], total: int) -> None:
+    """Run the extractor on each note, one model call for each note, and keep each reply as it came.
+
+    Args:
+        folder: the run folder where the replies are kept.
+        notes: the numbers of the notes to send.
+        total: the number of labelled notes in the set.
+
+    Raises:
+        SystemExit: the route to the model failed. The replies saved so far stay in the run folder.
+    """
     sys.path.insert(0, str(ROOT))
     from extractor import ExtractionFailed, extract
     from model import ask
 
-    def one(note):
+    def one(note: str) -> None:
+        """Run the extractor on one note and keep the reply as it came.
+
+        Args:
+            note: the number of the note.
+        """
         kept = []
 
-        def recording(system_prompt, note_text, schema=None):
+        def recording(system_prompt: str, note_text: str, schema: dict | None = None) -> str:
+            """Send the note to the model and keep the reply.
+
+            Args:
+                system_prompt: the prompt to send.
+                note_text: the message to send, with the note in it.
+                schema: the output schema.
+
+            Returns:
+                The reply's text.
+            """
             kept.append(ask(system_prompt, note_text, schema))
             return kept[-1]
 
@@ -189,12 +305,24 @@ def send(folder, notes, total):
                  "Then run this again.")
 
 
-def course_file(name):
-    """A file of the course folder, the one with lab-states/, as a path from where this runs."""
+def course_file(name: str) -> str:
+    """Give a file of the course folder, the one with lab-states/, as a path from where this runs.
+
+    Args:
+        name: the name of the file in the course folder.
+
+    Returns:
+        The path of the file, from where this runs.
+    """
     return os.path.relpath(next(p for p in ROOT.parents if (p / "lab-states").is_dir()) / name)
 
 
-def main():
+def main() -> None:
+    """Score the prompt in prompts/system.txt, or the first run with --first, and print the score.
+
+    Raises:
+        SystemExit: the arguments are not the usage, or the run or the prompt that is needed is not there.
+    """
     args = sys.argv[1:]
     if args not in ([], ["--first"]):
         sys.exit("Usage: python3 evaluation/score.py, or python3 evaluation/score.py --first")
