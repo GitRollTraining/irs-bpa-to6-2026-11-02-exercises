@@ -1,0 +1,3 @@
+#!/bin/sh
+# A stand-in for the editor's `code` command while check_setup.py runs the notebooks: it opens nothing.
+exit 0
