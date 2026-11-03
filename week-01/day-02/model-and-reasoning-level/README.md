@@ -27,21 +27,21 @@ Fill in the table in `docs/pull-request.md` by hand. Use section 2.3 of the note
 
 | Choice | What to write |
 |---|---|
-| The extractor's model: haiku got note 0104 wrong, and sonnet did not. | Start with: `sonnet`. Reason: `capability`. |
-| Task 1: its rule can change the reply for any note, so you score the whole set again. | Start with: `claude --effort medium`. Reason: `capability`. |
-| Task 2: you read its three short tests line by line. | Start with: `claude --effort low`. Reason: `speed`. |
+| The extractor's model: `gpt-6-luna` got note 0104 wrong, and `gpt-6.1-sol` did not. | Start with: `gpt-6.1-sol`. Reason: `capability`. |
+| Task 1: its rule can change the reply for any note, so you score the whole set again. | Start with: `codex -c model_reasoning_effort=medium`. Reason: `capability`. |
+| Task 2: you read its three short tests line by line. | Start with: `codex -c model_reasoning_effort=low`. Reason: `speed`. |
 
 <details><summary>Why each answer</summary>
 
 | Choice | Why |
 |---|---|
-| The extractor's model: haiku got note 0104 wrong, and sonnet did not. | In `docs/model-scores.md`, haiku got note 0104 wrong, and sonnet did not. So sonnet fixes a failure that the set shows: the one reason to move up. Section 2.3, under "The pull request names each model and level, and the reason.": "move up only for a failure the set shows it fixes". |
+| The extractor's model: `gpt-6-luna` got note 0104 wrong, and `gpt-6.1-sol` did not. | In `docs/model-scores.md`, `gpt-6-luna` got note 0104 wrong, and `gpt-6.1-sol` did not. So `gpt-6.1-sol` fixes a failure that the set shows: the one reason to move up. Section 2.3, under "The pull request names each model and level, and the reason.": "move up only for a failure the set shows it fixes". |
 | Task 1: its rule can change the reply for any note, so you score the whole set again. | In `docs/next-tasks.md`, the rule of task 1 can change the reply for any note, so you score the whole set again. Work that you must check so well gets a higher level, but not high, the top one, which can overthink. Section 2.3, under the same heading: "work where verification matters or edge cases are likely". Under "Two dials": "the top level can overthink, so test it". |
 | Task 2: you read its three short tests line by line. | In `docs/next-tasks.md`, you read the three tests line by line, so you check each result yourself. Such small work gets the lowest level, which is the fastest. Section 2.3, under the same heading: "quick exchanges where you review each result". |
 
 </details>
 
-With Codex, write `codex -c model_reasoning_effort=medium` and `codex -c model_reasoning_effort=low` in place of the two commands. Do not start either agent.
+With Claude Code, write `claude --effort medium` and `claude --effort low` in place of the two commands. Do not start either agent.
 
 Save your changes, then commit and check:
 
@@ -55,6 +55,6 @@ Finish when the check prints `Done:`. If it prints `Not yet:`, address the findi
 
 ## Reflect
 
-When would haiku be the better choice, and why? When would task 2, which also changes a file, need a higher level? Capability, speed or cost: which reason decides most often in your own work, and why?
+When would `gpt-6-luna` be the better choice, and why? When would task 2, which also changes a file, need a higher level? Capability, speed or cost: which reason decides most often in your own work, and why?
 
 [Worked answer](../answers/model-and-reasoning-level/) · [Start over](../../../README.md#start-an-exercise-again)

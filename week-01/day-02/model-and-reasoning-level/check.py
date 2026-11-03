@@ -20,7 +20,7 @@ REPO = HERE / "lab"
 RECORD = "docs/pull-request.md"
 FOLDER = "model-and-reasoning-level"
 REASONS = ("capability", "speed", "cost")
-MODELS = ("haiku", "sonnet")
+MODELS = ("gpt-6-luna", "gpt-6.1-sol")
 # The levels that docs/next-tasks.md gives, the lowest first. Both coding agents take these three.
 LEVELS = ("low", "medium", "high")
 # The command that starts each coding agent at a level, as docs/next-tasks.md gives it.
@@ -29,15 +29,15 @@ COMMAND = re.compile(
     r"|\bcodex\b[^|`\n]*?(?:-c|--config)(?:\s+|=)[\"']?model_reasoning_effort\s*=\s*[\"']?(?P<codex>[A-Za-z]+)")
 SEPARATOR = re.compile(r"^\s*\|?\s*:?-{3,}")
 MODEL_ROW, TASK_1, TASK_2 = "The extractor's model", "Task 1", "Task 2"
-# The course's answer: sonnet for the model, and for the tasks a level for task 1 above the level for
+# The course's answer: gpt-6.1-sol for the model, and for the tasks a level for task 1 above the level for
 # task 2. Then the reasons that section 2.3 allows for each answer. answers/model-and-reasoning-level/
 # decisions.md gives the rule for each.
-MODEL_ANSWER = "sonnet"
+MODEL_ANSWER = "gpt-6.1-sol"
 ALLOWED = {MODEL_ROW: {"capability"}, TASK_1: {"capability"}, TASK_2: {"speed", "cost"}}
 FACTS = {MODEL_ROW: "docs/model-scores.md", TASK_1: "docs/next-tasks.md", TASK_2: "docs/next-tasks.md"}
 # Shown for a choice that the course does not accept: how to decide, in the words of the exercise's table and
 # of its reasons under "Why each answer".
-LOOK_AGAIN_MODEL = ("In docs/model-scores.md, find a note that haiku got wrong and sonnet did not. One such note "
+LOOK_AGAIN_MODEL = ("In docs/model-scores.md, find a note that gpt-6-luna got wrong and gpt-6.1-sol did not. One such note "
                     "is enough to move up, whatever the cost. Section 2.3, row The extractor's model: \"move up only "
                     "for a failure the set shows it fixes\". The exercise's table shows how to decide, and the Reason "
                     "for each choice.")
@@ -45,7 +45,7 @@ LOOK_AGAIN_TASKS = ("In docs/next-tasks.md, read \"How you will check its work\"
                     "read line by line takes the lower level. Section 2.3, below its table: \"quick exchanges where "
                     "you review each result\". The task that can change the reply for any note takes the higher one. "
                     "The exercise's table shows how to decide, and the Reason for each level.")
-REASON_RULE = ("The exercise's table gives the reason for each choice: capability for sonnet and for task 1, and "
+REASON_RULE = ("The exercise's table gives the reason for each choice: capability for gpt-6.1-sol and for task 1, and "
                "speed for task 2. Section 2.3, under \"Two dials\": \"Every reason for a choice is one of three: "
                "capability, speed or cost.\"")
 
@@ -89,11 +89,16 @@ def words(text):
     return re.findall(r"[a-z]+", text.lower())
 
 
+def names(model, cell):
+    """True when the cell names the model whole: gpt-6-luna, not part of gpt-6-luna-2 or gpt-6.1-luna."""
+    return re.search(r"(?<![\w.-])" + re.escape(model) + r"(?![\w-]|\.\w)", cell.lower()) is not None
+
+
 def model_choice(cell):
     """The model that Start with names. Otherwise None, and what the cell still needs."""
-    named = [model for model in MODELS if model in words(cell)]
+    named = [model for model in MODELS if names(model, cell)]
     if not named:
-        return None, "in Start with, write haiku or sonnet, the two models in docs/model-scores.md."
+        return None, "in Start with, write gpt-6-luna or gpt-6.1-sol, the two models in docs/model-scores.md."
     if len(named) > 1 or "not" in words(cell):
         return None, "in Start with, write only the model that you choose."
     return named[0], None

@@ -10,7 +10,7 @@ Task 1 and task 2 in `docs/next-tasks.md`. Your coding agent does each task in i
 
 Fill in this table.
 
-- Start with: for the model, haiku or sonnet. For each task, the command that starts your coding agent at the level that you choose. `docs/next-tasks.md` shows the command.
+- Start with: for the model, `gpt-6-luna` or `gpt-6.1-sol`. For each task, the command that starts your coding agent at the level that you choose. `docs/next-tasks.md` shows the command.
 - Reason: capability, speed or cost. If two reasons fit, write one of them.
 
 | Choice | Start with | Reason |
