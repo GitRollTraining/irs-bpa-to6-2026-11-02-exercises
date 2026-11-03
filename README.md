@@ -8,14 +8,13 @@ All names, notes, and scenarios are fictional. Use only the supplied course data
 
 Use VS Code, or Code OSS in the hosted workspace, with the Python and Jupyter extensions. Run each command below in its terminal (Terminal > New Terminal). The exercises use Unix shell commands; on Windows, use WSL.
 
-1. Install the Codex CLI, open a new terminal, and sign in:
+1. Install the Codex CLI:
 
    ```sh
    curl -fsSL https://chatgpt.com/codex/install.sh | sh
-   codex login
    ```
 
-   Run `codex login` in the new terminal. In the hosted workspace, run `codex login --device-auth` instead: it gives a code to enter in your browser.
+   Then open a new terminal and sign in with `codex login`. In the hosted workspace, run `codex login --device-auth` instead: it gives a code to enter in your browser.
 
 2. Install uv, which sets up the course's Python and its packages, then open a new terminal:
 
