@@ -1,5 +1,5 @@
 """Build this exercise's starting repository, extractor/. Run it through the reset command:
-python3 ~/practice/reset.py score-the-prompt
+python3 reset.py score-the-prompt, in the course folder
 
 extractor/ is the week's lab repository at its saved state run2, as the course team committed it. It
 holds the simulated notes, the field list, the route to the model and the agent's configuration. It

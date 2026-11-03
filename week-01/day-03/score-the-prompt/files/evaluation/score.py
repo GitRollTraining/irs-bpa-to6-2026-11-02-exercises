@@ -17,6 +17,7 @@ import concurrent.futures
 import datetime
 import hashlib
 import json
+import os
 import pathlib
 import sys
 import textwrap
@@ -184,7 +185,13 @@ def send(folder, notes, total):
     print(flush=True)  # ends the line of replies saved
     if stopped:
         sys.exit(f"Stopped: {stopped}\nThe replies saved so far stay in {folder.relative_to(ROOT)}. "
-                 "Run python3 ~/practice/check_setup.py to check the route to the model. Then run this again.")
+                 f"Run python3 {course_file('check_setup.py')} --check-model to check the route to the model. "
+                 "Then run this again.")
+
+
+def course_file(name):
+    """A file of the course folder, the one with lab-states/, as a path from where this runs."""
+    return os.path.relpath(next(p for p in ROOT.parents if (p / "lab-states").is_dir()) / name)
 
 
 def main():
@@ -197,7 +204,8 @@ def main():
     known = runs()
     if args == ["--first"]:
         if 1 not in known:
-            sys.exit("There is no first run in evaluation/runs/1. Run python3 ~/practice/reset.py score-the-prompt.")
+            sys.exit("There is no first run in evaluation/runs/1. "
+                     f"Run python3 {course_file('reset.py')} score-the-prompt.")
         number = 1
     else:
         if not PROMPT.is_file():

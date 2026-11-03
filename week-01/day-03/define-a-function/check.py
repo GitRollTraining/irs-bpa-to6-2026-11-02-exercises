@@ -7,22 +7,25 @@ questions. For note 0106, the model must ask for one call to lookup_form. The ar
 your code in tools.py must give the title of Form 5329 for them. For note 0147, the model must ask for no call.
 
 It does not read strict. The course's code that sends your list to the model (model.py) drops strict. So the
-check tests each call against the schema in its place. It calls no model. A line for a part of step 2 names
-the row of its table that gives the answer. It also quotes the line of the notebook that the answer rests on.
+check tests each call against the schema in its place. It calls no model. A line for a change in the exercise's
+table names the row that gives the answer. It also quotes the line of the notebook that the answer rests on.
 """
 import importlib.util
 import itertools
 import json
+import os
 import pathlib
 import sys
 
 import jsonschema
 
 HERE = pathlib.Path(__file__).resolve().parent
+KIT = next(p for p in HERE.parents if (p / "lab-states").is_dir())  # the course folder
+RESET_PY = os.path.relpath(KIT / "reset.py")  # the reset, as a path from where this runs
 REPO = HERE / "lab"
-RESET = "Run python3 ~/practice/reset.py define-a-function."
+RESET = f"Run python3 {RESET_PY} define-a-function."
 AGAIN = "Then run python3 ask.py again."
-START_AGAIN = "To start again, run python3 ~/practice/reset.py define-a-function, and make the three changes again."
+START_AGAIN = f"To start again, run python3 {RESET_PY} define-a-function, and make the three changes again."
 # The two questions that ask.py sends, as it sends them: for note 0106 a call is right, for note 0147 none is.
 QUESTIONS = {"call": ("0106", "What is Form 5329, which this note names?"),
              "no-call": ("0147", "What amount is in question?")}
@@ -31,13 +34,13 @@ TITLE_5329 = "Additional Taxes on Qualified Plans (including IRAs) and Other Tax
 ALLOWED = "lookup_form"
 # The files that the check reads, and where to copy each one from again. A reset gives functions.json again.
 SUPPLIED = {"functions.json": None, "tools.py": "../files/tools.py", "system-prompt.txt": "../files/system-prompt.txt",
-            "ask.py": "../files/ask.py", "notes/0106.txt": "~/practice/notes/0106.txt",
-            "notes/0147.txt": "~/practice/notes/0147.txt"}
+            "ask.py": "../files/ask.py", "notes/0106.txt": os.path.relpath(KIT / "notes" / "0106.txt"),
+            "notes/0147.txt": os.path.relpath(KIT / "notes" / "0147.txt")}
 # The calls that the check tries the schema of lookup_form on. The third call adds one more argument to the first.
 NEEDED = {"form_number": "5329"}
 NO_FORM_NUMBER = {}
 MORE_NAMES = ("year", "tax_year", "note")
-# The lines of section 3.2 that the answers rest on, and what each row of the table in step 2 gives.
+# The lines of section 3.2 that the answers rest on, and what each row of the exercise's table gives.
 BELONGS = 'Section 3.2, the table of functions: "No: that call belongs to a person".'
 HARMLESS = 'Section 3.2, the table of functions: "Yes: harmless".'
 INTERN = 'Section 3.2, list "Describe each function": "Could an intern use it from that alone?"'
@@ -49,18 +52,18 @@ BOUNDARY = ('Section 3.2, under "That makes the function list a boundary.": "The
             'defined."')
 NOT_NEEDED = 'system-prompt.txt: "Do not call a function that the question does not need."'
 ROW_1 = ("functions.json still offers add_follow_up. In tools.py, it writes the next action into the case file. "
-         "IRS policy keeps such actions under a person's oversight. Remove it, as row 1 of the table in step 2 says. "
+         "IRS policy keeps such actions under a person's oversight. Remove it, as row 1 of the exercise's table says. "
          + BELONGS)
-COPY_2 = "Copy the text in row 2 of the table in step 2."
-COPY_3 = "Copy the text in row 3 of the table in step 2."
-ROW_2 = "The description of lookup_form tells the model when to call it. Use the text in row 2 of the table in step 2."
-ROW_3 = "The description of form_number tells the model what to send. Use the text in row 3 of the table in step 2."
+COPY_2 = "Copy the text in row 2 of the exercise's table."
+COPY_3 = "Copy the text in row 3 of the exercise's table."
+ROW_2 = "The description of lookup_form tells the model when to call it. Use the text in row 2 of the exercise's table."
+ROW_3 = "The description of form_number tells the model what to send. Use the text in row 3 of the exercise's table."
 # For a list that it sent before, ask.py sends nothing and shows the saved replies. With replies/ removed, it sends.
 # A round prints this once: after the quote, at the end of the last line that names row 2 or row 3, before AGAIN.
 SEND_AGAIN = ("If the description has that text already, the model can reply differently on each run. To send the "
               "two questions again, run rm -r replies, which removes the saved replies.")
-ONLY_LOOKUP = f"After step 2, the list offers only lookup_form. {BOUNDARY}"
-SCHEMA_STAYS = f"Step 2 does not change the schema. {CALLS_ADHERE}"
+ONLY_LOOKUP = f"After the changes in the exercise's table, the list offers only lookup_form. {BOUNDARY}"
+SCHEMA_STAYS = f"The exercise's table does not change the schema. {CALLS_ADHERE}"
 NO_STRICT = "In this lab, model.py drops strict, so a call can break the schema."
 
 
@@ -110,8 +113,8 @@ def load_tools():
 
 
 def schema_problems(schema):
-    """The problems in the input_schema of lookup_form, and its validator when it can run. Step 2 does not
-    change the schema: these lines come only when an edit broke it."""
+    """The problems in the input_schema of lookup_form, and its validator when it can run. The exercise's
+    table does not change the schema: these lines come only when an edit broke it."""
     if not isinstance(schema, dict) or schema.get("type") != "object" or not isinstance(schema.get("properties"), dict):
         return ['the input_schema of lookup_form must stay as the teammate wrote it: "type": "object", with '
                 f'form_number in "properties". {SCHEMA_STAYS}'], None
@@ -160,8 +163,8 @@ def when_to_call(path, case, names=("lookup_form",)):
     else:
         what = (f"for note 0147, the model asks for a call to {' and '.join(names)} ({path}). Its question asks for an "
                 "amount, which the note gives. So no call is right.")
-    # A call to a function that step 2 removes is fixed by row 1. A call to lookup_form is fixed by its description.
-    # Each fix quotes one line of section 3.2.
+    # A call to a function that the exercise's table removes is fixed by row 1. A call to lookup_form is fixed by
+    # its description. Each fix quotes one line of section 3.2.
     fix = f"{ROW_2} {BOTH_KINDS}" if set(names) == {ALLOWED} else ONLY_LOOKUP
     return f"{what} {fix} {AGAIN}"
 
@@ -209,7 +212,7 @@ try:
     functions = json.loads((REPO / "functions.json").read_text())
 except json.JSONDecodeError as err:
     stop(f"functions.json is not valid JSON. Python reports: {err.msg} (line {err.lineno}). Near that line, look for "
-         "a comma, or for a quote inside a text with no \\ before it. The table in step 2 gives each text as "
+         "a comma, or for a quote inside a text with no \\ before it. The exercise's table gives each text as "
          f"functions.json needs it. {START_AGAIN}")
 if not isinstance(functions, list) or not all(isinstance(f, dict) and isinstance(f.get("name"), str)
                                               for f in functions):
@@ -237,8 +240,8 @@ for name in offered:
 validator = None
 lookup = offered.get(ALLOWED)
 if lookup is None:
-    problems.append("functions.json does not offer lookup_form. The question about note 0106 needs it. Step 2 keeps "
-                    f"it, and writes its two descriptions. {HARMLESS} {START_AGAIN}")
+    problems.append("functions.json does not offer lookup_form. The question about note 0106 needs it. The "
+                    f"exercise's table keeps it, and gives its two descriptions. {HARMLESS} {START_AGAIN}")
 else:
     if undescribed(lookup.get("description")):
         problems.append(f"the description of lookup_form, in functions.json, {no_text(lookup.get('description'))}. The "
@@ -252,7 +255,7 @@ missing = [QUESTIONS[case][0] for case, (path, reply) in replies.items() if repl
 if missing:
     problems.append(f"ask.py saved no reply for the question about note {' or note '.join(missing)} with "
                     "functions.json as it is now. The two replies test your list. When the list is ready, run "
-                    f"python3 ask.py, as step 2 says. {BOTH_KINDS}")
+                    f"python3 ask.py (cell 2 in the notebook). {BOTH_KINDS}")
 if replies["call"][1] is not None and lookup is not None:
     problems += call_problems(*replies["call"], validator, tools)
 path, reply = replies["no-call"]

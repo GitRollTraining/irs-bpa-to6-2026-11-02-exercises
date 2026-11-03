@@ -1,7 +1,7 @@
-# The answer to "Check replies against a schema and your own check". Run it from
-# `~/practice/week-01/day-03/validate-replies/lab`, after `python3 ~/practice/reset.py validate-replies`:
+# The answer to "3.1 Check every reply". Run it from
+# `week-01/day-03/validate-replies/lab`, after `python3 reset.py validate-replies` in the course folder:
 #   `sh ../../answers/validate-replies/commands.sh`
-# As the steps of the exercise do, it makes the three changes of the table in step 2. Then it counts
+# As the steps of the exercise do, it makes the three changes of the exercise's table. Then it counts
 # the failures again, and runs the check, which prints Done:. decisions.md gives the reason for each
 # change, and the other answers that the check accepts.
 set -e

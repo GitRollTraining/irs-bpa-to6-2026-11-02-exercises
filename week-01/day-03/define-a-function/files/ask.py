@@ -15,6 +15,7 @@ starts with TODO.
 """
 import hashlib
 import json
+import os
 import pathlib
 import sys
 
@@ -105,6 +106,11 @@ def show(number, question, reply):
     print()
 
 
+def course_file(name):
+    """A file of the course folder, the one with lab-states/, as a path from where this runs."""
+    return os.path.relpath(next(p for p in LAB.parents if (p / "lab-states").is_dir()) / name)
+
+
 def main():
     system_prompt = (LAB / "system-prompt.txt").read_text()
     functions = function_list()
@@ -118,7 +124,8 @@ def main():
             reply = json.loads(ask(system_prompt, message(question), functions=functions))
         except Exception as failure:  # no reply came back: ask.py says so, and keeps the replies that it saved
             sys.exit(f"The model did not reply. model.py reports: {failure}\n"
-                     "Run python3 ~/practice/check_setup.py. If it prints Missing, tell your trainer.")
+                     f"Run python3 {course_file('check_setup.py')} --check-model, and follow what it reports. "
+                     "If it still prints Missing, tell your trainer.")
         record = {"case": question["case"], "note": question["note"], "question": question["question"],
                   "sent": {"system_prompt": system_prompt, "functions": functions, "message": message(question)},
                   "reply": reply}

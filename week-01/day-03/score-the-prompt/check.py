@@ -10,6 +10,7 @@ model. It looks for these:
 - your commit
 """
 import json
+import os
 import pathlib
 import re
 import subprocess
@@ -17,6 +18,8 @@ import sys
 
 sys.dont_write_bytecode = True
 HERE = pathlib.Path(__file__).resolve().parent
+KIT = next(p for p in HERE.parents if (p / "lab-states").is_dir())  # the course folder
+RESET_PY = os.path.relpath(KIT / "reset.py")  # the reset, as a path from where this runs
 REPO = HERE / "extractor"
 TAG = "first-score"
 sys.path.insert(0, str(HERE / "files" / "evaluation"))
@@ -32,11 +35,11 @@ KEPT = ["notes", "evaluation/labels.jsonl", "evaluation/score.py", FIRST, SCHEMA
         "model-route.json"]
 FIELD_NAMES = {"tax_year": r"\btax[ _]year\b", "form": r"\bform\b",
                "amount_in_question": r"\bamount(?:[ _]in[ _]question)?\b"}
-# The notebook lines that the messages quote. The Why column of the table in step 2 quotes RULE_FIELD for Note: and
-# Field:, RULE_SHAPE for Cause: and RULE_LOOP for the change. RULE_COMPARE, RULE_FIXED and RULE_COMMIT rule on the
-# score of your prompt, the files that stay as supplied, and the commit. RULE_SAY rules on a line about the form, for
-# a run that still gets form wrong after the change. RULE_LOOK rules on the score that goes to the trainer, for a run
-# that still gets form wrong with both changes in the prompt.
+# The notebook lines that the messages quote. The Why column of the toggle under the exercise's table quotes
+# RULE_FIELD for Note: and Field:, RULE_SHAPE for Cause: and RULE_LOOP for the change. RULE_COMPARE, RULE_FIXED and
+# RULE_COMMIT rule on the score of your prompt, the files that stay as supplied, and the commit. RULE_SAY rules on a
+# line about the form, for a run that still gets form wrong after the change. RULE_LOOK rules on the score that goes
+# to the trainer, for a run that still gets form wrong with both changes in the prompt.
 LOOP_PLACE = 'Day 2, section 2.2, under "Revise by editing the prompt, then re-score the whole set."'
 RULE_FIELD = ('Section 3.3, the list "Score the fields, not the note": "Per field, the score names the instruction '
               'to change".')
@@ -50,9 +53,9 @@ RULE_COMMIT = 'Day 1, "Opening", the list "How we work": "Each step ends in a co
 RULE_SAY = 'Day 2, section 2.2, the list "Say what you want": "Be specific about format and constraints".'
 RULE_LOOK = ('Section 3.3, under "Start by looking, not by measuring.": "Each note beside its JSON and the JSON it '
              'should be".')
-CHANGE = (f'In lines 11 and 17 of {PROMPT}, write "form": "1040" in place of "form": "Form 1040", as the table in '
-          'step 2 says.')
-SCORE_IT = "Score it on the whole set, as step 2 says: run python3 evaluation/score.py, or cell 2 in the notebook."
+CHANGE = (f'In lines 11 and 17 of {PROMPT}, write "form": "1040" in place of "form": "Form 1040", as the '
+          "exercise's table says.")
+SCORE_IT = "Score it on the whole set: run python3 evaluation/score.py, or cell 2 in the notebook."
 
 
 def git(*args):
@@ -100,16 +103,16 @@ def examples(prompt_lines, field):
 
 
 def has_change(prompt_text):
-    """True when each example reply of the prompt gives "form": "1040", as the table in step 2 says. In the teammate's
-    prompt, these are lines 11 and 17. A new line above them moves them down."""
+    """True when each example reply of the prompt gives "form": "1040", as the exercise's table says. In the
+    teammate's prompt, these are lines 11 and 17. A new line above them moves them down."""
     lines = prompt_text.splitlines()
     shown = examples(lines, "form")
     return len(shown) >= 2 and all(re.search(r'"form":\s*"1040"', lines[number - 1]) for number in shown)
 
 
 def next_move(field, run):
-    """What to do when your run gets the field no more right than the first run. First comes the change of the table
-    in step 2, then a line about the form. With both in your prompt, the check has no other change to give."""
+    """What to do when your run gets the field no more right than the first run. First comes the change of the
+    exercise's table, then a line about the form. With both in your prompt, the check has no other change to give."""
     prompt_now = (REPO / PROMPT).read_text()
     if field != "form" or not has_change(prompt_now):
         return f"{CHANGE} {SCORE_IT} {RULE_LOOP}"
@@ -117,7 +120,8 @@ def next_move(field, run):
         return (f"Your prompt has the change, but the replies of your run still get form wrong. Below line 4 of "
                 f"{PROMPT}, add this line: \"Give form as the form number only.\" For a new prompt, score.py sends "
                 f"the 20 notes again. {SCORE_IT} {RULE_SAY}")
-    return ("Your prompt has both changes: the examples of step 2, and a line that asks for the form number only. "
+    return ("Your prompt has both changes: the examples as the exercise's table gives them, and a line that asks for "
+            "the form number only. "
             "But the replies of your run still get form wrong. So the check has no other change to give. Show "
             f"{run.relative_to(REPO).as_posix()}/score.txt to your trainer. It names each note that your run got "
             f"wrong. {RULE_LOOK}")
@@ -139,20 +143,20 @@ def page_problems(text, wrong, labels):
     fields = [field for field, pattern in FIELD_NAMES.items() if re.search(pattern, (field_line or "").lower())]
     if note_line is None or field_line is None:
         problems.append(f"{PAGE} no longer has its lines Note: and Field:. Write them again at the bottom of your "
-                        f"write-up, as the table in step 2 says. {RULE_FIELD}")
+                        f"write-up, as the exercise's table says. {RULE_FIELD}")
     elif not notes or not field_line:
         problems.append(f"{PAGE}: Note: and Field: do not name a wrong value yet. Write Note: 0147 and Field: form, "
-                        f"as the table in step 2 says. {where} {RULE_FIELD}")
+                        f"as the exercise's table says. {where} {RULE_FIELD}")
     elif len(fields) != 1:
         problems.append(f"{PAGE}: after Field:, write one field that the scorer compares: tax_year, form or "
-                        f"amount_in_question. The table in step 2 gives form. {RULE_FIELD}")
+                        f"amount_in_question. The exercise's table gives form. {RULE_FIELD}")
     elif not any(note in labels for note in notes):
         problems.append(f"{PAGE}: note {notes[0]} is not one of the {len(labels)} labelled notes. Take a note from "
-                        f"the wrong values in {FIRST_SCORE}, such as 0147, as the table in step 2 says. {RULE_FIELD}")
+                        f"the wrong values in {FIRST_SCORE}, such as 0147, as the exercise's table says. {RULE_FIELD}")
     elif not any((note, fields[0]) in wrong for note in notes):
         named = ", ".join(note for note in notes if note in labels)
         problems.append(f"{PAGE}: the first score has no wrong value in {fields[0]} for note {named}. {where} The "
-                        f"table in step 2 gives Field: form. {RULE_FIELD}")
+                        f"exercise's table gives Field: form. {RULE_FIELD}")
     # The cause: the lines of the teammate's prompt whose example replies give the field its value, or missing for
     # the line that tells the model how to write it.
     cause = answers.get("Cause")
@@ -161,14 +165,14 @@ def page_problems(text, wrong, labels):
     named, lacks = cause_lines(cause or "", len(teammate)), re.search(r"\bmissing\b", (cause or "").lower())
     if cause is None:
         problems.append(f"{PAGE} no longer has its line Cause:. Write it again at the bottom of your write-up, as "
-                        f"the table in step 2 says. {RULE_SHAPE}")
+                        f"the exercise's table says. {RULE_SHAPE}")
     elif not named and not lacks:
         problems.append(f"{PAGE}: Cause: names no line of the teammate's prompt. Write the numbers of the lines that "
-                        f"led to that value. The table in step 2 gives Cause: 11, 17. {RULE_SHAPE}")
+                        f"led to that value. The exercise's table gives Cause: 11, 17. {RULE_SHAPE}")
     elif not lacks and not named & examples(teammate, field):
         problems.append(f"{PAGE}: no line that Cause: names gives {field} its value in the teammate's prompt. Its "
-                        'lines 11 and 17 are the replies of the two examples, which write "Form 1040". The table in '
-                        f"step 2 gives Cause: 11, 17. {RULE_SHAPE}")
+                        'lines 11 and 17 are the replies of the two examples, which write "Form 1040". The '
+                        f"exercise's table gives Cause: 11, 17. {RULE_SHAPE}")
     return problems
 
 
@@ -176,7 +180,7 @@ def your_run(labels):
     """The folder of the run of the prompt as it is now, or a problem when that run is not complete."""
     if not (REPO / PROMPT).is_file():
         return None, (f"{PROMPT} is missing. Put it back as the tag {TAG} has it: git checkout {TAG} -- {PROMPT}. "
-                      f"Then make the change of the table in step 2. {RULE_LOOP}")
+                      f"Then make the change of the exercise's table. {RULE_LOOP}")
     prompt_now = (REPO / PROMPT).read_text()
     if scorer.same_words(prompt_now, supplied(PROMPT) or ""):
         return None, f"{PROMPT} is still the teammate's prompt. {CHANGE} {SCORE_IT} {RULE_LOOP}"
@@ -193,7 +197,7 @@ def your_run(labels):
 
 def main():
     if not (REPO / ".git").is_dir() or git("rev-parse", "-q", "--verify", f"refs/tags/{TAG}").returncode:
-        stop(f"there is no repository extractor/ with the tag {TAG}. Run python3 ~/practice/reset.py score-the-prompt.")
+        stop(f"there is no repository extractor/ with the tag {TAG}. Run python3 {RESET_PY} score-the-prompt.")
     labels = scorer.load_labels(HERE / "files" / "evaluation" / "labels.jsonl")
     schema = json.loads(supplied(SCHEMA))
     first = {note: supplied(f"{FIRST}/{note}.txt") for note in labels}
@@ -208,7 +212,7 @@ def main():
         problems = page_problems(page.read_text(), wrong, labels)
     else:
         problems = [f"{PAGE} is missing. Put it back as the tag {TAG} has it: git checkout {TAG} -- {PAGE}. Then "
-                    f"write the answers of the table in step 2. {RULE_FIELD}"]
+                    f"write the answers of the exercise's table. {RULE_FIELD}"]
     if run_problem:
         problems.append(run_problem)
     else:
@@ -234,7 +238,7 @@ def main():
         if path not in pending and not any(path == kept or path.startswith(f"{kept}/") for kept in changed):
             pending.append(path)
     if pending:
-        problems.append("commit your changes, as step 3 says. In the notebook, set commit = True in cell 3. Then run "
+        problems.append("commit your changes. In the notebook, set commit = True in cell 3. Then run "
                         f"cell 3. In a terminal, run git add {PROMPT} evaluation. Then run git commit -m \"Revise the "
                         "prompt once\". Not committed: " + ", ".join(pending) + f". {RULE_COMMIT}")
 
