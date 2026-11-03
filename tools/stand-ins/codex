@@ -1,0 +1,4 @@
+#!/bin/sh
+# A stand-in for the `codex` command while check_setup.py runs the notebooks: no coding agent starts there.
+echo "stand-in codex: the notebook check never starts a coding agent" >&2
+exit 3

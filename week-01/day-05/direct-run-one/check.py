@@ -128,7 +128,7 @@ def outcomes(xml):
 def run_done_when(where, env, xml):
     """Run the done-when in `where`: its exit code, its last line without the time, and each test's outcome."""
     try:
-        # --rootdir: the same test names in lab/ and in its copy. Else setup.py makes the course folder
+        # --rootdir: the same test names in lab/ and in its copy. Else pyproject.toml makes the course folder
         # pytest's rootdir in lab/, and each name there starts with week-01.day-05. The folder is resolved,
         # as pytest resolves the test's path: a temporary folder can be a link, such as /var on macOS.
         run = subprocess.run([sys.executable, "-m", "pytest", "-q", "-p", "no:cacheprovider", "--color=no",

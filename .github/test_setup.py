@@ -1,7 +1,7 @@
-"""Isolated setup regression tests: .venv/bin/python .github/test_setup.py.
+"""Isolated tests of the setup check: uv run .github/test_setup.py.
 
-Uses temporary repositories, synthetic identities and a fake model. The setup
-orchestration test stubs package installation and kernel registration only.
+Uses temporary courses, synthetic identities, a fake model, and a fake Codex CLI. No test opens a
+network connection beyond this machine; the notebook kernels talk to the check on loopback only.
 """
 import importlib.util
 import json
@@ -14,9 +14,20 @@ import tempfile
 import unittest
 from unittest import mock
 
+import nbformat
+
 ROOT = pathlib.Path(__file__).resolve().parents[1]
 PYTHON = sys.executable
 REAL_RUN = subprocess.run
+FAKE_CODEX = """#!/bin/sh
+case "$1 $2" in
+  "--version "*) echo "codex-cli 0.0.0-test" ;;
+  "login status")
+    if [ -n "$FAKE_CODEX_SIGNED_OUT" ]; then echo "Not logged in" >&2; exit 1; fi
+    echo "Logged in using ChatGPT" >&2 ;;
+  *) exit 3 ;;
+esac
+"""
 
 
 def module(path, name):
@@ -26,7 +37,7 @@ def module(path, name):
     return loaded
 
 
-class SetupTests(unittest.TestCase):
+class SetupCheckTests(unittest.TestCase):
     def setUp(self):
         self.temp = tempfile.TemporaryDirectory(prefix="course-setup-")
         self.addCleanup(self.temp.cleanup)
@@ -36,16 +47,18 @@ class SetupTests(unittest.TestCase):
         self.home.mkdir()
         self.global_config = self.home / ".gitconfig"
         self.global_config.write_text("# leave untouched\n")
+        tools = self.root.parent / "bin"
+        tools.mkdir()
+        (tools / "codex").write_text(FAKE_CODEX)
+        (tools / "codex").chmod(0o755)
         self.env = {key: value for key, value in os.environ.items()
-                    if not key.startswith(("GIT_", "PYTHON", "CLAUDE", "CODEX"))}
+                    if not key.startswith(("GIT_", "PYTHON", "CLAUDE", "CODEX", "VIRTUAL_ENV", "JUPYTER"))}
         self.env.update(HOME=str(self.home), USERPROFILE=str(self.home),
                         GIT_CONFIG_GLOBAL=str(self.global_config), GIT_CONFIG_NOSYSTEM="1",
-                        PATH=str(pathlib.Path(PYTHON).parent) + os.pathsep + os.environ["PATH"],
+                        PATH=os.pathsep.join([str(pathlib.Path(PYTHON).parent), str(tools), os.environ["PATH"]]),
                         PYTHONDONTWRITEBYTECODE="1")
-        for name in ("check_setup.py", "setup.py"):
-            shutil.copy(ROOT / name, self.root / name)
-        (self.root / "lab-states").mkdir()
-        shutil.copy(ROOT / "lab-states/build_lab.py", self.root / "lab-states/build_lab.py")
+        shutil.copy(ROOT / "check_setup.py", self.root / "check_setup.py")
+        shutil.copytree(ROOT / "tools", self.root / "tools")
         (self.root / "model.py").write_text('''import os
 from pathlib import Path
 Path(__file__).with_name("model-imported").touch()
@@ -56,90 +69,99 @@ def ask(*args):
     return "ready"
 ''')
         (self.root / "model-route.json").write_text(json.dumps({"model": "fake"}))
-        # No test is allowed to open a network connection, including subprocesses.
+        # No test may reach the network; a kernel and the check meet on loopback only.
         guard = self.root.parent / "guard"
         guard.mkdir()
         (guard / "sitecustomize.py").write_text('''import sys
+LOOPBACK = {"127.0.0.1", "::1", "localhost", None, ""}
 def audit(event, args):
-    if event in ("socket.connect", "socket.getaddrinfo", "socket.sendto"):
+    if event == "socket.connect" and isinstance(args[1], tuple) and args[1][0] not in LOOPBACK:
+        raise RuntimeError("test network access forbidden")
+    if event == "socket.getaddrinfo" and args[0] not in LOOPBACK:
         raise RuntimeError("test network access forbidden")
 sys.addaudithook(audit)
 ''')
         self.env["PYTHONPATH"] = str(guard)
         self.git("init", "-q", "-b", "main")
+        self.notebook("print('hello')")
 
     def git(self, *args, folder=None):
         return REAL_RUN(["git", "-C", str(folder or self.root), *args],
                         env=self.env, check=True, capture_output=True, text=True).stdout.strip()
 
+    def notebook(self, *sources):
+        """A day's notebook with these code cells, committed, as the course's notebooks are."""
+        folder = self.root / "week-01/day-01"
+        folder.mkdir(parents=True, exist_ok=True)
+        nb = nbformat.v4.new_notebook()
+        nb.cells = [nbformat.v4.new_markdown_cell("# Day 1")] + [nbformat.v4.new_code_cell(s) for s in sources]
+        nbformat.write(nb, folder / "week-01-day-01.ipynb")
+        self.git("add", "-A")
+        self.git("-c", "user.name=Fixture", "-c", "user.email=fixture@example.invalid",
+                 "commit", "-qm", "The course")
+
     def identity(self):
-        self.git("config", "--local", "user.name", "Learner")
-        self.git("config", "--local", "user.email", "learner@example.invalid")
+        self.git("config", "--global", "user.name", "Learner")
+        self.git("config", "--global", "user.email", "learner@example.invalid")
 
     def check(self, *args, expected=0, env=None, cwd=None):
         result = REAL_RUN([PYTHON, str(self.root / "check_setup.py"), *args],
                           env=env or self.env, cwd=cwd or self.root.parent,
-                          capture_output=True, text=True, timeout=30)
+                          capture_output=True, text=True, timeout=300)
         self.assertEqual(result.returncode, expected, result.stdout + result.stderr)
         return result.stdout
 
-    def exercise(self):
-        folder = self.root / "week-01/day-01/example"
-        folder.mkdir(parents=True)
-        (folder / "start.py").touch()
-        repo = folder / "lab"
-        repo.mkdir()
-        self.git("init", "-q", "-b", "main", folder=repo)
-        (repo / "learner-draft.txt").write_text("preserve me\n")
-        return repo
-
-    def test_offline_from_arbitrary_directory_without_model_import(self):
+    def test_ready_from_another_folder_runs_the_notebook_without_the_model(self):
         self.identity()
-        self.assertIn("Setup OK (offline)", self.check())
+        out = self.check()
+        self.assertIn("Setup OK", out)
+        self.assertIn("codex-cli 0.0.0-test, signed in", out)
+        self.assertIn("all 1 cells of the 1 notebooks ran", out)
         self.assertFalse((self.root / "model-imported").exists())
-        self.assertEqual(self.global_config.read_text(), "# leave untouched\n")
+        self.assertFalse((self.root / "week-01/day-01/.ipynb_checkpoints").exists())
 
-    def test_missing_identity_actionable_and_read_only(self):
+    def test_missing_identity_is_actionable_and_read_only(self):
         out = self.check(expected=1)
-        self.assertIn("git config --local user.name", out)
-        self.assertIn("git config --local user.email", out)
+        self.assertIn('git config --global user.name "Your Name"', out)
+        self.assertIn('git config --global user.email "you@example.com"', out)
         self.assertEqual(self.global_config.read_text(), "# leave untouched\n")
-        self.assertFalse((self.root / "model-imported").exists())
 
-    def test_existing_global_identity_is_accepted(self):
-        self.global_config.write_text("[user]\n name = Existing Learner\n email = existing@example.invalid\n")
-        before = self.global_config.read_bytes()
-        self.assertIn("Setup OK (offline)", self.check())
-        self.assertEqual(self.global_config.read_bytes(), before)
-
-    def test_explicit_model_probe_success_and_failure(self):
+    def test_codex_missing_or_signed_out_is_actionable(self):
         self.identity()
-        self.assertIn("including live model probe", self.check("--check-model"))
+        env = dict(self.env, FAKE_CODEX_SIGNED_OUT="1")
+        out = self.check(expected=1, env=env)
+        self.assertIn("Codex CLI is not signed in (Not logged in): run codex login", out)
+        env = dict(self.env, PATH=os.pathsep.join(p for p in self.env["PATH"].split(os.pathsep)
+                                                  if not (pathlib.Path(p) / "codex").exists()))
+        out = self.check(expected=1, env=env)
+        self.assertIn("Codex CLI: install it with curl -fsSL https://chatgpt.com/codex/install.sh | sh", out)
+
+    def test_model_probe_alone_succeeds_and_fails(self):
+        out = self.check("--check-model")
+        self.assertIn("Model OK: fake answered 'ready'", out)
+        self.assertNotIn("notebooks", out)
         self.assertTrue((self.root / "model-called").exists())
         env = dict(self.env, FAKE_MODEL_FAIL="1")
         self.assertIn("synthetic provider unavailable", self.check("--check-model", expected=1, env=env))
 
     def test_missing_packages_and_git_are_actionable(self):
         self.identity()
-        loaded = module(self.root / "check_setup.py", "readiness_packages")
+        loaded = module(self.root / "check_setup.py", "check_packages")
         with mock.patch.dict(os.environ, self.env, clear=True), \
-             mock.patch.object(sys, "argv", ["check_setup.py"]), \
              mock.patch.object(loaded.importlib.metadata, "version",
-                               side_effect=importlib.metadata.PackageNotFoundError), \
-             mock.patch("builtins.print") as output:
-            self.assertEqual(loaded.main(), 1)
-        printed = "\n".join(str(call.args[0]) for call in output.call_args_list)
-        for name in ("pytest", "jsonschema", "ipykernel"):
-            self.assertIn(name + ": run setup.py", printed)
+                               side_effect=importlib.metadata.PackageNotFoundError):
+            missing = []
+            self.assertFalse(loaded.check_python(missing, []))
+        for name in loaded.PACKAGES:
+            self.assertIn(f"{name}: run uv sync in the course folder, then uv run check_setup.py", missing)
         with mock.patch.dict(os.environ, self.env, clear=True), \
-             mock.patch.object(sys, "argv", ["check_setup.py"]), \
-             mock.patch.object(loaded, "git", side_effect=FileNotFoundError), \
-             mock.patch("builtins.print") as output:
-            self.assertEqual(loaded.main(), 1)
-        self.assertTrue(any("install Git 2.28" in str(call) for call in output.call_args_list))
+             mock.patch.object(loaded, "git", side_effect=FileNotFoundError):
+            missing = []
+            self.assertFalse(loaded.check_git(missing, []))
+        self.assertIn("Git: install Git 2.28 or later", missing)
 
     @unittest.skipIf(os.name == "nt", "Unix notebook shell interpreter check")
-    def test_shell_environment_mismatch(self):
+    def test_another_python_on_path(self):
         self.identity()
         shell = self.root.parent / "shell"
         shell.mkdir()
@@ -147,74 +169,33 @@ sys.addaudithook(audit)
         fake.write_text("#!/bin/sh\necho /different/python/environment\n")
         fake.chmod(0o755)
         env = dict(self.env, PATH=str(shell) + os.pathsep + self.env["PATH"])
-        self.assertIn("different environment", self.check(expected=1, env=env))
+        self.assertIn("python3 on PATH is another Python", self.check(expected=1, env=env))
 
-    def test_nested_identity_propagation_preserves_work_and_overrides(self):
+    def test_an_exercise_without_an_identity_is_named(self):
+        self.git("config", "--local", "user.name", "Learner")
+        self.git("config", "--local", "user.email", "learner@example.invalid")
+        folder = self.root / "week-01/day-01/example"
+        folder.mkdir()
+        (folder / "start.py").touch()
+        (folder / "lab").mkdir()
+        self.git("init", "-q", "-b", "main", folder=folder / "lab")
+        out = self.check(expected=1)
+        self.assertIn("week-01/day-01/example/lab has no Git name or email", out)
+
+    def test_a_failing_cell_is_named_and_your_work_is_left_alone(self):
         self.identity()
-        repo = self.exercise()
-        self.assertIn("example/lab needs user.name", self.check(expected=1))
-        loaded = module(self.root / "lab-states/build_lab.py", "lab_identity")
-        with mock.patch.dict(os.environ, self.env, clear=True):
-            loaded.configure_identity(repo)
-        self.git("add", ".", folder=repo)
-        self.git("commit", "-qm", "Learner commit", folder=repo)
-        self.assertEqual(self.git("show", "-s", "--format=%an <%ae>", folder=repo),
-                         "Learner <learner@example.invalid>")
-        self.git("config", "--local", "user.name", "Explicit Override", folder=repo)
-        with mock.patch.dict(os.environ, self.env, clear=True):
-            loaded.configure_identity(repo)
-        self.assertEqual(self.git("config", "--get", "user.name", folder=repo), "Explicit Override")
-        self.assertEqual((repo / "learner-draft.txt").read_text(), "preserve me\n")
-        self.assertIn("Setup OK (offline)", self.check(cwd=repo))
-        self.assertEqual(self.global_config.read_text(), "# leave untouched\n")
-
-    def test_missing_venv_support_has_repair_guidance(self):
-        loaded = module(self.root / "setup.py", "setup_venv_failure")
-        def run(args, **kwargs):
-            args = [str(a) for a in args]
-            if args[1:3] == ["-m", "venv"]:
-                raise subprocess.CalledProcessError(1, args)
-            return REAL_RUN(args, **kwargs)
-        with mock.patch.dict(os.environ, self.env, clear=True), \
-             mock.patch.object(sys, "argv", ["setup.py"]), \
-             mock.patch.object(subprocess, "run", side_effect=run), \
-             self.assertRaisesRegex(SystemExit, "python3-venv"):
-            loaded.main()
-
-    def test_setup_repeatable_local_identity_and_offline_final_check(self):
-        repo = self.exercise()
-        loaded = module(self.root / "setup.py", "course_setup")
-        # Reuse the test interpreter; do not install packages or register a user kernel.
-        loaded.PYTHON = pathlib.Path(PYTHON)
-        loaded.BIN = pathlib.Path(PYTHON).parent
-        loaded.VENV = pathlib.Path(sys.prefix)
-        installs = []
-
-        def run(args, **kwargs):
-            args = [str(a) for a in args]
-            if args[1:3] in (["-m", "pip"], ["-m", "ipykernel"]):
-                installs.append(args)
-                return subprocess.CompletedProcess(args, 0)
-            return REAL_RUN(args, **kwargs)
-
-        with mock.patch.dict(os.environ, self.env, clear=True), \
-             mock.patch.object(sys, "argv", ["setup.py"]), \
-             mock.patch.object(subprocess, "run", side_effect=run), \
-             mock.patch("builtins.input", side_effect=["Learner", "learner@example.invalid"]):
-            self.git("-c", "user.name=Fixture", "-c", "user.email=fixture@example.invalid",
-                     "commit", "--allow-empty", "-qm", "Fixture")
-            self.assertEqual(loaded.main(), 0)
-            baseline = self.git("rev-parse", "start")
-            self.assertEqual(loaded.main(), 0)
-            self.assertEqual(self.git("rev-parse", "start"), baseline)
-        self.assertEqual(len(installs), 4)
-        kernel = next(args for args in installs if args[2] == "ipykernel")
-        self.assertIn(str(loaded.BIN) + os.pathsep + self.env["PATH"], kernel)
-        self.assertEqual(self.git("config", "--local", "user.name"), "Learner")
-        self.assertEqual(self.git("config", "--local", "user.email", folder=repo), "learner@example.invalid")
-        self.assertEqual((repo / "learner-draft.txt").read_text(), "preserve me\n")
-        self.assertEqual(self.global_config.read_text(), "# leave untouched\n")
-        self.assertFalse((self.root / "model-imported").exists())
+        self.notebook("print('fine')", "1 / 0", "!cat no-such-file.txt",
+                      "!echo Done: nothing to check  # check.py")
+        draft = self.root / "week-01/day-01/week-01-day-01.ipynb"
+        draft.write_text(draft.read_text().replace("print('fine')", "print('my own edit')"))
+        before = draft.read_text()
+        out = self.check(expected=1)
+        self.assertIn("week-01/day-01: cell", out)
+        self.assertIn("stopped with an error: ZeroDivisionError", out)
+        self.assertIn("reports a missing file", out)
+        self.assertIn("does not print Not yet: before any work", out)
+        self.assertEqual(draft.read_text(), before)
+        self.assertNotIn("my own edit", out)
 
 
 if __name__ == "__main__":

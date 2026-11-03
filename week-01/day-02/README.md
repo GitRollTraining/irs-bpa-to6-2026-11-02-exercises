@@ -2,7 +2,7 @@
 
 See the model sample its replies, write the extractor's system prompt, and choose a model and reasoning levels with a reason for each.
 
-Complete the [course setup](../../README.md#set-up-once), then open [the Day 2 notebook](week-01-day-02.ipynb). Use the **Python (practice .venv)** kernel. For terminal work, open a new terminal, which starts in the course folder, and activate the environment first:
+Complete the [course setup](../../README.md#set-up-once), then open [the Day 2 notebook](week-01-day-02.ipynb). Use the **.venv** kernel. For terminal work, open a new terminal, which starts in the course folder, and activate the environment first:
 
 ```sh
 source .venv/bin/activate
