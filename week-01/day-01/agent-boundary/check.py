@@ -9,6 +9,7 @@ chapter rule out. It reads each setting as the documentation of its tool describ
 developer of the contractor starts the agent. Then it looks for your commit.
 """
 import json
+import os
 import pathlib
 import re
 import subprocess
@@ -20,6 +21,8 @@ except ImportError:  # Python 3.10, which has no tomllib: mini_toml below reads 
     tomllib = None
 
 HERE = pathlib.Path(__file__).resolve().parent
+KIT = next(p for p in HERE.parents if (p / "lab-states").is_dir())  # the course folder
+RESET_PY = os.path.relpath(KIT / "reset.py")  # the reset, as a path from where this runs
 REPO = HERE / "lab"
 DRAFT = "pilot-draft"
 CLAUDE = (".claude/settings.json", ".mcp.json")
@@ -398,7 +401,7 @@ def stop(message):
 
 def main():
     if not (REPO / ".git").is_dir() or git("rev-parse", "-q", "--verify", f"refs/tags/{DRAFT}").returncode:
-        stop("there is no repository lab/ with the tag pilot-draft. Run python3 ~/practice/reset.py agent-boundary.")
+        stop(f"there is no repository lab/ with the tag pilot-draft. Run python3 {RESET_PY} agent-boundary.")
     problems = []
     for agent, (paths, findings) in AGENTS.items():
         lines = [line for found in findings(*(now(path) for path in paths)).values() for line in found]

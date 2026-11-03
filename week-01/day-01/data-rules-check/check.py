@@ -6,12 +6,15 @@ Each answer needs a reason in Why that ends with its section. The check does not
 further. The class talks the reasons through. Your answers count only after you commit them. It calls
 no model.
 """
+import os
 import pathlib
 import re
 import subprocess
 import sys
 
 HERE = pathlib.Path(__file__).resolve().parent
+KIT = next(p for p in HERE.parents if (p / "lab-states").is_dir())  # the course folder
+RESET_PY = os.path.relpath(KIT / "reset.py")  # the reset, as a path from where this runs
 REPO = HERE / "lab"
 RECORD = "docs/data-rules-check.md"
 USES = range(1, 5)
@@ -88,9 +91,9 @@ def judge(use, answer, who):
 
 
 if not (REPO / ".git").is_dir():
-    stop("there is no repository lab/ yet. Run python3 ~/practice/reset.py data-rules-check.")
+    stop(f"there is no repository lab/ yet. Run python3 {RESET_PY} data-rules-check.")
 if not (REPO / RECORD).exists():
-    stop(f"{RECORD} is missing. Run python3 ~/practice/reset.py data-rules-check to get it again.")
+    stop(f"{RECORD} is missing. Run python3 {RESET_PY} data-rules-check to get it again.")
 
 found = answers((REPO / RECORD).read_text())
 problems = []
