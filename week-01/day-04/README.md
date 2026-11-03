@@ -2,7 +2,7 @@
 
 Commit only what you asked a coding agent for, push without losing a teammate's work, read a change in each form of `git diff`, and map the modes of Codex.
 
-Complete the [course setup](../../README.md#set-up-once), then open [the Day 4 notebook](week-01-day-04.ipynb). Use the **Python (practice .venv)** kernel. For terminal work, open a new terminal, which starts in the course folder, and activate the environment first:
+Complete the [course setup](../../README.md#set-up-once), then open [the Day 4 notebook](week-01-day-04.ipynb). Use the **.venv** kernel. For terminal work, open a new terminal, which starts in the course folder, and activate the environment first:
 
 ```sh
 source .venv/bin/activate

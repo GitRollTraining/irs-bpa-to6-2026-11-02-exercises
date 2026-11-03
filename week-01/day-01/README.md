@@ -2,7 +2,7 @@
 
 Learn to find data leaks, decide which AI uses need approval, and limit what a coding agent can access.
 
-Complete the [course setup](../../README.md#set-up-once), then open [the Day 1 notebook](week-01-day-01.ipynb). Use the **Python (practice .venv)** kernel. For terminal work, open a new terminal, which starts in the course folder, and activate the environment first:
+Complete the [course setup](../../README.md#set-up-once), then open [the Day 1 notebook](week-01-day-01.ipynb). Use the **.venv** kernel. For terminal work, open a new terminal, which starts in the course folder, and activate the environment first:
 
 ```sh
 source .venv/bin/activate

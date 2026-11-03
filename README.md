@@ -6,41 +6,57 @@ All names, notes, and scenarios are fictional. Use only the supplied course data
 
 ## Set up once
 
-Use Python 3.10 or later, Git 2.28 or later, and VS Code with the Python and Jupyter extensions. The exercises use Unix shell commands; on Windows, use WSL.
+Use VS Code, or Code OSS in the hosted workspace, with the Python and Jupyter extensions. Run each command below in its terminal (Terminal > New Terminal). The exercises use Unix shell commands; on Windows, use WSL.
 
-1. Open a terminal in the course folder: the folder that holds this repository. If you have no copy yet, clone the course, for example into `~/practice`:
+1. Install the Codex CLI, open a new terminal, and sign in:
+
+   ```sh
+   curl -fsSL https://chatgpt.com/codex/install.sh | sh
+   codex login
+   ```
+
+   Run `codex login` in the new terminal. In the hosted workspace, run `codex login --device-auth` instead: it gives a code to enter in your browser.
+
+2. Install uv, which sets up the course's Python and its packages, then open a new terminal:
+
+   ```sh
+   curl -LsSf https://astral.sh/uv/install.sh | sh
+   ```
+
+3. Give Git your name and email, for your commits:
+
+   ```sh
+   git config --global user.name "Your Name"
+   git config --global user.email "you@example.com"
+   ```
+
+4. Clone the course, for example into `~/practice`, and open that folder (File > Open Folder):
 
    ```sh
    git clone https://github.com/GitRollTraining/irs-bpa-to6-2026-11-02-exercises.git ~/practice
-   cd ~/practice
    ```
 
    Any folder works: every path in the exercises is relative to the course folder or to the exercise. In the hosted workspace, keep the course in your home folder, which is kept when the workspace stops.
 
-2. From the course folder, run:
+5. In a new terminal, which opens in the course folder, set up the environment and check it:
 
    ```sh
-   python3 setup.py
+   uv sync
+   uv run check_setup.py
    ```
 
-   Setup installs the Python packages, registers the notebook kernel, and asks for a Git name and email if needed. Initial installation needs internet access. You can rerun setup without losing exercise work.
+   `uv sync` makes `.venv` with the course's Python packages; the first run needs internet access. `check_setup.py` checks Python, Git and the Codex CLI, then runs every cell of every notebook in a temporary copy of the course, with nothing sent to a model. It takes a minute or two. Continue when it prints `Setup OK`. If it prints `Missing`, follow each message and run the check again.
 
-3. In each new terminal, activate the environment and check readiness. In VS Code, Terminal > New Terminal opens in the course folder:
+6. Open the day's notebook, select **.venv** as its kernel (Select Kernel > Python Environments), and run its first cell.
 
-   ```sh
-   source .venv/bin/activate
-   python3 check_setup.py
-   ```
-
-   Continue when it prints `Setup OK (offline)`. If it prints `Missing`, follow the messages and rerun the check. Day 1 needs no model access or coding agent.
-
-4. Open the course folder in VS Code (File > Open Folder) and open the day's notebook. Select **Python (practice .venv)** as its kernel. Restart the kernel if it was running during setup.
+For an exercise's terminal commands, run `source .venv/bin/activate` first in each new terminal.
 
 ### If setup needs attention
 
-- **Git name or email missing:** rerun `python3 setup.py` and enter your own details. They are saved for this course and its exercises; existing global Git settings are left alone.
-- **Python environments differ:** activate `.venv` in the terminal, select **Python (practice .venv)** in the notebook, and restart its kernel. In a notebook cell, `import sys; print(sys.executable)` should show a path inside the course folder's `.venv`.
-- **Other missing requirements:** follow the readiness message, then rerun setup.
+- **Git name or email missing:** run the two `git config --global` commands in step 3, with your own details.
+- **Codex CLI not signed in:** run `codex login`, or in the hosted workspace `codex login --device-auth`.
+- **Python environments differ:** run `source .venv/bin/activate` in the terminal, select **.venv** as the notebook's kernel, and restart the kernel. In a notebook cell, `import sys; print(sys.executable)` should show a path inside the course folder's `.venv`.
+- **A notebook cell fails in the check:** send the course team the lines under `Missing`.
 
 ## Week 1
 
@@ -54,13 +70,13 @@ Use Python 3.10 or later, Git 2.28 or later, and VS Code with the Python and Jup
 
 ## When an exercise needs AI access
 
-Four exercises call a model through `model.py`: `same-note-five-times` and `system-prompt` on Day 2, and `define-a-function` and `score-the-prompt` on Day 3. Before those exercises, check access from the activated environment:
+Four exercises call a model through `model.py`: `same-note-five-times` and `system-prompt` on Day 2, and `define-a-function` and `score-the-prompt` on Day 3. Before those exercises, check access from the course folder:
 
 ```sh
-python3 check_setup.py --check-model
+uv run check_setup.py --check-model
 ```
 
-This sends a short live request. Follow any provider sign-in instructions it reports. Ordinary readiness and exercise checks do not call a live model.
+This checks only the route to the model, with one short live request. Follow any provider sign-in instructions it reports. The setup check and the exercise checks do not call a live model.
 
 Only `tool-modes` on Day 4 and `direct-run-one` on Day 5 ask you to start a coding agent. Follow their instructions for choosing and launching it.
 
