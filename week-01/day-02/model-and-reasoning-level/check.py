@@ -7,12 +7,15 @@ then compares Reason with the reasons that section 2.3 allows for that choice. T
 docs/model-scores.md and docs/next-tasks.md. The class talks them through. Then it looks for your commit. It calls
 no model and starts no coding agent.
 """
+import os
 import pathlib
 import re
 import subprocess
 import sys
 
 HERE = pathlib.Path(__file__).resolve().parent
+KIT = next(p for p in HERE.parents if (p / "lab-states").is_dir())  # the course folder
+RESET_PY = os.path.relpath(KIT / "reset.py")  # the reset, as a path from where this runs
 REPO = HERE / "lab"
 RECORD = "docs/pull-request.md"
 FOLDER = "model-and-reasoning-level"
@@ -32,16 +35,17 @@ MODEL_ROW, TASK_1, TASK_2 = "The extractor's model", "Task 1", "Task 2"
 MODEL_ANSWER = "sonnet"
 ALLOWED = {MODEL_ROW: {"capability"}, TASK_1: {"capability"}, TASK_2: {"speed", "cost"}}
 FACTS = {MODEL_ROW: "docs/model-scores.md", TASK_1: "docs/next-tasks.md", TASK_2: "docs/next-tasks.md"}
-# Shown for a choice that the course does not accept: how to decide, in the words of the table in step 2.
+# Shown for a choice that the course does not accept: how to decide, in the words of the exercise's table and
+# of its reasons under "Why each answer".
 LOOK_AGAIN_MODEL = ("In docs/model-scores.md, find a note that haiku got wrong and sonnet did not. One such note "
                     "is enough to move up, whatever the cost. Section 2.3, row The extractor's model: \"move up only "
-                    "for a failure the set shows it fixes\". The table in step 2 shows how to decide, and the Reason "
+                    "for a failure the set shows it fixes\". The exercise's table shows how to decide, and the Reason "
                     "for each choice.")
 LOOK_AGAIN_TASKS = ("In docs/next-tasks.md, read \"How you will check its work\" for each task. The task that you "
                     "read line by line takes the lower level. Section 2.3, below its table: \"quick exchanges where "
                     "you review each result\". The task that can change the reply for any note takes the higher one. "
-                    "The table in step 2 shows how to decide, and the Reason for each level.")
-REASON_RULE = ("The table in step 2 gives the reason for each choice: capability for sonnet and for task 1, and "
+                    "The exercise's table shows how to decide, and the Reason for each level.")
+REASON_RULE = ("The exercise's table gives the reason for each choice: capability for sonnet and for task 1, and "
                "speed for task 2. Section 2.3, under \"Two dials\": \"Every reason for a choice is one of three: "
                "capability, speed or cost.\"")
 
@@ -135,17 +139,17 @@ def reason_accepted(row, reason):
 
 
 if not (REPO / ".git").is_dir():
-    stop(f"there is no repository lab/ yet. Run python3 ~/practice/reset.py {FOLDER}.")
+    stop(f"there is no repository lab/ yet. Run python3 {RESET_PY} {FOLDER}.")
 if not (REPO / RECORD).is_file():
-    stop(f"{RECORD} is missing. Run python3 ~/practice/reset.py {FOLDER} to get it again.")
+    stop(f"{RECORD} is missing. Run python3 {RESET_PY} {FOLDER} to get it again.")
 rows = table((REPO / RECORD).read_text())
 if rows is None:
     stop(f"{RECORD} has no table with the columns Choice, Start with and Reason. "
-         f"Run python3 ~/practice/reset.py {FOLDER} to get the file again.")
+         f"Run python3 {RESET_PY} {FOLDER} to get the file again.")
 
 problems = []
 NO_ROW = "the table has no row for this choice. Put the row back, as the file had it."
-EMPTY = "fill in Start with and Reason in docs/pull-request.md, as the table in step 2 says."
+EMPTY = "fill in Start with and Reason in docs/pull-request.md, as the exercise's table says."
 
 # The extractor's model: the choice first, then its reason.
 if MODEL_ROW not in rows:
