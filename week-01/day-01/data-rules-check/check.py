@@ -23,8 +23,8 @@ USES = range(1, 5)
 ACCEPTED = {1: ("yes", None), 2: ("no", None), 3: ("not mine", "accountable"), 4: ("no", None)}
 # Shown for a use whose answer the course does not accept: where to look again, in the file and in the notebook.
 LOOK_AGAIN = {
-    1: "Look again at the first line of notes/0147.txt, and at The approval on file. Then find its row in the "
-       "data-rules check in section 1.2.",
+    1: "Look again at the first line of notes/0147.txt, and at what the approval covers, at the top of "
+       "docs/data-rules-check.md. Then find its row in the data-rules check in section 1.2.",
     2: "Look again at what exports/case-2231.txt still gives without its name. Section 1.1 says what that means.",
     3: "Look again at what the approval covers, and at move 5 in section 1.2.",
     4: "Look again at the warning of the policy about public AI tools, in section 1.1.",

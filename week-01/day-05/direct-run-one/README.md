@@ -56,7 +56,7 @@ git commit -m "Accept run 1"
 python3 ../check.py
 ```
 
-Finish when the check prints `Done:`. If it prints `Not yet:`, address the findings, commit, and check again. The check breaks the schema to see whether a test fails; it does not read your agent's session.
+Expect `Accept run 1` and the run's files only: Git does not track your report. Finish when the check prints `Done:`. If it prints `Not yet:`, address the findings, commit, and check again. The check breaks the schema to see whether a test fails; it does not read your agent's session.
 
 ## Reflect
 
