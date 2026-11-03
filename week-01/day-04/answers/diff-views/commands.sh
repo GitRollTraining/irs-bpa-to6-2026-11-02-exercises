@@ -1,7 +1,7 @@
-# The answer to "Read one change in every view, before and after".
-# Run it from ~/practice/week-01/day-04/diff-views/lab, after python3 ~/practice/reset.py diff-views:
+# The answer to "4.3 Read every diff view".
+# Run it from week-01/day-04/diff-views/lab, after python3 reset.py diff-views in the course folder:
 #   sh ../../answers/diff-views/commands.sh
-# It does the rows of the table in step 2, in order, and runs the check, which prints Done:.
+# It does the rows of the exercise's table, in order, and runs the check, which prints Done:.
 # decisions.md gives the reason for each row.
 set -e
 

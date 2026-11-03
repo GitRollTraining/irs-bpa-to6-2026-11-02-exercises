@@ -8,7 +8,7 @@ screen broke in two is one line here.
 - Agent: Codex, the command-line program `codex`, version 0.165.0-alpha.1.2.
 - Model: GPT-6.1-Sol, with reasoning medium, as `/status` showed it.
 - Date: 2026-10-30.
-- Where: in a copy of `~/practice` on a computer of the course team. It was not the hosted workspace
+- Where: in a copy of this repository on a computer of the course team. It was not the hosted workspace
   of the course.
 - Settings: the Codex settings of the course team. Before the start, the course team set the folder
   as trusted, so Codex asked no trust question. The course team set the reasoning level to medium.

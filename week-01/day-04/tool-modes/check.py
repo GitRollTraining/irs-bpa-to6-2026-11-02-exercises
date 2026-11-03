@@ -1,16 +1,19 @@
 """The done check for this exercise. From extractor/, run: python3 ../check.py
 
 It reads modes.md, the file that you fill in, and what Git shows in extractor/. Each Kind must be
-agent, as the table in step 3 gives. Your answer under "Your run in Ask for approval" must match the
+agent, as the exercise's table gives. Your answer under "Your run in Ask for approval" must match the
 changes that Git shows since the start. It starts no coding agent, calls no model and needs no
 network.
 """
+import os
 import pathlib
 import re
 import subprocess
 import sys
 
 HERE = pathlib.Path(__file__).resolve().parent
+KIT = next(p for p in HERE.parents if (p / "lab-states").is_dir())  # the course folder
+RESET_PY = os.path.relpath(KIT / "reset.py")  # the reset, as a path from where this runs
 REPO = HERE / "extractor"
 TABLE = "modes.md"
 START = REPO / ".git" / "info" / "exercise-start"
@@ -20,10 +23,10 @@ KINDS = ("completion", "chat", "agent")
 MODES = ("Read Only", "Ask for approval", "Approve for me", "Full Access")
 # The course's kind for each mode. answers/tool-modes/decisions.md gives the reason.
 KIND = "agent"
-STEP = "Step 3's table gives the answer and its reason."
+STEP = "The exercise's table gives the answer and its reason."
 UNDER = 'Section 4.4, under "Three kinds of tool, and they need different checks.":'
-# The reason for agent and its notebook line, as step 3's table gives them. A message stands alone, so it
-# names the heading in full.
+# The reason for agent and its notebook line, as the Why column of the toggle under the exercise's table gives
+# them. A message stands alone, so it names the heading in full.
 KIND_WHY = ("In modes.md, each row says that Codex uses tools without your yes: it reads files and runs commands, "
             "in Read Only too. Only an agent does that: chat reaches only what you paste into it.")
 KIND_LINE = f'{UNDER} "Coding agents: conversational AI models with tools".'
@@ -136,7 +139,7 @@ def rows_named(names):
 def main():
     if not (REPO / ".git").is_dir() or not START.is_file() or \
             git("cat-file", "-e", START.read_text().strip() + "^{commit}").returncode:
-        stop("there is no repository extractor/ from the start. Run python3 ~/practice/reset.py tool-modes.")
+        stop(f"there is no repository extractor/ from the start. Run python3 {RESET_PY} tool-modes.")
     if not (REPO / TABLE).is_file():
         stop(f"{TABLE} is missing. Copy it again: cp ../files/{TABLE} {TABLE}")
     text = (REPO / TABLE).read_text(encoding="utf-8", errors="replace")
@@ -167,7 +170,8 @@ def main():
     said, has_line = answer(text)
     if not changed:
         problems.append("Git shows no change in extractor since the start. Give Codex the request in Ask for "
-                        f'approval, as step 2 says. Then fill in "Answer:" in {TABLE}.')
+                        'approval. The steps are under "Try two modes and record" in ../README.md, and above '
+                        f'cell 2 in the notebook. Then fill in "Answer:" in {TABLE}.')
     elif not has_line:
         problems.append(f'{TABLE} no longer has its line "Answer:". Copy it from ../files/{TABLE}.')
     elif said is None:

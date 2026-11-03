@@ -1,5 +1,5 @@
 """Build this exercise's starting repository, extractor/. Run it through the reset command:
-python3 ~/practice/reset.py commit-three-of-four
+python3 reset.py commit-three-of-four, in the course folder
 
 extractor/ is the week's lab repository after its run 2, as the course team committed it. On top of
 it, not committed, are a coding agent's changes to four files (files/agent-run.patch), and the log

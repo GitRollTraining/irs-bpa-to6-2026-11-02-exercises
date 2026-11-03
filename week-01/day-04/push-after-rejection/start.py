@@ -1,5 +1,5 @@
 """Build this exercise's starting state. Run it through the reset command:
-python3 ~/practice/reset.py push-after-rejection
+python3 reset.py push-after-rejection, in the course folder
 
 shared.git/ is the lab's remote. It takes the place of a repository on a Git host. It holds the week's
 lab at its saved state run2, and one more commit of the course team: docs/remote.md, which names the

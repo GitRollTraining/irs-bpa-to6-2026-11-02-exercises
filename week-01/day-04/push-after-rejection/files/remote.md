@@ -2,6 +2,7 @@
 
 Push the history of this repository to the lab's remote, and to no other place.
 
-In the course's workspace, the lab's remote is this folder. It takes the place of a repository on a Git host:
+The lab's remote is the folder `shared.git` beside your clone. It takes the place of a repository on a Git host.
+From the top of your clone, its path is:
 
-`~/practice/week-01/day-04/push-after-rejection/shared.git`
+`../shared.git`

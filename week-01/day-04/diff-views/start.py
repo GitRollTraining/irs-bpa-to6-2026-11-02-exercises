@@ -1,5 +1,5 @@
 """Build this exercise's starting repository, lab/. Run it through the reset command:
-python3 ~/practice/reset.py diff-views
+python3 reset.py diff-views, in the course folder
 
 lab/ is the week's lab repository at its saved state run2, as the course team committed it. Then the
 course team commits docs/directing-prompt.md (files/directing-prompt.md): the directing prompt of

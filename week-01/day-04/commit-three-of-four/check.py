@@ -6,23 +6,26 @@ you asked the agent for (agent-session.txt), as the agent made it. Last, it chec
 .gitignore keeps logs/ out of Git. It runs no test, calls no model and starts no agent.
 """
 import json
+import os
 import pathlib
 import subprocess
 import sys
 
 HERE = pathlib.Path(__file__).resolve().parent
+KIT = next(p for p in HERE.parents if (p / "lab-states").is_dir())  # the course folder
+RESET_PY = os.path.relpath(KIT / "reset.py")  # the reset, as a path from where this runs
 REPO = HERE / "extractor"
 # start.py records the Git id of each changed file, as the course committed it and as the agent left it.
 RECORD = REPO / ".git" / "info" / "agent-run.json"
-# The kept answer, which the table in step 2 gives: commit the three changes that the request asks for,
+# The kept answer, which the exercise's table gives: commit the three changes that the request asks for,
 # leave out model.py, the debugging print that writes the whole note to logs/extractor.log, and add logs/
-# to .gitignore. Each line of the check names its file, the step that gives the answer, and the notebook line.
+# to .gitignore. Each line of the check names its file, what to do, and the notebook line.
 ASKED = ("extractor.py", "tests/test_extractor.py", "README.md")
 LEFT_OUT = "model.py"
 LOGS = "logs"
 LOG_FILES = [p.relative_to(HERE / "files").as_posix()
              for p in sorted((HERE / "files" / LOGS).rglob("*")) if p.is_file()]
-RESET = "python3 ~/practice/reset.py commit-three-of-four"
+RESET = f"python3 {RESET_PY} commit-three-of-four"
 TABLE = "Skipping staging lets an agent's stray edit in."
 WHO_CHOOSES = f'Section 4.1, the table under "{TABLE}", row Who chooses: "You choose which changes go in".'
 STAY_OUT = (f'Section 4.1, the table under "{TABLE}", row The debugging print: with git add, then git commit, '
@@ -55,6 +58,12 @@ def on_disk(path):
     return found.stdout.strip() if found and found.returncode == 0 else None
 
 
+def unstage(path):
+    """How to take path out of the staging area: in the notebook with cell 2, in a terminal with Git."""
+    return (f"Unstage it. In the notebook, take it out of files and run cell 2 again. In a terminal, run git restore "
+            f"--staged {path}.")
+
+
 if not (REPO / ".git").is_dir() or not RECORD.is_file() or git("rev-parse", "-q", "--verify", "HEAD").returncode:
     stop(f"there is no repository extractor/ yet. Run {RESET}.")
 record = json.loads(RECORD.read_text())
@@ -69,24 +78,23 @@ staged = git("diff", "--cached", "--name-only").stdout.split()
 held = []  # what the two lines below say to unstage
 if any(blob(commit, LEFT_OUT) != course[LEFT_OUT] for commit in commits):
     problems.append(f"a commit holds the change to {LEFT_OUT}, the debugging print that you did not ask for. The "
-                    f"table in step 2 leaves it out. A commit stays in the history. To start again, run {RESET}. "
+                    f"exercise's table leaves it out. A commit stays in the history. To start again, run {RESET}. "
                     f"{STAY_OUT}")
 elif LEFT_OUT in staged:
     held.append(LEFT_OUT)
-    problems.append(f"the staging area holds the change to {LEFT_OUT}, the debugging print. The table in step 2 "
-                    f"leaves it out. Unstage it as step 2 says. {STAY_OUT}")
+    problems.append(f"the staging area holds the change to {LEFT_OUT}, the debugging print. The exercise's table "
+                    f"leaves it out. {unstage(LEFT_OUT)} {STAY_OUT}")
 if any(git("cat-file", "-e", f"{commit}:{LOGS}").returncode == 0 for commit in commits):
-    problems.append(f"a commit holds {LOGS}/, with a whole note in its log. The table in step 2 keeps it out. A "
+    problems.append(f"a commit holds {LOGS}/, with a whole note in its log. The exercise's table keeps it out. A "
                     f"commit stays in the history. To start again, run {RESET}. {IGNORE}")
 elif any(path.startswith(LOGS + "/") for path in staged):
     held.append(LOGS + "/")
-    problems.append(f"the staging area holds {LOGS}/. The table in step 2 keeps it out. Unstage it as step 2 says. "
+    problems.append(f"the staging area holds {LOGS}/. The exercise's table keeps it out. {unstage(LOGS + '/')} "
                     f"{IGNORE}")
 # The move that commits a change. While the lines above say to unstage model.py or logs/, it says that first, and
 # says "commit" with no "it", which could read as a commit of that file.
-THEN_COMMIT = (f"Unstage {' and '.join(held)} as step 2 says. Then commit as step 3 says." if held
-               else "Then commit it as step 3 says.")
-COMMIT = THEN_COMMIT if held else "Commit it as step 3 says."
+THEN_COMMIT = f"Unstage {' and '.join(held)}. Then commit." if held else "Then commit it."
+COMMIT = THEN_COMMIT if held else "Commit it."
 
 # The changes that you asked for: each one in the last commit, as the agent made it. One line for each.
 for path in ASKED:
@@ -103,7 +111,7 @@ for path in ASKED:
         # The commit takes the copy that you staged, so a later edit on disk does not matter here.
         line += f" The staging area holds it. {COMMIT}"
     elif on_disk(path) == agent[path]:
-        line += f" Stage it as step 2 says. {THEN_COMMIT}"
+        line += f" Stage it. {THEN_COMMIT}"
     else:
         # No commit, not the staging area and not the disk holds the agent's change now: only the reset gets it back.
         if head == course[path]:
@@ -118,14 +126,13 @@ kept_out = len(lines) == len(LOG_FILES) and all(
     for line in lines)
 if not kept_out:
     problems.append(f".gitignore has no line that keeps {LOGS}/ out yet. Add {LOGS}/ on a new line at its end, as "
-                    f"the table in step 2 says. Save .gitignore. Stage it as step 2 says. {THEN_COMMIT} {IGNORE}")
+                    f"the exercise's table says. Save .gitignore. Stage it. {THEN_COMMIT} {IGNORE}")
 elif git("status", "--porcelain", "--", ".gitignore").stdout.strip():
     if ".gitignore" in staged:
         problems.append(f"the staging area holds your line in .gitignore, but no commit holds it yet. {COMMIT} "
                         f"{STAGING}")
     else:
-        problems.append(f"your line in .gitignore is not in a commit yet. Stage .gitignore as step 2 says. "
-                        f"{THEN_COMMIT} {STAGING}")
+        problems.append(f"your line in .gitignore is not in a commit yet. Stage .gitignore. {THEN_COMMIT} {STAGING}")
 
 if problems:
     print(f"Not yet: {len(problems)} left.")

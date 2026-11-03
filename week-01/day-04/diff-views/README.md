@@ -1,35 +1,73 @@
-# Exercise: Read one change in every view, before and after
+# 4.3 Read every diff view
 
-After this exercise, you can read a coding agent's change in each form of `git diff`, before and after you commit it.
+Read a coding agent's change in four forms of `git diff`, and commit only what its directing prompt asks for.
 
-**Scenario:** A coding agent made one more run in the lab. It staged part of its change.
+A coding agent made one more run in the lab and staged part of its change. Review the change before you commit it.
 
-**Success criterion:** from `lab`, `python3 ../check.py` prints `Done:`.
+## Start
 
-**Where you work:** the folder `~/practice/week-01/day-04/diff-views/lab`, with Git. In the Explorer, it is week-01 › day-04 › diff-views › lab. Each path in this exercise starts there. Do not use AI tools.
+Follow the [Day 4 setup](../README.md). Work by hand, without AI tools. In a new terminal in the course folder, these commands create the workspace only if it is missing, then enter it:
 
-**Start from:** the lab at its saved state `run2`, plus the agent's change. Run `python3 ~/practice/reset.py diff-views`. It prints `diff-views is back as it was supplied.` Then run `cd ~/practice/week-01/day-04/diff-views/lab`. To start again, run the same reset. It removes your commits.
+```sh
+test -d week-01/day-04/diff-views/lab/.git || python3 reset.py diff-views
+cd week-01/day-04/diff-views/lab
+```
 
-**What you have:** in `lab`, `docs/directing-prompt.md`: your directing prompt, and the agent's report. `../check.py` is the check. The rules are in section 4.3, "Compare before and after you commit".
+All paths below are relative to `lab/`. Read `docs/directing-prompt.md`: your directing prompt and the agent's report. Compare the files they name with what Git shows.
 
-## Steps
+## Read and stage
 
-1. Run `code docs/directing-prompt.md`. It opens the directing prompt and the report.
-2. Run `git diff` with the form of each row below, in order. `--name-status` lists only the files, and M marks a changed file. Before row 3, run `git restore --staged prompts/system.txt`. It takes the file out of the staging area, and keeps its change on disk. Then run `git add extractor.py`. Before row 4, run `git commit -m "Fail a reply whose amount is negative"`.
+Use section 4.3 of the notebook to explain each answer.
 
-| Row | Form | You should see | Why, in section 4.3 |
-|---|---|---|---|
-| 1 | `--name-status` | Only `extractor.py` | This form compares the files on disk with the staging area. So it misses what the agent staged. The list "The trap: the plain form": "Shows only changes still unstaged". |
-| 2 | `HEAD --name-status` | All three files | This form compares the files on disk with the last commit, staged or not. It shows `prompts/system.txt`, which the agent staged but did not report. The directing prompt does not allow that file, so you unstage it. Under "Start wide, then point --exit-code at HEAD for the tests.": "a file outside what the directing prompt allowed is a finding". |
-| 3 | `--staged --name-status` | `extractor.py` and `tests/test_extractor.py` | This form compares the staging area with the last commit: what your commit will hold. The directing prompt asks for both changes, but the agent did not stage `extractor.py`. So you stage it. The list "The trap: the plain form": "Run git diff --staged before every commit". |
-| 4 | `HEAD^ HEAD --name-status` | `extractor.py` and `tests/test_extractor.py` again | `HEAD` is now your commit, and `HEAD^` the one before. So this form shows what your commit changed. The list "A diff shows lines": "HEAD: the commit you are on". "HEAD^: the one before". |
+| What the form shows | Form, and the change to make |
+|---|---|
+| Only the changes not staged yet | `--name-status` |
+| Every change since the last commit, staged or not: also `prompts/system.txt`, which the directing prompt does not allow | `HEAD --name-status`, then unstage `prompts/system.txt` |
+| What your commit will hold: it needs `extractor.py`, which the agent did not stage | Stage `extractor.py`, then `--staged --name-status` |
+| What your commit changed | `HEAD^ HEAD --name-status` |
 
-3. Run `python3 ../check.py`. You should see `Done:`. If you see `Not yet:`, fix what it names. Then run the check again.
+<details><summary>Why each answer</summary>
 
-**Answer:** `~/practice/week-01/day-04/answers/diff-views/` holds `decisions.md`, and `commands.sh`, which ends with `Done:`.
+| What the form shows | Why, in section 4.3 |
+|---|---|
+| Only the changes not staged yet | This form compares the files on disk with the staging area. So it misses what the agent staged. The list "The trap: the plain form": "Shows only changes still unstaged". |
+| Every change since the last commit, staged or not: also `prompts/system.txt`, which the directing prompt does not allow | This form compares the files on disk with the last commit, staged or not. It shows `prompts/system.txt`, which the agent staged but did not report. The directing prompt does not allow that file, so you unstage it. Under "Start wide, then point --exit-code at HEAD for the tests.": "a file outside what the directing prompt allowed is a finding". |
+| What your commit will hold: it needs `extractor.py`, which the agent did not stage | This form compares the staging area with the last commit: what your commit will hold. The directing prompt asks for both changes, but the agent did not stage `extractor.py`. So you stage it. The list "The trap: the plain form": "Run git diff --staged before every commit". |
+| What your commit changed | `HEAD` is now your commit, and `HEAD^` the one before. So this form shows what your commit changed. The list "A diff shows lines": "HEAD: the commit you are on". "HEAD^: the one before". |
 
-## Afterwards, together
+</details>
 
-- When would the plain form show every file of the agent's change?
-- Would `git diff --exit-code -- tests/` catch this run's test change? Why?
-- When would the change to `prompts/system.txt` go into a commit, and why?
+Read the change in the forms of rows 1 and 2:
+
+```sh
+git diff --name-status
+git diff HEAD --name-status
+```
+
+Expect only `extractor.py`, then all three files. `--name-status` lists only the files; `M` marks a changed file.
+
+Unstage `prompts/system.txt`, stage `extractor.py`, and read what your commit will hold:
+
+```sh
+git restore --staged prompts/system.txt
+git add extractor.py
+git diff --staged --name-status
+```
+
+Expect `extractor.py` and `tests/test_extractor.py`. `git restore --staged` keeps the change on disk.
+
+Commit, read your commit, then check:
+
+```sh
+git commit -m "Fail a reply whose amount is negative"
+git diff HEAD^ HEAD --name-status
+python3 ../check.py
+```
+
+Expect `2 files changed, 9 insertions(+)`, then the same two files. Finish when the check prints `Done:`. If it prints `Not yet:`, address the findings, commit, and check again. The check reads your commits and runs the tests; it does not see which forms you ran.
+
+## Reflect
+
+Would `git diff --exit-code -- tests/` catch this run's test change, and why? When would the change to `prompts/system.txt` go into a commit, and why?
+
+[Worked answer](../answers/diff-views/) · [Start over](../../../README.md#start-an-exercise-again)

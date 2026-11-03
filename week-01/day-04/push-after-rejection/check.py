@@ -12,18 +12,21 @@ When ../mirror.git holds a push, only the reset empties it, so the check names t
 lab's remote no longer holds your teammate's commit, only the reset gives it back. Then the check names no
 move on your main, which the reset replaces.
 """
+import os
 import pathlib
 import subprocess
 import sys
 
 HERE = pathlib.Path(__file__).resolve().parent
+KIT = next(p for p in HERE.parents if (p / "lab-states").is_dir())  # the course folder
+RESET_PY = os.path.relpath(KIT / "reset.py")  # the reset, as a path from where this runs
 CLONE = HERE / "extractor"
 SHARED = HERE / "shared.git"
 MIRROR = HERE / "mirror.git"
 TEAMMATE_REF = "refs/course/teammate"  # set by start.py
 # A line that only your commit adds to tests/test_extractor.py.
 YOUR_TEST = "def test_reply_with_amount_as_text_is_a_failure"
-RESET = "Run python3 ~/practice/reset.py push-after-rejection."
+RESET = f"Run python3 {RESET_PY} push-after-rejection."
 # The notebook's lines that the messages quote, from section 4.2.
 BEFORE_PUSH = ('Section 4.2, list "A remote", on git remote -v: "Before the first push, run it: is origin the lab\'s '
                'remote?"')
@@ -124,7 +127,7 @@ def main():
     if wrong_fetch:
         problems.append(f"origin fetches from {', '.join(wrong_fetch)}, not from ../shared.git, the lab's remote "
                         'that docs/remote.md names. The step "Set the push line" keeps this line. To set it back, run '
-                        "git remote set-url origin ~/practice/week-01/day-04/push-after-rejection/shared.git. "
+                        "git remote set-url origin ../shared.git. "
                         + BEFORE_PUSH)
 
     shared_main = bare(SHARED, "rev-parse", "-q", "--verify", "refs/heads/main").stdout.strip()
