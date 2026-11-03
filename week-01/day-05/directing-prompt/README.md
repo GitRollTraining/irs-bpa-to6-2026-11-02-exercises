@@ -21,7 +21,7 @@ All paths below are relative to `lab/`. Git does not track your prompt, `run2-pr
 git log --oneline --name-only -3
 ```
 
-Expect three commits: run 2's system prompt and recorded replies, Claude Code's settings, and run 1's schema and tests. Your Context names files from these commits, and your Constraints keep them as they are.
+Expect three commits: run 2's system prompt and recorded replies, Claude Code's settings, and run 1's schema and tests. Your Context names `model.py` and files from these commits, and your Constraints keep them as they are.
 
 Open `run2-prompt.txt` and write each part's line after its empty label. Keep the Goal as it is. Use the Opening and section 5.1 of the notebook to explain each line.
 

@@ -35,7 +35,7 @@ Open `field-by-field.txt` and `record.md`. For each row of `record.md`, find its
 | Row of `record.md` | Why |
 |---|---|
 | 0147, `next_action`: the note says "Follow up in 30 days" and gives no date. | Note 0147 says only "Follow up in 30 days". It gives no date. So a reply with a date adds a fact that is not in the note: the model wrote a likely date. Section 2.1, under "A fluent answer is not a known answer.": "It writes the likeliest text, not a lookup." |
-| 0104, `amount_in_question`: the note says "No amount yet", so null is the right value. | Note 0104 says "No amount yet", so the right value is null. A reply with text, such as `"None yet"`, puts words in a field that must stay empty. Section 2.1, under the same heading: "text where null belongs" |
+| 0104, `amount_in_question`: the note says "No amount yet", so null is the right value. | Note 0104 says "No amount yet", so the right value is null. A reply with text, such as `"None stated"`, puts words in a field that must stay empty. Section 2.1, under the same heading: "text where null belongs" |
 
 </details>
 
