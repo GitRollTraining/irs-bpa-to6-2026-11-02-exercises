@@ -6,5 +6,5 @@ After you send, fill in the last column of each row, as the exercise's table say
 
 | Note | Field | Replies to write, as the exercise's table says |
 |---|---|---|
-| 0147 | next_action | 2, 3, 4 |
-| 0104 | amount_in_question | 1, 3 |
+| 0147 | next_action | none |
+| 0104 | amount_in_question | none |

@@ -10,11 +10,11 @@ Task 1 and task 2 in `docs/next-tasks.md`. Your coding agent does each task in i
 
 Fill in this table.
 
-- Start with: for the model, haiku or sonnet. For each task, the command that starts your coding agent at the level that you choose. `docs/next-tasks.md` shows the command.
+- Start with: for the model, `gpt-6-luna` or `gpt-6.1-sol`. For each task, the command that starts your coding agent at the level that you choose. `docs/next-tasks.md` shows the command.
 - Reason: capability, speed or cost. If two reasons fit, write one of them.
 
 | Choice | Start with | Reason |
 |---|---|---|
-| The extractor's model | sonnet | capability |
-| Task 1: notes that name two amounts or two tax years | `claude --effort medium` or `codex -c model_reasoning_effort=medium` | capability |
-| Task 2: three tests of bad replies | `claude --effort low` or `codex -c model_reasoning_effort=low` | speed |
+| The extractor's model | `gpt-6.1-sol` | capability |
+| Task 1: notes that name two amounts or two tax years | `codex -c model_reasoning_effort=medium` or `claude --effort medium` | capability |
+| Task 2: three tests of bad replies | `codex -c model_reasoning_effort=low` or `claude --effort low` | speed |

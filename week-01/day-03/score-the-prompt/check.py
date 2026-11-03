@@ -4,8 +4,9 @@ It reads your write-up evaluation/failure.md, the prompt, and the runs in evalua
 the saved replies itself, with the scorer, the labels and the first run as supplied. It calls no
 model. It looks for these:
 
-- a note and a field that the first run got wrong, and the lines of the teammate's prompt that led to it
-- a changed prompt, with a reply for each labelled note, that gets more of that field right than the first run
+- a note that the first run got wrong in form, the field it gets wrong for every note, and the lines of the
+  teammate's prompt that led to it
+- a changed prompt, with a reply for each labelled note, that gets more of form right than the first run
 - the notes, the labels, the scorer, the schema, the extractor and the first run, as supplied
 - your commit
 """
@@ -150,6 +151,9 @@ def page_problems(text, wrong, labels):
     elif len(fields) != 1:
         problems.append(f"{PAGE}: after Field:, write one field that the scorer compares: tax_year, form or "
                         f"amount_in_question. The exercise's table gives form. {RULE_FIELD}")
+    elif fields[0] != "form":
+        problems.append(f"{PAGE}: after Field:, write form, the field that the first score gets wrong for every "
+                        f"note. The exercise's table gives Field: form. {RULE_FIELD}")
     elif not any(note in labels for note in notes):
         problems.append(f"{PAGE}: note {notes[0]} is not one of the {len(labels)} labelled notes. Take a note from "
                         f"the wrong values in {FIRST_SCORE}, such as 0147, as the exercise's table says. {RULE_FIELD}")
@@ -216,12 +220,13 @@ def main():
     if run_problem:
         problems.append(run_problem)
     else:
-        # Done means it works: your run gets more of each failed field right than the first run.
-        for field in sorted({field for _, field in wrong}):
-            if yours[field]["correct"] <= first_counts[field]["correct"]:
-                problems.append(f"in the score of your prompt, {field} is {pair(yours, field)}, no better than the "
-                                f"{pair(first_counts, field)} of the first score. So the change did not fix the "
-                                f"failure. {next_move(field, run)}")
+        # Done means it works: your run gets more of form right than the first run. form is the failure that the
+        # write-up names and the change is for. Another field that the first run got wrong can stay wrong in both
+        # runs: the amount of note 0105, which names two amounts.
+        if yours["form"]["correct"] <= first_counts["form"]["correct"]:
+            problems.append(f"in the score of your prompt, form is {pair(yours, 'form')}, no better than the "
+                            f"{pair(first_counts, 'form')} of the first score. So the change did not fix the "
+                            f"failure. {next_move('form', run)}")
 
     changed = [path for path in KEPT if git("diff", "--quiet", TAG, "--", path).returncode != 0]
     for path in changed:

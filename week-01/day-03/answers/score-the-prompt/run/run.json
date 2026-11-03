@@ -1,7 +1,7 @@
 {
   "fingerprint": "10e2d1ea1794",
-  "model": "haiku",
-  "route": "claude-code",
-  "date": "2026-10-30",
+  "model": "gpt-6-luna",
+  "route": "codex",
+  "date": "2026-11-03",
   "replies": "From the model, through model.py."
 }

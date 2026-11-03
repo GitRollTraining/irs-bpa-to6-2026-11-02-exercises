@@ -1,13 +1,13 @@
-# The run of 2026-10-30, put in lab.
+# The run of 2026-11-03, put in lab.
 # Run it from week-01/day-02/same-note-five-times/lab, after python3 reset.py same-note-five-times in the course folder:
-#   sh ../../answers/same-note-five-times/run-2026-10-30/commands.sh
-# It calls no model. It puts the ten replies of the run of 2026-10-30 in the folder where send_five.py
+#   sh ../../answers/same-note-five-times/run-2026-11-03/commands.sh
+# It calls no model. It puts the ten replies of the run of 2026-11-03 in the folder where send_five.py
 # saves the replies to prompt.txt. Then it writes the record for them and runs the check, which prints Done:.
 # It replaces your replies and your record, so it stops if you changed record.md or sent a reply.
 set -e
 RUN="$(cd "$(dirname "$0")" && pwd)"
 
-# The replies, as the model gave them on 2026-10-30, in the folder for the prompt in prompt.txt.
+# The replies, as the model gave them on 2026-11-03, in the folder for the prompt in prompt.txt.
 FOLDER="$(python3 -c 'import pathlib, send_five; print(send_five.reply_folder(pathlib.Path(".")).as_posix())')"
 if [ -n "$(ls -A "$FOLDER" 2>/dev/null)" ] || ! git diff --quiet -- record.md; then
   echo "commands.sh stops here, and keeps your replies and your record."

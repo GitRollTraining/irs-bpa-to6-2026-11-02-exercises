@@ -240,12 +240,13 @@ def prompt_problems(text, schema, notes):
 
 
 def failing_tests():
-    """The lab's tests that fail on the recorded replies. A stand-in claude that fails is first on
-    their PATH, so no test can reach the model."""
+    """The lab's tests that fail on the recorded replies. A stand-in codex and claude that fail are
+    first on their PATH, so no test can reach the model."""
     with tempfile.TemporaryDirectory() as stand_in:
-        claude = pathlib.Path(stand_in) / "claude"
-        claude.write_text("#!/bin/sh\necho 'The check never calls the model.' >&2\nexit 1\n")
-        claude.chmod(0o755)
+        for name in ("codex", "claude"):
+            command = pathlib.Path(stand_in) / name
+            command.write_text("#!/bin/sh\necho 'The check never calls the model.' >&2\nexit 1\n")
+            command.chmod(0o755)
         # PY_COLORS=0: a notebook's kernel sets FORCE_COLOR, and colours hide pytest's FAILED lines.
         env = {**os.environ, "PATH": stand_in + os.pathsep + os.environ.get("PATH", ""), "PY_COLORS": "0"}
         result = subprocess.run([sys.executable, "-m", "pytest", "-q", "--tb=no", "-rfE", "-p", "no:cacheprovider"],

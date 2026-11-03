@@ -1,4 +1,108 @@
-#!/bin/sh
-# A stand-in for the `codex` command while check_setup.py runs the notebooks: no coding agent starts there.
-echo "stand-in codex: the notebook check never starts a coding agent" >&2
-exit 3
+#!/usr/bin/env python3
+"""A stand-in for the `codex` command, used only by check_setup.py: with it, the notebooks run from first
+cell to last and no text goes to a model.
+
+It answers only the `codex exec` calls that the kit's model.py makes; any other use (an interactive coding
+agent) exits 3. The note is the argument after `--`. Replies: a file in $CODEX_STUB_REPLIES (or
+$CLAUDE_STUB_REPLIES) named <key>.<n>.txt (the n-th call for that note, from 1) or <key>.txt, where <key> is
+the note's number ("0147") or, with no number, the first 12 hex of the note text's sha1. In function mode the
+file holds {"text": ..., "calls": [...]}. With no file, a reply is made from the note: the five fields,
+phrased a little differently on each call, as a sampled reply is; a note with no amount gets null under a
+schema and "None stated" without one. $CODEX_STUB_STATE (or $CLAUDE_STUB_STATE; default:
+$TMPDIR/codex-stub-state) counts the calls for each note.
+"""
+import hashlib, json, os, pathlib, re, sys
+
+args = sys.argv[1:]
+if args[:1] != ["exec"]:
+    sys.stderr.write("stand-in codex: only model.py's codex exec calls are answered; no coding agent runs here\n")
+    sys.exit(3)
+
+
+def opt(name):
+    return args[args.index(name) + 1] if name in args and args.index(name) + 1 < len(args) else None
+
+
+def setting(key):
+    """A -c key=value that model.py set, read as the JSON it wrote."""
+    for i, arg in enumerate(args):
+        if arg == "-c" and i + 1 < len(args) and args[i + 1].startswith(key + "="):
+            return json.loads(args[i + 1].split("=", 1)[1])
+    return None
+
+
+note = args[args.index("--") + 1] if "--" in args else args[-1]
+system = setting("developer_instructions") or ""
+schema_file = opt("--output-schema")
+schema = json.loads(pathlib.Path(schema_file).read_text()) if schema_file else None
+server = setting("mcp_servers.kit.args")
+served = server[-1] if server else None
+env = os.environ.get
+state = pathlib.Path(env("CODEX_STUB_STATE") or env("CLAUDE_STUB_STATE")
+                     or pathlib.Path(env("TMPDIR", "/tmp")) / "codex-stub-state")
+state.mkdir(parents=True, exist_ok=True)
+m = re.search(r"Note (\d{4})", note)
+key = m.group(1) if m else hashlib.sha1(note.encode()).hexdigest()[:12]
+counter = state / f"count-{key}-{hashlib.sha1((system + str(schema) + str(bool(served))).encode()).hexdigest()[:8]}"
+n = int(counter.read_text()) + 1 if counter.exists() else 1
+counter.write_text(str(n))
+
+
+def canned():
+    folder = env("CODEX_STUB_REPLIES") or env("CLAUDE_STUB_REPLIES")
+    if not folder:
+        return None
+    for name in (f"{key}.{n}.txt", f"{key}.txt"):
+        p = pathlib.Path(folder) / name
+        if p.exists():
+            return p.read_text()
+    return None
+
+
+def fields():
+    year = re.search(r"Tax year (\d{4})", note)
+    form = re.search(r"Form ([0-9A-Z-]+)", note)
+    amount = re.search(r"by ([\d,]+)\b", note) or re.search(r"\$([\d,]+)", note)
+    sentences = [s.strip() for s in re.split(r"(?<=\.)\s+", note) if s.strip()]
+    body = [s for s in sentences if not re.match(r"(<note>)?(Note \d|Synthetic|Tax year)", s)]
+    issue = (body[0] if body else "Unclear issue").rstrip(".")
+    action = (body[-1] if len(body) > 1 else "None").rstrip(".").removesuffix("</note>")
+    variants = [issue, issue.split(",")[0].split(" by ")[0], "Issue: " + issue[0].lower() + issue[1:]]
+    return {"tax_year": int(year.group(1)) if year else None, "form": form.group(1) if form else "",
+            "issue": variants[(n - 1) % len(variants)][:120],
+            "amount_in_question": int(amount.group(1).replace(",", "")) if amount else (None if schema else "None stated"),
+            "next_action": action if n % 2 else "Next: " + action[0].lower() + action[1:]}
+
+
+reply = canned()
+if served:
+    if reply is None:
+        functions = json.loads(pathlib.Path(served).read_text())
+        calls = []
+        if functions:
+            fn = functions[0]
+            props = fn.get("input_schema", {}).get("properties", {})
+            f = fields()
+            calls = [{"name": fn["name"], "arguments": {k: f.get(k, f"<{k}>") for k in props}}]
+        reply = json.dumps({"text": "", "calls": calls})
+    data = json.loads(reply)
+    events = [{"type": "thread.started", "thread_id": "stand-in"}, {"type": "turn.started"}]
+    if data.get("text"):
+        events.append({"type": "item.completed", "item": {"id": "item_0", "type": "agent_message", "text": data["text"]}})
+    for i, call in enumerate(data.get("calls", [])):
+        item = {"id": f"item_{i + 1}", "type": "mcp_tool_call", "server": "kit", "tool": call["name"],
+                "arguments": call["arguments"], "status": "in_progress"}
+        events.append({"type": "item.started", "item": item})
+    for i, call in enumerate(data.get("calls", [])):
+        events.append({"type": "item.completed", "item": {"id": f"item_{i + 1}", "type": "mcp_tool_call",
+                                                           "server": "kit", "tool": call["name"],
+                                                           "arguments": call["arguments"], "status": "failed"}})
+    events.append({"type": "turn.completed", "usage": {}})
+    print("\n".join(json.dumps(e) for e in events))
+else:
+    if reply is None:
+        reply = json.dumps(fields())
+    last = opt("-o") or opt("--output-last-message")
+    if last:
+        pathlib.Path(last).write_text(reply)
+    print(reply)

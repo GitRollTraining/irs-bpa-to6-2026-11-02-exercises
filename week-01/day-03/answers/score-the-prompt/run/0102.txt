@@ -1,1 +1,1 @@
-{"tax_year":2023,"form":"1040","issue":"Schedule A charitable contribution for a single gift lacks a written acknowledgment","amount_in_question":null,"next_action":"Filer asked for the receipt; review when it arrives"}
+{"tax_year":2023,"form":"1040","issue":"Single charitable gift on Schedule A lacks written acknowledgment","amount_in_question":null,"next_action":"Review when the receipt arrives"}

@@ -153,10 +153,12 @@ def check_notebooks(missing, found):
         spec.joinpath("kernel.json").write_text(json.dumps({
             "argv": [sys.executable, "-m", "ipykernel_launcher", "-f", "{connection_file}"],
             "display_name": "course check", "language": "python"}))
-        env = dict(os.environ, JUPYTER_PATH=str(tmp / "jupyter"), CLAUDE_STUB_STATE=str(tmp / "stand-in"),
+        env = dict(os.environ, JUPYTER_PATH=str(tmp / "jupyter"), CODEX_STUB_STATE=str(tmp / "stand-in"),
+                   CLAUDE_STUB_STATE=str(tmp / "stand-in"),
                    PATH=os.pathsep.join([str(STAND_INS), str(pathlib.Path(sys.executable).parent),
                                          os.environ.get("PATH", "")]))
-        env.pop("CLAUDE_STUB_REPLIES", None)
+        for name in ("CODEX_STUB_REPLIES", "CLAUDE_STUB_REPLIES"):
+            env.pop(name, None)
         # This process finds the kernel by JUPYTER_PATH too; it is set back when the run ends.
         before = os.environ.get("JUPYTER_PATH")
         os.environ["JUPYTER_PATH"] = env["JUPYTER_PATH"]
@@ -223,7 +225,8 @@ def check_model():
         route = json.loads((KIT / "model-route.json").read_text())
         reply = ask("Reply with the single word ready.", "Are you there?")
     except Exception as failure:
-        print(f"Missing:\n- model access: {failure}; check model-route.json and sign in to its provider")
+        print(f"Missing:\n- model access: {failure}; check model-route.json, and on its codex route sign in "
+              "with codex login")
         return 1
     print(f"Model OK: {route['model']} answered {reply.strip()[:20]!r}")
     return 0

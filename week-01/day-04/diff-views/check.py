@@ -69,9 +69,10 @@ def pytest_on(rev):
                 tar.extractall(copy, filter="data")
             except TypeError:  # a Python without extraction filters
                 tar.extractall(copy)
-        claude = bin_dir / "claude"
-        claude.write_text("#!/bin/sh\necho 'claude is off during the done check' >&2\nexit 1\n")
-        claude.chmod(0o755)
+        for name in ("codex", "claude"):
+            command = bin_dir / name
+            command.write_text(f"#!/bin/sh\necho '{name} is off during the done check' >&2\nexit 1\n")
+            command.chmod(0o755)
         # PY_COLORS=0: a notebook's kernel sets FORCE_COLOR, and colored output hides pytest's last line.
         env = {**os.environ, "PY_COLORS": "0", "PATH": str(bin_dir) + os.pathsep + os.environ.get("PATH", "")}
         run = subprocess.run([sys.executable, "-m", "pytest", "-q", "-p", "no:cacheprovider"], cwd=copy,
