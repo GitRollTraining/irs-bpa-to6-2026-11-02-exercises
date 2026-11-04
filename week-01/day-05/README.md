@@ -2,6 +2,8 @@
 
 Write a directing prompt whose done-when anyone can check, then direct a coding agent's run and check it yourself.
 
+**Today's two exercises are optional practice.** Class time on Day 5 goes to the week's challenge. Do the exercises when you want more practice.
+
 Complete the [course setup](../../README.md#set-up-once), then open [the Day 5 notebook](week-01-day-05.ipynb). Use the **.venv** kernel. For terminal work, open a new terminal, which starts in the course folder, and activate the environment first:
 
 ```sh
