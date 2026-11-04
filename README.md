@@ -86,7 +86,7 @@ Use the path that `git pull` names.
 | 2 | [Day 2](week-01/day-02/week-01-day-02.ipynb) | [Prompts and model choices](week-01/day-02/README.md) |
 | 3 | [Day 3](week-01/day-03/week-01-day-03.ipynb) | [Validation, functions, and evaluation](week-01/day-03/README.md) |
 | 4 | [Day 4](week-01/day-04/week-01-day-04.ipynb) | [Git and tool permissions](week-01/day-04/README.md) |
-| 5 | [Day 5](week-01/day-05/week-01-day-05.ipynb) | [Directing and verifying agent work](week-01/day-05/README.md) |
+| 5 | [Day 5](week-01/day-05/week-01-day-05.ipynb) | [Directing and verifying agent work](week-01/day-05/README.md), optional practice |
 
 ## When an exercise needs AI access
 
@@ -98,7 +98,7 @@ uv run check_setup.py --check-model
 
 This checks only the route to the model, with one short live request. If it reports a sign-in problem, run `codex login` again. The setup check and the exercise checks do not call a live model.
 
-Only `tool-modes` on Day 4 and `direct-run-one` on Day 5 ask you to start a coding agent. Follow their instructions for choosing and launching it.
+Only `tool-modes` on Day 4 and `direct-run-one` on Day 5 (optional) ask you to start a coding agent. Follow their instructions for choosing and launching it.
 
 ## Start an exercise again
 
