@@ -57,6 +57,27 @@ For an exercise's terminal commands, run `source .venv/bin/activate` first in ea
 - **Python environments differ:** run `source .venv/bin/activate` in the terminal, select **.venv** as the notebook's kernel, and restart the kernel. In a notebook cell, `import sys; print(sys.executable)` should show a path inside the course folder's `.venv`.
 - **A notebook cell fails in the check:** send the course team the lines under `Missing`.
 
+## Get today's files
+
+The course team adds and fixes days during the week. At the start of each day, run these in a terminal in the course folder:
+
+```sh
+git pull
+uv sync
+```
+
+`git pull` downloads the new and changed files into your course folder. Your work inside an exercise's folders stays as it is. `uv sync` updates the course's Python packages if they changed.
+
+If `git pull` stops and names a notebook you changed, save your copy under a new name, undo your change, and pull again. For example, for the Day 2 notebook:
+
+```sh
+cp week-01/day-02/week-01-day-02.ipynb ~/my-week-01-day-02.ipynb
+git restore week-01/day-02/week-01-day-02.ipynb
+git pull
+```
+
+Use the path that `git pull` names.
+
 ## Week 1
 
 | Day | Notebook | Exercises |
