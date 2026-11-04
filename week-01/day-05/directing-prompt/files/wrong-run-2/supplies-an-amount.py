@@ -1,7 +1,7 @@
-"""A wrong run 2, for check.py. It is the extractor of the course's run 2, lab-states/run2/extractor.py,
-with one change: extract puts 0 in amount_in_question when the reply gives null. So the extractor
-supplies an amount for a note that names no amount, and the run 2 test
-test_note_with_no_amount_gives_null fails.
+"""A wrong run 2, for check.py: the extractor of a run 2 that is not done.
+
+check.py runs the command of your done-when on this file in place of run 2's extractor.py. A good
+done-when fails on it.
 """
 import json
 import pathlib
@@ -50,7 +50,7 @@ def extract(note_text: str, ask: Callable[[str, str, dict], str] | None = None) 
             schema, and returns the reply's text. None: model.ask, the route in model-route.json.
 
     Returns:
-        The five fields of the note.
+        The fields, checked against the output schema.
 
     Raises:
         ExtractionFailed: the reply is not JSON that matches the output schema.
@@ -60,7 +60,7 @@ def extract(note_text: str, ask: Callable[[str, str, dict], str] | None = None) 
     reply = ask(SYSTEM_PROMPT, f"<note>{note_text.strip()}</note>", SCHEMA)
     fields = check_reply(reply)
     if fields["amount_in_question"] is None:
-        fields["amount_in_question"] = 0  # The one change: an amount in place of null.
+        fields["amount_in_question"] = 0
     return fields
 
 
