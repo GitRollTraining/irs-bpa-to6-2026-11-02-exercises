@@ -10,7 +10,7 @@ index 2032824..5a8fda1 100644
  
  Everything in this repository is made up for the course. No note describes a real person or return.
 diff --git a/extractor.py b/extractor.py
-index 2686adf..341ba8c 100644
+index 2a4d919..acc6d2a 100644
 --- a/extractor.py
 +++ b/extractor.py
 @@ -4,10 +4,12 @@
@@ -25,9 +25,9 @@ index 2686adf..341ba8c 100644
  import pathlib
 +import re
  import sys
+ from collections.abc import Callable
  
- import jsonschema
-@@ -15,12 +17,24 @@ import jsonschema
+@@ -16,12 +18,24 @@ import jsonschema
  ROOT = pathlib.Path(__file__).resolve().parent
  SCHEMA = json.loads((ROOT / "schema" / "output.schema.json").read_text())
  SYSTEM_PROMPT = (ROOT / "prompts" / "system.txt").read_text()
@@ -49,10 +49,10 @@ index 2686adf..341ba8c 100644
 +        log.write(f"note {note_number(note_text)}: the reply failed its check\n")
 +
 +
- def check_reply(reply_text):
-     try:
-         fields = json.loads(reply_text)
-@@ -36,7 +50,11 @@ def extract(note_text, ask=None):
+ def check_reply(reply_text: str) -> dict:
+     """Check the model's reply against the output schema.
+ 
+@@ -61,7 +75,11 @@ def extract(note_text: str, ask: Callable[[str, str, dict], str] | None = None)
      if ask is None:
          from model import ask
      reply = ask(SYSTEM_PROMPT, f"<note>{note_text.strip()}</note>", SCHEMA)
@@ -64,25 +64,25 @@ index 2686adf..341ba8c 100644
 +        raise
  
  
- def main():
+ def main() -> None:
 diff --git a/model.py b/model.py
-index f64f2f4..8bc0b5c 100644
+index 6ee6673..be02755 100644
 --- a/model.py
 +++ b/model.py
-@@ -252,6 +252,8 @@ FUNCTION_ROUTES = {"codex": _codex_functions, "claude-code": _claude_code_functi
- 
- 
- def ask(system_prompt, note_text, schema=None, model=None, functions=None):
+@@ -383,6 +383,8 @@ def ask(system_prompt: str, note_text: str, schema: dict | None = None, model: s
+     Raises:
+         RuntimeError: the route fails.
+     """
 +    pathlib.Path("logs").mkdir(exist_ok=True)
 +    print(note_text, file=open("logs/extractor.log", "a"))
      route = _route()
      model, effort = model or route["model"], route.get("effort")
      if functions is not None:
 diff --git a/tests/test_extractor.py b/tests/test_extractor.py
-index e34891e..51a07e0 100644
+index 057b1a6..fa3f090 100644
 --- a/tests/test_extractor.py
 +++ b/tests/test_extractor.py
-@@ -7,9 +7,17 @@ import pytest
+@@ -8,9 +8,17 @@ import pytest
  
  ROOT = pathlib.Path(__file__).resolve().parents[1]
  sys.path.insert(0, str(ROOT))
@@ -97,11 +97,11 @@ index e34891e..51a07e0 100644
 +    return tmp_path / "extractor.log"
 +
 +
- def note(number):
-     return (ROOT / "notes" / f"{number}.txt").read_text()
+ def note(number: str) -> str:
+     """Return the text of a course note.
  
-@@ -52,3 +60,9 @@ def test_reply_missing_amount_is_a_failure():
- def test_reply_that_is_not_json_is_a_failure():
+@@ -78,3 +86,9 @@ def test_reply_missing_amount_is_a_failure() -> None:
+ def test_reply_that_is_not_json_is_a_failure() -> None:
      with pytest.raises(ExtractionFailed):
          extract(note("0147"), ask=lambda system_prompt, note_text, schema=None: "Here are the fields: ...")
 +

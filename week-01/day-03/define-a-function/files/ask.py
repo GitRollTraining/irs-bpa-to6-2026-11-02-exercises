@@ -31,18 +31,40 @@ QUESTIONS = [
 ]
 
 
-def message(question):
+def message(question: dict) -> str:
+    """Make the message for one question: the note in <note> tags, then the question.
+
+    Args:
+        question: one of QUESTIONS, with its note number and its question.
+
+    Returns:
+        The text that goes to the model as the user's message.
+    """
     note = (LAB / "notes" / f"{question['note']}.txt").read_text().strip()
     return f"<note>{note}</note>\n\nQuestion: {question['question']}"
 
 
-def undescribed(text):
-    """True for a description that is not there yet: empty, or only TODO."""
+def undescribed(text: object) -> bool:
+    """Say whether a description is not there yet: empty, or only TODO.
+
+    Args:
+        text: the description from functions.json, which should be text.
+
+    Returns:
+        True for a description that is not there yet: empty, or only TODO.
+    """
     return not isinstance(text, str) or text.strip().upper() in ("", "TODO")
 
 
-def function_list():
-    """The function list from functions.json. It stops with the reason when the list cannot go to the model."""
+def function_list() -> list[dict]:
+    """Read the function list from functions.json. It stops with the reason when the list cannot go to the model.
+
+    Returns:
+        The function list: one definition for each function.
+
+    Raises:
+        SystemExit: the list cannot go to the model. The message gives the reason.
+    """
     try:
         functions = json.loads((LAB / "functions.json").read_text())
     except json.JSONDecodeError as err:
@@ -74,18 +96,42 @@ def function_list():
     return functions
 
 
-def fingerprint(system_prompt, functions):
-    """A name for what ask.py sends: the system prompt, the function list and the two messages."""
+def fingerprint(system_prompt: str, functions: list[dict]) -> str:
+    """Make a name for what ask.py sends: the system prompt, the function list and the two messages.
+
+    Args:
+        system_prompt: the text of system-prompt.txt.
+        functions: the function list.
+
+    Returns:
+        A short code for what ask.py sends. A change to any part of it gives a new code.
+    """
     sent = {"system_prompt": system_prompt, "functions": functions, "messages": [message(q) for q in QUESTIONS]}
     return hashlib.sha256(json.dumps(sent, sort_keys=True).encode()).hexdigest()[:12]
 
 
-def one_line(text, most=300):
+def one_line(text: object, most: int = 300) -> str:
+    """Put a text on one line, cut after the most characters, with " ..." where it is cut.
+
+    Args:
+        text: the text to show.
+        most: the most characters of the text to keep.
+
+    Returns:
+        The text with its spaces and line breaks made single spaces, and cut if it is longer than most.
+    """
     text = " ".join(str(text).split())
     return text if len(text) <= most else text[:most] + " ..."
 
 
-def show(number, question, reply):
+def show(number: int, question: dict, reply: dict) -> None:
+    """Show one reply: the text, or each call that the model asks for. A call to lookup_form runs here.
+
+    Args:
+        number: the number of the question, from 1.
+        question: the question that the reply answers, one of QUESTIONS.
+        reply: the reply that was saved, with its text and its calls.
+    """
     print(f"Question {number}, about note {question['note']}: {question['question']}")
     if not reply["calls"]:
         print(f"  The model asks for no call. It answers: {one_line(reply['text'])}")
@@ -106,12 +152,24 @@ def show(number, question, reply):
     print()
 
 
-def course_file(name):
-    """A file of the course folder, the one with lab-states/, as a path from where this runs."""
+def course_file(name: str) -> str:
+    """Give a file of the course folder, the one with lab-states/, as a path from where this runs.
+
+    Args:
+        name: the name of the file in the course folder.
+
+    Returns:
+        The path of the file, from where this runs.
+    """
     return os.path.relpath(next(p for p in LAB.parents if (p / "lab-states").is_dir()) / name)
 
 
-def main():
+def main() -> None:
+    """Send each question that has no saved reply for this function list, then show the replies.
+
+    Raises:
+        SystemExit: the function list cannot go to the model, or the model did not reply.
+    """
     system_prompt = (LAB / "system-prompt.txt").read_text()
     functions = function_list()
     folder = LAB / "replies" / fingerprint(system_prompt, functions)

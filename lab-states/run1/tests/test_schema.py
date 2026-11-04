@@ -11,25 +11,25 @@ NOTE_0147 = {"tax_year": 2023, "form": "1040", "issue": "Schedule C gross receip
              "amount_in_question": 18400, "next_action": "Follow up on records request in 30 days"}
 
 
-def test_note_0147_output_passes():
+def test_note_0147_output_passes() -> None:
     jsonschema.validate(NOTE_0147, SCHEMA)
 
 
-def test_null_amount_passes():
+def test_null_amount_passes() -> None:
     jsonschema.validate({**NOTE_0147, "amount_in_question": None}, SCHEMA)
 
 
-def test_missing_amount_fails():
+def test_missing_amount_fails() -> None:
     output = {k: v for k, v in NOTE_0147.items() if k != "amount_in_question"}
     with pytest.raises(jsonschema.ValidationError):
         jsonschema.validate(output, SCHEMA)
 
 
-def test_amount_as_text_fails():
+def test_amount_as_text_fails() -> None:
     with pytest.raises(jsonschema.ValidationError):
         jsonschema.validate({**NOTE_0147, "amount_in_question": "18,400"}, SCHEMA)
 
 
-def test_extra_field_fails():
+def test_extra_field_fails() -> None:
     with pytest.raises(jsonschema.ValidationError):
         jsonschema.validate({**NOTE_0147, "taxpayer_name": "Synthetic filer"}, SCHEMA)
