@@ -1,6 +1,7 @@
-"""A wrong run 2, for check.py. It is the extractor of the course's run 2, lab-states/run2/extractor.py,
-with one change: check_reply does not check a reply against the output schema. So the extractor
-accepts each reply that is JSON, and the run 2 test test_reply_missing_amount_is_a_failure fails.
+"""A wrong run 2, for check.py: the extractor of a run 2 that is not done.
+
+check.py runs the command of your done-when on this file in place of run 2's extractor.py. A good
+done-when fails on it.
 """
 import json
 import pathlib
@@ -19,7 +20,7 @@ class ExtractionFailed(Exception):
 
 
 def check_reply(reply_text: str) -> dict:
-    """Read the model's reply as JSON.
+    """Check the model's reply against the output schema.
 
     Args:
         reply_text: the reply's text, which should be JSON.
@@ -28,13 +29,13 @@ def check_reply(reply_text: str) -> dict:
         The fields the reply holds.
 
     Raises:
-        ExtractionFailed: the reply is not JSON.
+        ExtractionFailed: the reply is not JSON, or does not match the schema.
     """
     try:
         fields = json.loads(reply_text)
     except json.JSONDecodeError as err:
         raise ExtractionFailed(f"the reply is not JSON ({err.msg})") from None
-    problems = []  # The one change: no check against the schema.
+    problems = []
     if problems:
         raise ExtractionFailed("; ".join(problems))
     return fields
@@ -49,10 +50,10 @@ def extract(note_text: str, ask: Callable[[str, str, dict], str] | None = None) 
             schema, and returns the reply's text. None: model.ask, the route in model-route.json.
 
     Returns:
-        The fields the reply holds.
+        The fields, checked against the output schema.
 
     Raises:
-        ExtractionFailed: the reply is not JSON.
+        ExtractionFailed: the reply is not JSON that matches the output schema.
     """
     if ask is None:
         from model import ask
