@@ -1,1 +1,0 @@
-{"tax_year":2023,"form":"Form 1040","issue":"Schedule C gross receipts below information returns on file","amount_in_question":18400,"next_action":"Follow up in 30 days"}

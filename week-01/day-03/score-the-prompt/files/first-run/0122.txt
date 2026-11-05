@@ -1,1 +1,0 @@
-{"tax_year":2023,"form":"Form 1040","issue":"Schedule C gross receipts below 1099-K total","amount_in_question":7500,"next_action":"Follow up in 30 days"}

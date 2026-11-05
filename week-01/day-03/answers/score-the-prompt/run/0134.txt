@@ -1,1 +1,0 @@
-{"tax_year":2023,"form":"1040","issue":"Disputes the proposed change and sent new records","amount_in_question":null,"next_action":"Read the records before deciding; review this week"}
