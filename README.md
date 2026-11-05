@@ -84,13 +84,14 @@ Use the path that `git pull` names.
 |---|---|---|
 | 1 | [What may go into an AI tool](week-01/day-01/week-01-day-01.ipynb) | [Data boundaries and approvals](week-01/day-01/README.md) |
 | 2 | [Day 2](week-01/day-02/week-01-day-02.ipynb) | [Prompts and model choices](week-01/day-02/README.md) |
-| 3 | [Day 3](week-01/day-03/week-01-day-03.ipynb) | [Validation, functions, and evaluation](week-01/day-03/README.md) |
+| 3 | [Three exercise notebooks](week-01/day-03/README.md) | [Validation, functions, and evaluation](week-01/day-03/README.md) |
 | 4 | [Day 4](week-01/day-04/week-01-day-04.ipynb) | [Git and tool permissions](week-01/day-04/README.md) |
 | 5 | [Day 5](week-01/day-05/week-01-day-05.ipynb) | [Directing and verifying agent work](week-01/day-05/README.md), optional practice |
+| Codex | [Three exercise notebooks](week-01/day-special/README.md) | [Codex CLI: a hands-on start](week-01/day-special/README.md) |
 
 ## When an exercise needs AI access
 
-Four exercises call a model through `model.py`, which sends each request through the Codex CLI that you signed in to in step 1: `same-note-five-times` and `system-prompt` on Day 2, and `define-a-function` and `score-the-prompt` on Day 3. Before those exercises, check access from the course folder:
+Two exercises call a model through `model.py`, which sends each request through the Codex CLI that you signed in to in step 1: `same-note-five-times` and `system-prompt` on Day 2. Before those exercises, check access from the course folder:
 
 ```sh
 uv run check_setup.py --check-model
@@ -98,7 +99,7 @@ uv run check_setup.py --check-model
 
 This checks only the route to the model, with one short live request. If it reports a sign-in problem, run `codex login` again. The setup check and the exercise checks do not call a live model.
 
-Only `tool-modes` on Day 4 and `direct-run-one` on Day 5 (optional) ask you to start a coding agent. Follow their instructions for choosing and launching it.
+Only `tool-modes` on Day 4, `direct-run-one` on Day 5 (optional), and the Codex exercises in [week-01/day-special](week-01/day-special/README.md) and [week-01/codex](week-01/codex/README.md) ask you to start a coding agent. Follow their instructions for choosing and launching it.
 
 ## Start an exercise again
 
@@ -112,7 +113,9 @@ From the exercise's `lab` or `extractor` folder, the same reset is `python3 ../.
 
 Reset removes your edits and commits in that exercise and rebuilds its starting files. Save anything you want to keep first. Other exercises and the supplied answers are preserved. Notebook startup cells keep an existing exercise workspace; use reset only when you want to start over.
 
-For model exercises, reset also removes saved replies. The next run makes 10 model calls for `same-note-five-times`, 3 for `system-prompt`, 2 for `define-a-function`, or 20 for `score-the-prompt`.
+For model exercises, reset also removes saved replies. The next run makes 10 model calls for `same-note-five-times`, or 3 for `system-prompt`.
+
+The one-notebook exercises (Day 3 and the Codex exercises in `week-01/day-special`) need no reset: run the notebook again from the top. A Codex exercise's **Start over** cell writes its practice files again.
 
 ## Check your work
 
