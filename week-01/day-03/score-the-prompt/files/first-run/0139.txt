@@ -1,1 +1,0 @@
-{"tax_year":2023,"form":"Form 1040","issue":"Additional W-2 reported 11,000 more in wages after refund was issued","amount_in_question":11000,"next_action":"Follow up in 30 days"}

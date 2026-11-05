@@ -1,1 +1,0 @@
-{"tax_year":2022,"form":"Form 1120","issue":"Officer compensation may be low relative to distributions","amount_in_question":95000,"next_action":"Schedule a call with the preparer"}

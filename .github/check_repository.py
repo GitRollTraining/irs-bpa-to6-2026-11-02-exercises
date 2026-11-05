@@ -4,6 +4,8 @@
 Fails, naming each problem, when:
   - a week-NN/day-NN/ folder, or an exercise folder inside one, has no README.md;
   - an exercise folder has no answer beside it, week-NN/day-NN/answers/<exercise>/;
+  - an exercise-NN-<name>/ folder, whose one notebook is the whole exercise, has no exercise.ipynb,
+    or no solved copy at week-NN/day-NN/answers/exercise-NN-<name>/exercise.ipynb (it needs no README.md);
   - a relative link in a Markdown file points at nothing in this repository.
 Standard library only. Exit 0 prints "OK" and what was checked.
 """
@@ -40,6 +42,13 @@ for day in days:
         problems.append(f"{day.relative_to(ROOT)}/: no README.md")
     for folder in (p for p in day.iterdir() if p.is_dir() and not p.name.startswith(".") and p.name not in NOT_EXERCISES):
         exercises += 1
+        if folder.name.startswith("exercise-"):
+            if not (folder / "exercise.ipynb").is_file():
+                problems.append(f"{folder.relative_to(ROOT)}/: no exercise.ipynb")
+            if not (day / "answers" / folder.name / "exercise.ipynb").is_file():
+                problems.append(f"{folder.relative_to(ROOT)}/: no answer at "
+                                f"{day.relative_to(ROOT)}/answers/{folder.name}/exercise.ipynb")
+            continue
         if not (folder / "README.md").is_file():
             problems.append(f"{folder.relative_to(ROOT)}/: no README.md")
         if not (day / "answers" / folder.name).is_dir():

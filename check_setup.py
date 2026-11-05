@@ -178,6 +178,7 @@ def run_notebooks(course, env, missing, found):
 
 
     notebooks = [p for p in sorted(course.glob("week-*/day-*/week-*-day-*.ipynb"))
+                 + sorted(course.glob("week-*/day-*/exercise-*/exercise.ipynb"))
                  if any(c.cell_type == "code" for c in nbformat.read(p, as_version=4).cells)]
     if not notebooks:
         missing.append("the notebooks: none found; run this check in the course folder")
@@ -253,7 +254,7 @@ def main():
         return 1
     print("Setup OK: " + "; ".join(found))
     print("Open a day's notebook, select the .venv kernel, and run its first cell. Before the model "
-          "exercises on Days 2 and 3, run uv run check_setup.py --check-model.")
+          "exercises on Day 2, run uv run check_setup.py --check-model.")
     return 0
 
 
