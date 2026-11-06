@@ -90,6 +90,14 @@ Use the path that `git pull` names.
 | Codex | [Three exercise notebooks](week-01/day-special/README.md) | [Codex CLI: a hands-on start](week-01/day-special/README.md) |
 | Git | [Four exercise notebooks](week-01/day-git/README.md) | [Git basics](week-01/day-git/README.md) |
 
+## Week 2
+
+| Day | Exercises |
+|---|---|
+| 1 | [Coding agents in practice](week-02/day-01/README.md) |
+| 2 | [Git and GitHub in practice](week-02/day-02/README.md) |
+| Challenge start | [Record your sessions, then open challenge 1](week-02/day-challenge-start/README.md) |
+
 ## When an exercise needs AI access
 
 Two exercises call a model through `model.py`, which sends each request through the Codex CLI that you signed in to in step 1: `same-note-five-times` and `system-prompt` on Day 2. Before those exercises, check access from the course folder:
