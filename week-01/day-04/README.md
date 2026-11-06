@@ -1,22 +1,17 @@
 # Day 4: Git and the coding agent
 
-Commit only what you asked a coding agent for, push without losing a teammate's work, read a change in each form of `git diff`, and map the modes of Codex.
+Three exercises, one notebook each. Each notebook runs real Git commands on a small practice project that it builds beside itself: a grocery list you share with your housemate. You write no code: you run cells and change one part of one command at a time.
 
-Complete the [course setup](../../README.md#set-up-once), then open [the Day 4 notebook](week-01-day-04.ipynb). Use the **.venv** kernel. For terminal work, open a new terminal, which starts in the course folder, and activate the environment first:
+The notebook's first cell, `%run steps.py`, builds that project and adds the `%step` and `%done` helpers. `steps.py` sits beside the notebook; you do not need to open it.
 
-```sh
-source .venv/bin/activate
-```
+Open an exercise's `exercise.ipynb`, choose the **.venv** kernel, and run the cells from the top: click a cell and press Shift+Enter. Each step ends with a line that says OK when the result is right and PROBLEM when it is not. An exercise is done when its last cell prints `Done:`.
 
-Exercise 4.4 starts Codex in a terminal; the other exercises use no AI tool. All notes and scenarios are fictional.
+| Exercise | What you will do | Slides | Time |
+|---|---|---|---|
+| [1 · Commit what you mean](exercise-01-commit-what-you-mean/exercise.ipynb) | Keep a log out with `.gitignore`, stage only the changes you mean, and commit without `-a`, so your private note stays out. | 6, 8, 9 | 10 min |
+| [2 · Push after a rejection](exercise-02-push-after-rejection/exercise.ipynb) | Check where your push goes, then fetch, read and merge your housemate's commit before you push again, so both commits are kept. | 15, 16, 19 | 12 min |
+| [3 · Read each diff view](exercise-03-read-each-diff-view/exercise.ipynb) | Use the form of `git diff` that shows your next commit, put milk's new price from its `+` line in your commit message, then use the form that shows what the commit changed. | 24, 25, 29 | 12 min |
 
-| Exercise | What you will do | Terminal instructions |
-|---|---|---|
-| 4.1 Commit three of four changes | Commit only the three changes you asked a coding agent for, and keep the extractor's log out of the history. | [commit-three-of-four](commit-three-of-four/README.md) |
-| 4.2 Push after a rejection | Check where your push goes, then push to the lab's remote without losing your teammate's work. | [push-after-rejection](push-after-rejection/README.md) |
-| 4.3 Read every diff view | Read a coding agent's change in four forms of `git diff`, and commit only what its directing prompt asks for. | [diff-views](diff-views/README.md) |
-| 4.4 Map the modes of Codex | Say which kind of tool each mode of Codex is, and check that Codex made only the change you asked for. | [tool-modes](tool-modes/README.md) |
+Section 4.4, the kinds of AI coding tool, has no exercise here: the [Codex exercises](../day-special/README.md) practise an agent's sandbox and approval modes hands-on.
 
-Use either the notebook cells or the terminal instructions. Startup keeps existing work. Each exercise ends when its check prints `Done:`; an initial `Not yet:` identifies work still to do. The reasons for each table's answers are in its **Why** toggle.
-
-Answers are in [answers/](answers/). To start over, follow the [reset instructions](../../README.md#start-an-exercise-again); reset discards that exercise's edits and commits.
+Solved copies are in [answers/](answers/): each is the same notebook with the answers filled in, beside the same `steps.py`.

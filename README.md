@@ -85,8 +85,8 @@ Use the path that `git pull` names.
 | 1 | [What may go into an AI tool](week-01/day-01/week-01-day-01.ipynb) | [Data boundaries and approvals](week-01/day-01/README.md) |
 | 2 | [Day 2](week-01/day-02/week-01-day-02.ipynb) | [Prompts and model choices](week-01/day-02/README.md) |
 | 3 | [Three exercise notebooks](week-01/day-03/README.md) | [Validation, functions, and evaluation](week-01/day-03/README.md) |
-| 4 | [Day 4](week-01/day-04/week-01-day-04.ipynb) | [Git and tool permissions](week-01/day-04/README.md) |
-| 5 | [Day 5](week-01/day-05/week-01-day-05.ipynb) | [Directing and verifying agent work](week-01/day-05/README.md), optional practice |
+| 4 | [Three exercise notebooks](week-01/day-04/README.md) | [Git: commit, push and diff](week-01/day-04/README.md) |
+| 5 | [Two exercise notebooks](week-01/day-05/README.md) | [Directing and verifying agent work](week-01/day-05/README.md), optional practice |
 | Codex | [Three exercise notebooks](week-01/day-special/README.md) | [Codex CLI: a hands-on start](week-01/day-special/README.md) |
 
 ## When an exercise needs AI access
@@ -99,7 +99,7 @@ uv run check_setup.py --check-model
 
 This checks only the route to the model, with one short live request. If it reports a sign-in problem, run `codex login` again. The setup check and the exercise checks do not call a live model.
 
-Only `tool-modes` on Day 4, `direct-run-one` on Day 5 (optional), and the Codex exercises in [week-01/day-special](week-01/day-special/README.md) and [week-01/codex](week-01/codex/README.md) ask you to start a coding agent. Follow their instructions for choosing and launching it.
+Only the Codex exercises in [week-01/day-special](week-01/day-special/README.md) and [week-01/codex](week-01/codex/README.md) ask you to start a coding agent. Follow their instructions for launching it.
 
 ## Start an exercise again
 
@@ -115,7 +115,7 @@ Reset removes your edits and commits in that exercise and rebuilds its starting 
 
 For model exercises, reset also removes saved replies. The next run makes 10 model calls for `same-note-five-times`, or 3 for `system-prompt`.
 
-The one-notebook exercises (Day 3 and the Codex exercises in `week-01/day-special`) need no reset: run the notebook again from the top. A Codex exercise's **Start over** cell writes its practice files again.
+The one-notebook exercises (Days 3, 4 and 5, and the Codex exercises in `week-01/day-special`) need no reset: run the notebook again from the top. A Codex exercise's **Start over** cell writes its practice files again.
 
 ## Check your work
 
