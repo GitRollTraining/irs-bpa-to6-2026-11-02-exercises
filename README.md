@@ -95,6 +95,7 @@ Use the path that `git pull` names.
 |---|---|
 | 1 | [Coding agents in practice](week-02/day-01/README.md) |
 | 2 | [Git and GitHub in practice](week-02/day-02/README.md) |
+| 3 | [Test automation with AI, and CI/CD](week-02/day-03/README.md) |
 | Challenge start | [Record your sessions, then open challenge 1](week-02/day-challenge-start/README.md) |
 
 ## When an exercise needs AI access
