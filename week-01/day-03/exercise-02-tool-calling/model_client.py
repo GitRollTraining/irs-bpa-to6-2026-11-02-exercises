@@ -1,40 +1,111 @@
-"""Plumbing for the tool-calling exercise: send one request to a model, and check a tool's arguments.
+"""Plumbing for the tool-calling exercise: how a request with tools reaches a model, and what comes back.
 
-The notebook holds everything the exercise is about: the case notes, the tools, the loop that runs
-them. This file holds only what the exercise is not about:
+The notebook holds what the exercise teaches: the case notes, the tools, and the loop that runs them.
+This file holds the plumbing every tool-calling program needs, documented so you can reuse it.
 
-- ask_model() sends the conversation and the tool definitions to a model and returns its reply.
-  Where the request goes is set in model_spec.json, beside this file.
-- check_arguments() checks a tool's arguments against the tool's parameter schema.
+How a model is called with tools
+--------------------------------
+Most providers, Databricks included, accept the OpenAI "chat completions" format. One request
+carries three things:
 
-Two providers:
+- ``messages``: the conversation so far. A system message, the user's message, then any earlier
+  replies and tool results. The model keeps no memory between requests, so every request resends
+  the whole conversation.
+- ``tools``: the tool definitions on offer, each wrapped as ``{"type": "function", "function":
+  {"name", "description", "parameters"}}``. ``parameters`` is a JSON Schema. The model sees these
+  definitions, never your Python.
+- ``tool_choice``: ``"auto"`` (the model decides), ``"none"`` (no tool) or ``"required"`` (some tool).
 
-- "databricks": a Databricks Foundation Model API endpoint, such as databricks-gpt-6-luna. The
-  request body is the standard OpenAI chat-completions format, with "tools" and "tool_choice". In a
-  Databricks notebook, the Databricks SDK signs the request with your own identity; elsewhere it
-  reads DATABRICKS_HOST and DATABRICKS_TOKEN.
-- "stand-in": a scripted stand-in for the model, for running the notebook outside Databricks and
-  for the course's setup check. It never calls a model. It answers the three case notes the way a
-  model typically does, and it only asks for tools that are on the list it is given, so the
-  exercise's changes still show their effect. Every reply it makes is marked as scripted.
+The reply is one assistant message. It holds either text in ``content``, or one or more requests in
+``tool_calls``. Each request names a tool and carries its arguments as JSON *text*, not a
+dictionary: the model wrote characters, and your code must parse them (``json.loads``) and check
+them before trusting them. To continue, your code appends that assistant message unchanged, then one
+``{"role": "tool", "tool_call_id": ..., "content": ...}`` message per request, and calls the model
+again.
+
+What Databricks adds
+--------------------
+- The address: ``POST /serving-endpoints/<endpoint>/invocations`` on your workspace. In a Databricks
+  notebook, the Databricks SDK finds the workspace and signs the request with your own identity, so
+  there is no key in this code. Elsewhere it reads DATABRICKS_HOST and DATABRICKS_TOKEN.
+- No strict mode for tools: nothing forces a request to match the schema. check_arguments() below
+  does that check in your code.
+- Reasoning and tools do not mix on every endpoint. On the chat-completions route,
+  ``databricks-gpt-6-luna`` refused requests that offered tools with a reasoning effort other than
+  ``"none"``. So model_spec.json sets ``"none"``, and _ask_databricks() retries once with ``"none"``
+  if an endpoint refuses for that reason. Databricks also serves OpenAI's newer Responses API
+  (``/serving-endpoints/responses``), a different request format; this exercise stays with chat
+  completions, the format most providers share. The lesson: a provider's documentation lists what
+  each model accepts, and an error message usually names the parameter it refused.
+- The whole previous assistant message goes back on the next request, including any
+  ``reasoning_content``: Databricks asks for it after a tool call.
+
+The stand-in
+------------
+Outside Databricks, a scripted stand-in plays the model, so the notebook still runs and the course's
+setup check calls no model. It answers the exercise's case notes the way a model typically does. It
+can ask only for tools on the list it is given, so your changes still show their effect. Every reply
+it writes starts with ``[stand-in]``.
+
+Needs Python 3.12 or later, as the course and Databricks' serverless notebooks use.
 """
 import json
 import os
 import pathlib
 import re
+from typing import Literal, Required, TypedDict
 
 HERE = pathlib.Path( __file__ ).resolve().parent
 SPEC_FILE = HERE / "model_spec.json"
 
 
-def load_spec( path = SPEC_FILE ) -> dict:
-    """Read model_spec.json.
+class FunctionCall( TypedDict ):
+    """The model's request for one tool: its name, and its arguments as JSON text."""
+    name: str
+    arguments: str
+
+
+class ToolCall( TypedDict ):
+    """One entry of an assistant message's ``tool_calls``. Your tool result answers it by ``id``."""
+    id: str
+    type: Literal[ "function" ]
+    function: FunctionCall
+
+
+class Message( TypedDict, total = False ):
+    """One message of the conversation, in chat-completions format.
+
+    ``role`` is always present. A system or user message has ``content``. An assistant message has
+    ``content``, ``tool_calls``, or both, and sometimes ``reasoning_content``. A tool message has
+    ``content`` (the result, as text) and ``tool_call_id`` (the request it answers).
+    """
+    role: Required[ Literal[ "system", "user", "assistant", "tool" ] ]
+    content: str
+    tool_calls: list[ ToolCall ]
+    tool_call_id: str
+    reasoning_content: str
+
+
+class ToolDefinition( TypedDict ):
+    """What the model sees of a tool: a name, a description, and a JSON Schema for its arguments."""
+    name: str
+    description: str
+    parameters: dict[ str, object ]
+
+
+type ToolChoice = Literal[ "auto", "none", "required" ]
+type Spec = dict[ str, str | int | None ]
+
+
+def load_spec( path: pathlib.Path = SPEC_FILE ) -> Spec:
+    """Read model_spec.json and decide where the model runs.
 
     Args:
         path: the spec file. Defaults to model_spec.json beside this file.
 
     Returns:
-        The spec, with "provider" resolved to "databricks" or "stand-in".
+        The spec, with "provider" resolved from "auto" to "databricks" (in a Databricks notebook, or
+        with DATABRICKS_HOST set) or "stand-in" (anywhere else).
     """
     spec = json.loads( pathlib.Path( path ).read_text() )
     if spec.get( "provider", "auto" ) == "auto":
@@ -43,8 +114,8 @@ def load_spec( path = SPEC_FILE ) -> dict:
     return spec
 
 
-def describe( spec: dict ) -> str:
-    """One line saying where the model runs, for the notebook's first cell.
+def describe( spec: Spec ) -> str:
+    """Say in one line where the model runs, for the notebook's first cell.
 
     Args:
         spec: the spec from load_spec().
@@ -53,25 +124,24 @@ def describe( spec: dict ) -> str:
         The line.
     """
     if spec[ "provider" ] == "databricks":
-        effort = spec.get( "reasoning_effort" ) or "the endpoint's default"
-        return f"Model: {spec[ 'endpoint' ]} on Databricks, reasoning effort {effort}."
+        return f"Model: {spec[ 'endpoint' ]} on Databricks, reasoning effort {spec.get( 'reasoning_effort' )}."
     return ( "Model: the scripted stand-in. No model is called; every reply is scripted. "
              "Run this notebook in Databricks to call a real model." )
 
 
-def ask_model( messages: list, tools: list, tool_choice: str = "auto", spec: dict | None = None ) -> dict:
-    """Send the conversation so far, and the tools on offer, to the model.
+def ask_model( messages: list[ Message ], tools: list[ ToolDefinition ], tool_choice: ToolChoice = "auto",
+               spec: Spec | None = None ) -> Message:
+    """Send the conversation so far, and the tools on offer, to the model, and return its reply.
 
     Args:
-        messages: the conversation, in OpenAI chat format: system, user, assistant and tool messages.
-        tools: the tool definitions on offer, each {"name", "description", "parameters"}.
+        messages: the conversation so far.
+        tools: the definitions of the tools on offer. An empty list offers none.
         tool_choice: "auto" (the model decides), "none" (no tool) or "required" (some tool).
         spec: the spec from load_spec(). Defaults to model_spec.json.
 
     Returns:
-        The model's reply, as an assistant message: {"role": "assistant", "content": text,
-        "tool_calls": [...]}, where each tool call is {"id", "type": "function",
-        "function": {"name", "arguments"}} and "arguments" is JSON text.
+        The model's reply: an assistant message with text in "content", requests in "tool_calls",
+        or both.
     """
     spec = spec or load_spec()
     wrapped = [ { "type": "function", "function": tool } for tool in tools ]
@@ -83,12 +153,12 @@ def ask_model( messages: list, tools: list, tool_choice: str = "auto", spec: dic
 _WORKSPACE = None
 
 
-def _ask_databricks( messages: list, tools: list, tool_choice: str, spec: dict ) -> dict:
-    """One chat-completions request to a Databricks Foundation Model API endpoint.
+def _ask_databricks( messages: list[ Message ], tools: list[ dict ], tool_choice: ToolChoice, spec: Spec ) -> Message:
+    """Send one chat-completions request to a Databricks Foundation Model API endpoint.
 
     Args:
-        messages: the conversation, in OpenAI chat format.
-        tools: the tool definitions, wrapped as {"type": "function", "function": ...}.
+        messages: the conversation so far.
+        tools: the tool definitions, already wrapped as {"type": "function", "function": ...}.
         tool_choice: "auto", "none" or "required".
         spec: the spec, naming the endpoint, the reasoning effort and the token limit.
 
@@ -137,16 +207,17 @@ def _ask_databricks( messages: list, tools: list, tool_choice: str, spec: dict )
     return message
 
 
-def check_arguments( schema: dict, arguments: dict ) -> list:
-    """Check a tool's arguments against its parameter schema: the checking strict mode would do.
+def check_arguments( schema: dict[ str, object ], arguments: dict[ str, object ] ) -> list[ str ]:
+    """Check a tool's arguments against its parameter schema: the check strict mode would do.
 
     Databricks has no strict mode for tools, so the notebook's code checks every request itself.
     This covers the parts of JSON Schema the exercise uses: required properties, unknown
-    properties, the types string, integer, number and boolean, and enum.
+    properties, the types string, integer, number and boolean, and enum. It checks shape only: a
+    made-up value of the right type passes.
 
     Args:
         schema: the tool's "parameters" schema.
-        arguments: the arguments the model sent.
+        arguments: the arguments the model sent, parsed from JSON.
 
     Returns:
         One line per problem; empty when the arguments fit the schema.
@@ -171,17 +242,17 @@ def check_arguments( schema: dict, arguments: dict ) -> list:
 
 
 # The scripted stand-in. It reads the note, the system prompt and the tools on offer, and answers
-# the way a model typically answers these three notes. It can ask only for a tool on the list.
+# the way a model typically answers the exercise's notes. It can ask only for a tool on the list.
 
 _ASK_WORDS = ( "guess", "make up", "made up", "invent", "assume", "not in the note", "not stated", "not given",
                "missing", "say so", "ask for", "ask the caseworker", "does not give", "doesn't give" )
 
 
-def _ask_stand_in( messages: list, tools: list, tool_choice: str ) -> dict:
-    """The stand-in's reply to the conversation so far.
+def _ask_stand_in( messages: list[ Message ], tools: list[ dict ], tool_choice: ToolChoice ) -> Message:
+    """Write the stand-in's reply to the conversation so far.
 
     Args:
-        messages: the conversation, in OpenAI chat format.
+        messages: the conversation so far.
         tools: the tool definitions, wrapped as {"type": "function", "function": ...}.
         tool_choice: "auto", "none" or "required".
 
@@ -199,8 +270,16 @@ def _ask_stand_in( messages: list, tools: list, tool_choice: str ) -> dict:
     form = re.search( r"1099-(NEC|K|MISC)", note )
     receipts = re.search( r"gross receipts reported: ([\d,]+)", note )
 
-    def fill( tool: dict, values: dict ) -> dict:
-        """Arguments for one tool: the given values where the schema has them, a short text elsewhere."""
+    def fill( tool: ToolDefinition, values: dict[ str, object ] ) -> dict[ str, object ]:
+        """Build arguments for one tool: the given values where the schema has them, a short text elsewhere.
+
+        Args:
+            tool: the tool's definition.
+            values: the values the stand-in has, by parameter name.
+
+        Returns:
+            The arguments, by parameter name.
+        """
         params = tool.get( "parameters", {} )
         arguments = {}
         for name, rule in params.get( "properties", {} ).items():
@@ -249,17 +328,32 @@ def _ask_stand_in( messages: list, tools: list, tool_choice: str ) -> dict:
         return _say( f"No Form {found.get( 'form_type' )} is on file for tax year {found.get( 'tax_year' )}." )
     if results:
         return _say( "The tool reported: " + json.dumps( results[ -1 ] ) )
-    return _say( "No tool needed: the note records a change of address and raises no question about "
-                 "the return." )
+    return _say( "No tool is needed for this note." )
 
 
-def _say( text: str ) -> dict:
-    """A stand-in reply with text and no tool call."""
+def _say( text: str ) -> Message:
+    """Build a stand-in reply that holds text and no tool request.
+
+    Args:
+        text: what the stand-in writes.
+
+    Returns:
+        The assistant message.
+    """
     return { "role": "assistant", "content": "[stand-in] " + text }
 
 
-def _call( tool: dict, arguments: dict, number: int ) -> dict:
-    """A stand-in reply that asks for one tool."""
+def _call( tool: ToolDefinition, arguments: dict[ str, object ], number: int ) -> Message:
+    """Build a stand-in reply that asks for one tool, as a real model's reply does.
+
+    Args:
+        tool: the definition of the tool asked for.
+        arguments: its arguments; they are sent as JSON text, as a real model sends them.
+        number: how many requests came before, to give this one a unique id.
+
+    Returns:
+        The assistant message.
+    """
     return { "role": "assistant", "content": "",
              "tool_calls": [ { "id": f"call_{number + 1}", "type": "function",
                                "function": { "name": tool[ "name" ], "arguments": json.dumps( arguments ) } } ] }
