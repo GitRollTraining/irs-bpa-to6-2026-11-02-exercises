@@ -2,6 +2,6 @@
   "about": "Which model the exercise calls, and how. provider: 'auto' calls Databricks when the notebook runs in Databricks (or DATABRICKS_HOST is set) and the scripted stand-in otherwise; 'databricks' always calls Databricks; 'stand-in' never calls a model. endpoint: a Databricks Foundation Model API endpoint that supports tool calling. reasoning_effort: how hard the model thinks before it answers; null sends none.",
   "provider": "auto",
   "endpoint": "databricks-gpt-6-luna",
-  "reasoning_effort": "low",
+  "reasoning_effort": "none",
   "max_tokens": 1500
 }

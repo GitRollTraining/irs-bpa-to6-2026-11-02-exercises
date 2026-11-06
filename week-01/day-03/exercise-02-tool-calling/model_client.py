@@ -112,9 +112,19 @@ def _ask_databricks( messages: list, tools: list, tool_choice: str, spec: dict )
         body[ "tool_choice" ] = tool_choice
     if spec.get( "reasoning_effort" ):
         body[ "reasoning_effort" ] = spec[ "reasoning_effort" ]
+    path = f"/serving-endpoints/{spec[ 'endpoint' ]}/invocations"
     try:
-        reply = _WORKSPACE.api_client.do( "POST", f"/serving-endpoints/{spec[ 'endpoint' ]}/invocations",
-                                          body = body )
+        try:
+            reply = _WORKSPACE.api_client.do( "POST", path, body = body )
+        except Exception as failure:
+            # Some endpoints (e.g. gpt-6-luna on chat completions) reject function tools combined
+            # with a reasoning effort other than "none". Retry once with "none" and keep it.
+            if tools and "reasoning_effort" in str( failure ) and body.get( "reasoning_effort" ) != "none":
+                body[ "reasoning_effort" ] = "none"
+                spec[ "reasoning_effort" ] = "none"
+                reply = _WORKSPACE.api_client.do( "POST", path, body = body )
+            else:
+                raise
     except Exception as failure:
         raise RuntimeError( f"the endpoint {spec[ 'endpoint' ]} refused the request: {failure}. Check the "
                             "endpoint name in model_spec.json against Serving in your workspace." ) from None
