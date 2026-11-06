@@ -88,6 +88,7 @@ Use the path that `git pull` names.
 | 4 | [Three exercise notebooks](week-01/day-04/README.md) | [Git: commit, push and diff](week-01/day-04/README.md) |
 | 5 | [Two exercise notebooks](week-01/day-05/README.md) | [Directing and verifying agent work](week-01/day-05/README.md), optional practice |
 | Codex | [Three exercise notebooks](week-01/day-special/README.md) | [Codex CLI: a hands-on start](week-01/day-special/README.md) |
+| Git | [Four exercise notebooks](week-01/day-git/README.md) | [Git basics](week-01/day-git/README.md) |
 
 ## When an exercise needs AI access
 
@@ -115,7 +116,7 @@ Reset removes your edits and commits in that exercise and rebuilds its starting 
 
 For model exercises, reset also removes saved replies. The next run makes 10 model calls for `same-note-five-times`, or 3 for `system-prompt`.
 
-The one-notebook exercises (Days 3, 4 and 5, and the Codex exercises in `week-01/day-special`) need no reset: run the notebook again from the top. A Codex exercise's **Start over** cell writes its practice files again.
+The one-notebook exercises (Days 3, 4 and 5, the Codex exercises in `week-01/day-special` and the Git exercises in `week-01/day-git`) need no reset: run the notebook again from the top. A Codex exercise's **Start over** cell writes its practice files again.
 
 ## Check your work
 
