@@ -1,8 +1,8 @@
 # The answer to "Tighten your coding agent's configuration for the extractor's pilot".
-# Run it from ~/practice/week-01/day-01/agent-boundary/lab, after python3 ~/practice/reset.py agent-boundary:
+# Run it from week-01/day-01/agent-boundary/lab, after python3 reset.py agent-boundary in the course folder:
 #   sh ../../answers/agent-boundary/commands.sh
 # It makes the four fixes of the exercise's table, commits them, and runs the check, which prints Done:.
-# decisions.md says what each change closes, and what else the check accepts.
+# decisions.md explains each change and its rule.
 set -e
 ANSWER="$(cd "$(dirname "$0")" && pwd)"
 

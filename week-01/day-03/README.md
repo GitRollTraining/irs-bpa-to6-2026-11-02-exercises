@@ -1,7 +1,13 @@
-# Day 3 exercises
+# Day 3: Forms, tools and a score
 
-The day's notebook, with its reading and its exercises in the order of the slides: [`week-01-day-03.ipynb`](week-01-day-03.ipynb)
+Three exercises, one notebook each. You write no code: you run cells and change one value at a time. Each one practises one idea from the Day 3 slides with a food delivery app: when an order goes wrong, you message the app, and its AI turns your message into four fields of JSON. The AI's replies are sample data inside each notebook, so you need no model, key or sign-in.
 
-1. [Check replies against a schema and your own check](validate-replies/README.md). Check each reply against the schema and your own check, and count a bad reply as a failure. Where: the folder `~/practice/week-01/day-03/validate-replies/lab`, in VS Code. Do not use AI tools. Done when: from `lab`, `python3 ../check.py` prints a line that starts with `Done:`. Start: [`validate-replies/`](validate-replies/). Answer: [`answers/validate-replies/`](answers/validate-replies/).
-2. [Define one function, and test both cases](define-a-function/README.md). Describe a function for the model, and test it where a call is right and where none is. Where: the folder `~/practice/week-01/day-03/define-a-function/lab`, in the day's notebook or in a terminal. `ask.py` calls the model that the extractor calls. Use no other AI tool. Done when: from `lab`, `python3 ../check.py` prints a line that starts with `Done:`. Start: [`define-a-function/`](define-a-function/). Answer: [`answers/define-a-function/`](answers/define-a-function/).
-3. [Score the prompt on a labelled set, and revise it once](score-the-prompt/README.md). Score a prompt per field on a labelled set, and revise it on one failure. Where: the folder `~/practice/week-01/day-03/score-the-prompt/extractor`, in VS Code. The scorer sends the 20 notes to the model, one call each, for each new version of your prompt. Use no other AI tool. Done when: from `extractor`, `python3 ../check.py` prints a line that starts with `Done:`. Start: [`score-the-prompt/`](score-the-prompt/). Answer: [`answers/score-the-prompt/`](answers/score-the-prompt/).
+Open an exercise's `exercise.ipynb`, choose the **.venv** kernel, and run the cells from the top: click a cell and press Shift+Enter. Each cell says OK when a result is right and PROBLEM when it is not. An exercise is done when its last cell prints `Done:`.
+
+| Exercise | What you will do | Slides | Time |
+|---|---|---|---|
+| [1 · Check every reply against a schema](exercise-01-validate-replies/exercise.ipynb) | Run a checker on six sample replies, then tighten two loose rules so that every bad reply is rejected. | 4, 5, 7 | 10 min |
+| [2 · Define a safe function](exercise-02-define-a-safe-function/exercise.ipynb) | Take the money-sending function off the AI's list, and pick the clearest description of the safe lookup. | 13, 14, 16 | 15 min |
+| [3 · Score a prompt](exercise-03-score-a-prompt/exercise.ipynb) | Read two score tables, find the prompt line that causes the errors, and keep the better prompt. | 22, 23, 24, 27 | 15 min |
+
+Solved copies are in [answers/](answers/): each is the same notebook with the answers filled in.

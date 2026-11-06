@@ -1,5 +1,5 @@
-# The answer to "Write the system prompt, and record three replies".
-# Run it from ~/practice/week-01/day-02/system-prompt/lab, after python3 ~/practice/reset.py system-prompt.
+# The answer to "2.2 Write the system prompt".
+# Run it from week-01/day-02/system-prompt/lab, after python3 reset.py system-prompt in the course folder.
 # The command is: sh ../../answers/system-prompt/commands.sh
 # It writes the answer's prompt, and records the kept replies, with no call to the model.
 # Then it runs the tests, commits, and runs the check, which prints Done:.

@@ -1,7 +1,7 @@
 # Four uses of AI tools
 
 The course made up these files. Read `exports/case-2231.txt` as a real case note. Each path starts at the folder
-`~/practice/week-01/day-01/data-rules-check/lab`.
+`week-01/day-01/data-rules-check/lab`.
 
 The course's approved tool is the model that the extractor calls. Its approval covers only the simulated
 notes in `notes/`. No other use has an approval.

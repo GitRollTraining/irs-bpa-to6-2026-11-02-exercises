@@ -1,4 +1,0 @@
-# What the exercises need. python3 setup.py installs these into .venv.
-pytest==9.1.0
-jsonschema==4.26.0
-ipykernel==7.3.0

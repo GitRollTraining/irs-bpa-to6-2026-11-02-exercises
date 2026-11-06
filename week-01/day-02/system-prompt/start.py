@@ -1,5 +1,5 @@
 """Build this exercise's starting repository, lab/. Run it through the reset command:
-python3 ~/practice/reset.py system-prompt
+python3 reset.py system-prompt, in the course folder
 
 lab/ is the week's lab repository at its saved state run1. It holds the simulated notes, the field
 list and the route to the model. It also holds the agent's configuration, the data-rules check, and the

@@ -1,5 +1,5 @@
 """Build this exercise's starting repository, lab/. Run it through the reset command:
-python3 ~/practice/reset.py data-rules-check
+python3 reset.py data-rules-check, in the course folder
 
 lab/ is the week's lab repository at its first saved state: the simulated notes, the field list and
 the route to the model, committed by the course team. One file is added and not committed:

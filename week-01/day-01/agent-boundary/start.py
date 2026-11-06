@@ -1,5 +1,5 @@
 """Build this exercise's starting repository, lab/. Run it through the reset command:
-python3 ~/practice/reset.py agent-boundary
+python3 reset.py agent-boundary, in the course folder
 
 lab/ is the week's lab repository after its run 2, as the course team committed it: the simulated
 notes, the field list, the route to the model, the lab's agent configuration, the data-rules check,

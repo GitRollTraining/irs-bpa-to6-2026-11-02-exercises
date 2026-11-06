@@ -1,5 +1,5 @@
-# The answer to "Choose a model and two levels, and record why". Run it from
-# ~/practice/week-01/day-02/model-and-reasoning-level/lab, after python3 ~/practice/reset.py model-and-reasoning-level:
+# The answer to "2.3 Choose the model and levels". Run it from
+# week-01/day-02/model-and-reasoning-level/lab, after python3 reset.py model-and-reasoning-level in the course folder:
 #   sh ../../answers/model-and-reasoning-level/commands.sh
 # As the exercise's steps do, it fills in the table, commits it, and runs the check, which prints Done:.
 # decisions.md gives the rule for each choice, and the other answers that the check accepts.

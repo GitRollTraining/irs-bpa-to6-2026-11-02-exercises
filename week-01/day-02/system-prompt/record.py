@@ -14,12 +14,15 @@ the draft that the course gave you, it sends nothing.
 """
 import hashlib
 import json
+import os
 import pathlib
 import shutil
 import sys
 
 HERE = pathlib.Path(__file__).resolve().parent
 LAB = HERE / "lab"
+KIT = next(p for p in HERE.parents if (p / "lab-states").is_dir())  # the course folder
+RESET_PY = os.path.relpath(KIT / "reset.py")  # the reset, as a path from where this runs
 DRAFT = HERE / "files" / "system.txt"
 
 
@@ -32,7 +35,7 @@ def fingerprint(prompt, schema):
 
 def main(args):
     if not (LAB / ".git").is_dir():
-        sys.exit("There is no repository lab/ yet. Run python3 ~/practice/reset.py system-prompt.")
+        sys.exit(f"There is no repository lab/ yet. Run python3 {RESET_PY} system-prompt.")
     if not args or not all((LAB / "notes" / f"{note}.txt").is_file() for note in args):
         sys.exit("Usage: python3 ../record.py NOTE ..., with the number of each note, such as 0147. "
                  "The notes are in notes/.")

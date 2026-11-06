@@ -1,5 +1,5 @@
 # The answer to "Classify four uses of AI tools with the data-rules check". Run it from
-# ~/practice/week-01/day-01/data-rules-check/lab, after python3 ~/practice/reset.py data-rules-check:
+# week-01/day-01/data-rules-check/lab, after python3 reset.py data-rules-check in the course folder:
 #   sh ../../answers/data-rules-check/commands.sh
 # As the exercise's steps do, it writes the answers, commits them, and runs the check, which prints Done:.
 set -e

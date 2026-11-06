@@ -7,17 +7,20 @@ then compares Reason with the reasons that section 2.3 allows for that choice. T
 docs/model-scores.md and docs/next-tasks.md. The class talks them through. Then it looks for your commit. It calls
 no model and starts no coding agent.
 """
+import os
 import pathlib
 import re
 import subprocess
 import sys
 
 HERE = pathlib.Path(__file__).resolve().parent
+KIT = next(p for p in HERE.parents if (p / "lab-states").is_dir())  # the course folder
+RESET_PY = os.path.relpath(KIT / "reset.py")  # the reset, as a path from where this runs
 REPO = HERE / "lab"
 RECORD = "docs/pull-request.md"
 FOLDER = "model-and-reasoning-level"
 REASONS = ("capability", "speed", "cost")
-MODELS = ("haiku", "sonnet")
+MODELS = ("gpt-6-luna", "gpt-6.1-sol")
 # The levels that docs/next-tasks.md gives, the lowest first. Both coding agents take these three.
 LEVELS = ("low", "medium", "high")
 # The command that starts each coding agent at a level, as docs/next-tasks.md gives it.
@@ -26,22 +29,23 @@ COMMAND = re.compile(
     r"|\bcodex\b[^|`\n]*?(?:-c|--config)(?:\s+|=)[\"']?model_reasoning_effort\s*=\s*[\"']?(?P<codex>[A-Za-z]+)")
 SEPARATOR = re.compile(r"^\s*\|?\s*:?-{3,}")
 MODEL_ROW, TASK_1, TASK_2 = "The extractor's model", "Task 1", "Task 2"
-# The course's answer: sonnet for the model, and for the tasks a level for task 1 above the level for
+# The course's answer: gpt-6.1-sol for the model, and for the tasks a level for task 1 above the level for
 # task 2. Then the reasons that section 2.3 allows for each answer. answers/model-and-reasoning-level/
 # decisions.md gives the rule for each.
-MODEL_ANSWER = "sonnet"
+MODEL_ANSWER = "gpt-6.1-sol"
 ALLOWED = {MODEL_ROW: {"capability"}, TASK_1: {"capability"}, TASK_2: {"speed", "cost"}}
 FACTS = {MODEL_ROW: "docs/model-scores.md", TASK_1: "docs/next-tasks.md", TASK_2: "docs/next-tasks.md"}
-# Shown for a choice that the course does not accept: how to decide, in the words of the table in step 2.
-LOOK_AGAIN_MODEL = ("In docs/model-scores.md, find a note that haiku got wrong and sonnet did not. One such note "
+# Shown for a choice that the course does not accept: how to decide, in the words of the exercise's table and
+# of its reasons under "Why each answer".
+LOOK_AGAIN_MODEL = ("In docs/model-scores.md, find a note that gpt-6-luna got wrong and gpt-6.1-sol did not. One such note "
                     "is enough to move up, whatever the cost. Section 2.3, row The extractor's model: \"move up only "
-                    "for a failure the set shows it fixes\". The table in step 2 shows how to decide, and the Reason "
+                    "for a failure the set shows it fixes\". The exercise's table shows how to decide, and the Reason "
                     "for each choice.")
 LOOK_AGAIN_TASKS = ("In docs/next-tasks.md, read \"How you will check its work\" for each task. The task that you "
                     "read line by line takes the lower level. Section 2.3, below its table: \"quick exchanges where "
                     "you review each result\". The task that can change the reply for any note takes the higher one. "
-                    "The table in step 2 shows how to decide, and the Reason for each level.")
-REASON_RULE = ("The table in step 2 gives the reason for each choice: capability for sonnet and for task 1, and "
+                    "The exercise's table shows how to decide, and the Reason for each level.")
+REASON_RULE = ("The exercise's table gives the reason for each choice: capability for gpt-6.1-sol and for task 1, and "
                "speed for task 2. Section 2.3, under \"Two dials\": \"Every reason for a choice is one of three: "
                "capability, speed or cost.\"")
 
@@ -85,11 +89,16 @@ def words(text):
     return re.findall(r"[a-z]+", text.lower())
 
 
+def names(model, cell):
+    """True when the cell names the model whole: gpt-6-luna, not part of gpt-6-luna-2 or gpt-6.1-luna."""
+    return re.search(r"(?<![\w.-])" + re.escape(model) + r"(?![\w-]|\.\w)", cell.lower()) is not None
+
+
 def model_choice(cell):
     """The model that Start with names. Otherwise None, and what the cell still needs."""
-    named = [model for model in MODELS if model in words(cell)]
+    named = [model for model in MODELS if names(model, cell)]
     if not named:
-        return None, "in Start with, write haiku or sonnet, the two models in docs/model-scores.md."
+        return None, "in Start with, write gpt-6-luna or gpt-6.1-sol, the two models in docs/model-scores.md."
     if len(named) > 1 or "not" in words(cell):
         return None, "in Start with, write only the model that you choose."
     return named[0], None
@@ -135,17 +144,17 @@ def reason_accepted(row, reason):
 
 
 if not (REPO / ".git").is_dir():
-    stop(f"there is no repository lab/ yet. Run python3 ~/practice/reset.py {FOLDER}.")
+    stop(f"there is no repository lab/ yet. Run python3 {RESET_PY} {FOLDER}.")
 if not (REPO / RECORD).is_file():
-    stop(f"{RECORD} is missing. Run python3 ~/practice/reset.py {FOLDER} to get it again.")
+    stop(f"{RECORD} is missing. Run python3 {RESET_PY} {FOLDER} to get it again.")
 rows = table((REPO / RECORD).read_text())
 if rows is None:
     stop(f"{RECORD} has no table with the columns Choice, Start with and Reason. "
-         f"Run python3 ~/practice/reset.py {FOLDER} to get the file again.")
+         f"Run python3 {RESET_PY} {FOLDER} to get the file again.")
 
 problems = []
 NO_ROW = "the table has no row for this choice. Put the row back, as the file had it."
-EMPTY = "fill in Start with and Reason in docs/pull-request.md, as the table in step 2 says."
+EMPTY = "fill in Start with and Reason in docs/pull-request.md, as the exercise's table says."
 
 # The extractor's model: the choice first, then its reason.
 if MODEL_ROW not in rows:

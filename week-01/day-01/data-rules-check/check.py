@@ -6,12 +6,15 @@ Each answer needs a reason in Why that ends with its section. The check does not
 further. The class talks the reasons through. Your answers count only after you commit them. It calls
 no model.
 """
+import os
 import pathlib
 import re
 import subprocess
 import sys
 
 HERE = pathlib.Path(__file__).resolve().parent
+KIT = next(p for p in HERE.parents if (p / "lab-states").is_dir())  # the course folder
+RESET_PY = os.path.relpath(KIT / "reset.py")  # the reset, as a path from where this runs
 REPO = HERE / "lab"
 RECORD = "docs/data-rules-check.md"
 USES = range(1, 5)
@@ -20,8 +23,8 @@ USES = range(1, 5)
 ACCEPTED = {1: ("yes", None), 2: ("no", None), 3: ("not mine", "accountable"), 4: ("no", None)}
 # Shown for a use whose answer the course does not accept: where to look again, in the file and in the notebook.
 LOOK_AGAIN = {
-    1: "Look again at the first line of notes/0147.txt, and at The approval on file. Then find its row in the "
-       "data-rules check in section 1.2.",
+    1: "Look again at the first line of notes/0147.txt, and at what the approval covers, at the top of "
+       "docs/data-rules-check.md. Then find its row in the data-rules check in section 1.2.",
     2: "Look again at what exports/case-2231.txt still gives without its name. Section 1.1 says what that means.",
     3: "Look again at what the approval covers, and at move 5 in section 1.2.",
     4: "Look again at the warning of the policy about public AI tools, in section 1.1.",
@@ -88,9 +91,9 @@ def judge(use, answer, who):
 
 
 if not (REPO / ".git").is_dir():
-    stop("there is no repository lab/ yet. Run python3 ~/practice/reset.py data-rules-check.")
+    stop(f"there is no repository lab/ yet. Run python3 {RESET_PY} data-rules-check.")
 if not (REPO / RECORD).exists():
-    stop(f"{RECORD} is missing. Run python3 ~/practice/reset.py data-rules-check to get it again.")
+    stop(f"{RECORD} is missing. Run python3 {RESET_PY} data-rules-check to get it again.")
 
 found = answers((REPO / RECORD).read_text())
 problems = []

@@ -1,8 +1,17 @@
-# Day 4 exercises
+# Day 4: Git and the coding agent
 
-The day's notebook, with its reading and its exercises in the order of the slides: [`week-01-day-04.ipynb`](week-01-day-04.ipynb)
+Three exercises, one notebook each. Each notebook runs real Git commands on a small practice project that it builds beside itself: a grocery list you share with your housemate. You write no code: you run cells and change one part of one command at a time.
 
-1. [Commit three changes and leave the fourth out](commit-three-of-four/README.md). Commit only the changes that you asked an agent for, and keep the extractor's log out of the history. Where: the folder `~/practice/week-01/day-04/commit-three-of-four/extractor`, in VS Code. Do not use AI tools. Done when: from `extractor`, `python3 ../check.py` prints a line that starts with `Done:`. Start: [`commit-three-of-four/`](commit-three-of-four/). Answer: [`answers/commit-three-of-four/`](answers/commit-three-of-four/).
-2. [Check the remote, push, get rejected, and push again](push-after-rejection/README.md). Check where a push goes, and push again after a rejection without losing your teammate's work. Where: the folder `~/practice/week-01/day-04/push-after-rejection/extractor`, with Git. Do not use AI tools. Done when: from `extractor`, `python3 ../check.py` prints a line that starts with `Done:`. Start: [`push-after-rejection/`](push-after-rejection/). Answer: [`answers/push-after-rejection/`](answers/push-after-rejection/).
-3. [Read one change in every view, before and after](diff-views/README.md). Read a coding agent's change in each form of `git diff`, before and after you commit it. Where: the folder `~/practice/week-01/day-04/diff-views/lab`, with Git. Do not use AI tools. Done when: from `lab`, `python3 ../check.py` prints a line that starts with `Done:`. Start: [`diff-views/`](diff-views/). Answer: [`answers/diff-views/`](answers/diff-views/).
-4. [Map the modes of the coding tool you use](tool-modes/README.md). Say which kind of tool each mode of Codex is, and check what Codex did against a done-when. Where: the folder `~/practice/week-01/day-04/tool-modes/extractor`, and Codex in a terminal. Done when: from `extractor`, `python3 ../check.py` prints a line that starts with `Done:`. Start: [`tool-modes/`](tool-modes/). Answer: [`answers/tool-modes/`](answers/tool-modes/).
+The notebook's first cell, `%run steps.py`, builds that project and adds the `%step` and `%done` helpers. `steps.py` sits beside the notebook; you do not need to open it.
+
+Open an exercise's `exercise.ipynb`, choose the **.venv** kernel, and run the cells from the top: click a cell and press Shift+Enter. Each step ends with a line that says OK when the result is right and PROBLEM when it is not. An exercise is done when its last cell prints `Done:`.
+
+| Exercise | What you will do | Slides | Time |
+|---|---|---|---|
+| [1 · Commit what you mean](exercise-01-commit-what-you-mean/exercise.ipynb) | Keep a log out with `.gitignore`, stage only the changes you mean, and commit without `-a`, so your private note stays out. | 6, 8, 9 | 10 min |
+| [2 · Push after a rejection](exercise-02-push-after-rejection/exercise.ipynb) | Check where your push goes, then fetch, read and merge your housemate's commit before you push again, so both commits are kept. | 15, 16, 19 | 12 min |
+| [3 · Read each diff view](exercise-03-read-each-diff-view/exercise.ipynb) | Use the form of `git diff` that shows your next commit, put milk's new price from its `+` line in your commit message, then use the form that shows what the commit changed. | 24, 25, 29 | 12 min |
+
+Section 4.4, the kinds of AI coding tool, has no exercise here: the [Codex exercises](../day-special/README.md) practise an agent's sandbox and approval modes hands-on.
+
+Solved copies are in [answers/](answers/): each is the same notebook with the answers filled in, beside the same `steps.py`.

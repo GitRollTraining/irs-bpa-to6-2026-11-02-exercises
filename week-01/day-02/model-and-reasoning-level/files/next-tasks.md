@@ -6,8 +6,8 @@ The course made up these tasks. Your coding agent does each task in its own sess
 
 You set the level when you start the session. The level stays for that session only. Use the command of your coding agent:
 
+- Codex, the agent of the hosted workspace: `codex -c model_reasoning_effort=<level>`
 - Claude Code: `claude --effort <level>`
-- Codex: `codex -c model_reasoning_effort=<level>`
 
 In place of `<level>`, write low, medium or high. Both agents take these three levels. Low is the lowest of the three. Medium and high are both higher than low, and high is the highest.
 
