@@ -121,3 +121,18 @@ The one-notebook exercises (Days 3, 4 and 5, the Codex exercises in `week-01/day
 ## Check your work
 
 Each exercise explains how to run its check and what `Done:` means. If you need help, its day's `answers/<exercise>/` folder contains a worked solution. Try the exercise before opening the answer.
+
+## Repository validation
+
+From the repository root, run the structural check and the offline Day 1 check:
+
+```sh
+python3 .github/check_repository.py
+.venv/bin/python .github/check_day_one.py
+```
+
+The Day 1 check needs Git, `sh`, pytest, and jsonschema in the selected Python environment. CI installs with `uv sync --locked` and runs both checks on Python 3.12. The runner copies tracked course inputs with their current working-tree contents into a temporary checkout; commit or stage new fixture files before expecting them to be included. Ignored learner repositories are excluded.
+
+For all three Day 1 exercises, it checks the expected unfinished state, runs the supplied answer, resets from inside the exercise repository, and repeats the answer. It also checks preservation of other exercise work, an edited notebook, unrelated files, and temporary home settings. Child Python processes block socket access and live model calls. The temporary checkout and home are removed afterward; no setup script or live agent is run. These regression guards are not a sandbox for untrusted code.
+
+This verifies the exercise scripts and answers. Notebook cells, Markdown commands, editor integration, fresh dependency installation, and live agent behavior still need separate validation.

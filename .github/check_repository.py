@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""The exercise repository's one check: python3 .github/check_repository.py
+"""The exercise repository's structural check: python3 .github/check_repository.py
 
 Fails, naming each problem, when:
   - a week-NN/day-NN/ folder, or an exercise folder inside one, has no README.md;
