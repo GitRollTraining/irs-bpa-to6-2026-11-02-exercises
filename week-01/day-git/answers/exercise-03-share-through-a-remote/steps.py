@@ -22,12 +22,23 @@ SHARED = HOME / "practice" / "github" / "meal-plan.git"  # stands in for a repos
 for name in ("GIT_DIR", "GIT_WORK_TREE", "GIT_INDEX_FILE", "GIT_OBJECT_DIRECTORY", "GIT_COMMON_DIR",
              "GIT_CONFIG_PARAMETERS", "GIT_CONFIG_COUNT"):
     os.environ.pop(name, None)  # set by a Git hook or a caller, these would point Git elsewhere or change its settings
-# Git as on a new computer, the same on every run: your name is You, no editor opens, a new repository's
-# first branch is main, as on GitHub, and Git never looks above practice/ for a repository.
+
+
+def yours(key):
+    """One of your own Git settings, such as user.name, as Git reads it outside these exercises."""
+    env = {name: value for name, value in os.environ.items()  # without the settings below, left by an earlier run
+           if not (name in ("GIT_CONFIG_GLOBAL", "XDG_CONFIG_HOME") and value == os.devnull)
+           and name != "GIT_CONFIG_NOSYSTEM"}
+    return subprocess.run(["git", "config", "--get", key], env=env, stdin=subprocess.DEVNULL,
+                          capture_output=True, text=True).stdout.strip()
+
+
+# Your commits carry your own name and email, from your Git settings. Apart from those, Git runs as on a new
+# computer: no editor opens, a new repository's first branch is main, as on GitHub, and Git never looks above
+# practice/ for a repository.
+NAME, EMAIL = yours("user.name") or "You", yours("user.email") or "you@example.com"
 os.environ.update(GIT_CONFIG_GLOBAL=os.devnull, GIT_CONFIG_NOSYSTEM="1", GIT_EDITOR="true",
-                  GIT_AUTHOR_NAME="You", GIT_AUTHOR_EMAIL="you@example.com",
-                  GIT_COMMITTER_NAME="You", GIT_COMMITTER_EMAIL="you@example.com",
-                  GIT_AUTHOR_DATE="2026-11-02T09:00:00+00:00", GIT_COMMITTER_DATE="2026-11-02T09:00:00+00:00",
+                  GIT_AUTHOR_NAME=NAME, GIT_AUTHOR_EMAIL=EMAIL, GIT_COMMITTER_NAME=NAME, GIT_COMMITTER_EMAIL=EMAIL,
                   XDG_CONFIG_HOME=os.devnull, GIT_CEILING_DIRECTORIES=str(PROJECT.parent),
                   GIT_CONFIG_COUNT="1", GIT_CONFIG_KEY_0="init.defaultBranch", GIT_CONFIG_VALUE_0="main")
 RUNS = []  # (exit code, output) of this step's ! lines
