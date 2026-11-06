@@ -1,22 +1,16 @@
 # Day 5: The AI-assisted loop
 
-Write a directing prompt whose done-when anyone can check, then direct a coding agent's run and check it yourself.
-
 **Today's two exercises are optional practice.** Class time on Day 5 goes to the week's challenge. Do the exercises when you want more practice.
 
-Complete the [course setup](../../README.md#set-up-once), then open [the Day 5 notebook](week-01-day-05.ipynb). Use the **.venv** kernel. For terminal work, open a new terminal, which starts in the course folder, and activate the environment first:
+Two exercises, one notebook each. Each notebook runs real pytest and Git commands on a small practice project that it builds beside itself: a grocery list and `total.py`, a helper that adds up its prices. A coding agent was asked to fix the helper; its runs are made up and saved by the notebook, so you need no agent, key or sign-in. You write no code: you run cells and change one part of one command at a time.
 
-```sh
-source .venv/bin/activate
-```
+The notebook's first cell, `%run steps.py`, builds that project and adds the `%step` and `%done` helpers. `steps.py` sits beside the notebook; you do not need to open it.
 
-Exercise 5.2 starts your coding agent, Codex or Claude Code, in a terminal; exercise 5.1 uses no AI tool. All notes and scenarios are fictional.
+Open an exercise's `exercise.ipynb`, choose the **.venv** kernel, and run the cells from the top: click a cell and press Shift+Enter. Each step ends with a line that says OK when the result is right and PROBLEM when it is not. An exercise is done when its last cell prints `Done:`.
 
-| Exercise | What you will do | Terminal instructions |
-|---|---|---|
-| 5.1 Write run 2's directing prompt | Complete the directing prompt for run 2 with a done-when that anyone can check from a command. | [directing-prompt](directing-prompt/README.md) |
-| 5.2 Direct and check run 1 | Direct a coding agent with run 1's prompt, and check its done-when yourself before you accept the run. | [direct-run-one](direct-run-one/README.md) |
+| Exercise | What you will do | Slides | Time |
+|---|---|---|---|
+| [1 · Check an agent's runs with your done-when](exercise-01-check-an-agents-runs/exercise.ipynb) | See that a total that looks right is not a check, run the whole done-when to reject run B, and switch to run A, which passes it. | 5, 7, 10 | 15 min |
+| [2 · Check the done-when yourself](exercise-02-check-the-done-when/exercise.ipynb) | Run the done-when yourself, read the diff of the test file the agent changed, and undo its work with `git restore`. | 14, 16 | 10 min |
 
-Use either the notebook cells or the terminal instructions. Startup keeps existing work. Each exercise ends when its check prints `Done:`; an initial `Not yet:` identifies work still to do. The reasons for each table's answers are in its **Why** toggle.
-
-Answers are in [answers/](answers/). To start over, follow the [reset instructions](../../README.md#start-an-exercise-again); reset discards that exercise's edits and commits.
+Solved copies are in [answers/](answers/): each is the same notebook with the answers filled in, beside the same `steps.py`.

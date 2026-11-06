@@ -1,3 +1,0 @@
-Fail a reply whose amount is text
-
-The coding agent wrote this test. I read it, and the tests pass.

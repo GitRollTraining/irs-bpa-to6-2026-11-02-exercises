@@ -1,3 +1,0 @@
-Fail a reply whose form keeps the word Form
-
-docs/fields.md gives the form number only, without the word "Form".

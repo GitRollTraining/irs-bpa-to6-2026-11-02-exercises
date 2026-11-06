@@ -1,9 +1,0 @@
-# Answer: where your push goes, and what to do after the rejection
-
-| Decision | Answer | Reason |
-|---|---|---|
-| The `(push)` line | `git remote set-url --push origin ../shared.git` | `git push` uses the `(push)` line, and the coding agent had set it to `mirror.git`, while `docs/remote.md` names `shared.git` as the lab's remote. Every later clone of a repository holds what you pushed there, so check where origin pushes before the first push (section 4.2, lists "A remote" and "A push"). |
-| The `(fetch)` line | Keep it. | It already names `shared.git`, the lab's remote (section 4.2, list "A remote"). |
-| After the rejection | `git fetch`, `git show --stat origin/main`, `git merge --no-edit origin/main`, then `git push`; not the `git pull` that Git's hint names. | Your teammate pushed first, and Git does not let your push replace a commit your clone has not seen. A pull also tries to merge what came in before you read it; a fetch only downloads, so you can read your teammate's commit first. The merge holds both commits, so the next push replaces nothing (section 4.2, the table of the three commands and the figure of two copies). |
-
-The check also accepts the lab's remote in another form (its full path or a `file://` address), no push line (`git config --unset remote.origin.pushurl`, so origin pushes where it fetches from), or origin removed and added again (then the first push is `git push -u origin main`). After the rejection, it also accepts `git pull --no-rebase` (a fetch, then a merge) or `git pull --rebase`; here a plain `git pull` fetches, then stops and asks for one of the two, unless your Git settings choose one. It never accepts a push to `mirror.git` or a push that replaced your teammate's commit, such as `git push --force`: only the reset takes either back, and outside the course nothing does. Passing does not show that you read your teammate's commit before the merge.
