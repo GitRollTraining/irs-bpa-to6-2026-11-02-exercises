@@ -88,7 +88,7 @@ Use the path that `git pull` names.
 | 4 | [Three exercise notebooks](week-01/day-04/README.md) | [Git: commit, push and diff](week-01/day-04/README.md) |
 | 5 | [Two exercise notebooks](week-01/day-05/README.md) | [Directing and verifying agent work](week-01/day-05/README.md), optional practice |
 | Codex | [Three exercise notebooks](week-01/day-special/README.md) | [Codex CLI: a hands-on start](week-01/day-special/README.md) |
-| Git | [Three exercise notebooks](week-01/day-git/README.md) | [Git basics: ten commands](week-01/day-git/README.md) |
+| Git | [Four exercise notebooks](week-01/day-git/README.md) | [Git basics](week-01/day-git/README.md) |
 
 ## When an exercise needs AI access
 
