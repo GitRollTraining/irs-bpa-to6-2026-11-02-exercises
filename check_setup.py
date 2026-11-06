@@ -204,9 +204,12 @@ def run_notebooks(course, env, missing, found):
             cells += 1
             out = output_of(cell)
             last = " | ".join(out.strip().splitlines()[-3:])[:200]
+            # In a command notebook's %step cell, git status before git init prints "not a git repository" on
+            # purpose: the step teaches it, and prints OK or PROBLEM itself. Any other missing file still counts.
+            seen = re.sub(r"(?m)^fatal: not a git repository.*$", "", out) if cell.source.startswith("%step") else out
             if any(o.get("output_type") == "error" for o in cell.get("outputs", [])):
                 problems.append(f"cell {cell.get('id')} stopped with an error: {last}")
-            elif MISSING_FILE.search(out):
+            elif MISSING_FILE.search(seen):
                 problems.append(f"cell {cell.get('id')} reports a missing file: {last}")
             elif "check.py" in cell.source and "Not yet" not in out:
                 problems.append(f"check cell {cell.get('id')} does not print Not yet: before any work: {last}")
