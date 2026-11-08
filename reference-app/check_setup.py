@@ -1,9 +1,10 @@
 """Check week 2's setup: python reference-app/check_setup.py, with the week's environment active.
 
 It checks Python 3.10 or later, that this terminal runs a virtual environment (reference-app/.venv,
-made by bash reference-app/setup.sh), that Flask and pytest are in it, that the app's case list page
-opens and its tests pass, and that the Codex CLI answers and is signed in. Nothing is sent to a model.
-Continue when it prints Setup OK.
+made by bash reference-app/setup.sh, which runs this check too), that Flask, pytest and ipykernel are in it, that
+the app's case list page opens and its tests pass, that the notebooks' kernel runs this terminal's
+Python, and that the Codex CLI answers and is signed in. Nothing is sent to a model. Continue when it
+prints Setup OK.
 """
 import importlib.metadata
 import os
@@ -16,6 +17,7 @@ APP = pathlib.Path(__file__).resolve().parent
 ACTIVATE = "source reference-app/.venv/bin/activate (from the course folder)"
 SETUP = "bash reference-app/setup.sh (from the course folder)"
 CODEX_INSTALL = "curl -fsSL https://chatgpt.com/codex/install.sh | sh"
+KERNEL = "python3"  # the kernel every week 2 notebook names in its metadata
 
 
 def check_python(missing, found):
@@ -37,9 +39,9 @@ def check_python(missing, found):
 
 
 def check_packages(missing, found):
-    """Flask and pytest import in this environment."""
+    """Flask, pytest and ipykernel (the notebooks' kernel) import in this environment."""
     ready = True
-    for name in ("flask", "pytest"):
+    for name in ("flask", "pytest", "ipykernel"):
         try:
             __import__(name)
             found.append(f"{name} {importlib.metadata.version(name)}")
@@ -66,6 +68,39 @@ def check_app(missing, found):
         missing.append(f"the app's tests did not pass ({summary}): tell your trainer")
     else:
         found.append(f"tests: {summary}")
+
+
+def check_kernel(missing, found):
+    """The notebooks' kernel runs the same Python as this terminal's python3."""
+    from jupyter_client.kernelspec import NoSuchKernel
+    from jupyter_client.manager import start_new_kernel
+
+    shell = shutil.which("python3")
+    terminal = subprocess.run([shell, "-c", "import sys; print(sys.prefix)"], capture_output=True,
+                              text=True, timeout=60).stdout.strip() if shell else ""
+    said = []
+
+    def keep(message):
+        if message["msg_type"] == "stream":
+            said.append(message["content"]["text"])
+
+    try:
+        manager, client = start_new_kernel(kernel_name=KERNEL, startup_timeout=60)
+    except (NoSuchKernel, RuntimeError, OSError) as failure:
+        missing.append(f"the notebooks' kernel {KERNEL} did not start ({failure}): run {SETUP}")
+        return
+    try:
+        client.execute_interactive("import sys; print(sys.prefix)", timeout=60, output_hook=keep)
+    finally:
+        client.stop_channels()
+        manager.shutdown_kernel(now=True)
+    kernel = "".join(said).strip()
+    if not terminal or not kernel or pathlib.Path(kernel).resolve() != pathlib.Path(terminal).resolve():
+        missing.append(f"the notebooks' kernel {KERNEL} runs the Python in {kernel or 'nothing'}, and this "
+                       f"terminal's python3 the one in {terminal or 'nothing'}: run {ACTIVATE}, then "
+                       f"python -m ipykernel install --user --name {KERNEL}, then run this check again")
+    else:
+        found.append("the notebooks' kernel runs this Python")
 
 
 def check_codex(missing, found):
@@ -95,12 +130,13 @@ def main():
     missing, found = [], []
     if check_python(missing, found) and check_packages(missing, found):
         check_app(missing, found)
+        check_kernel(missing, found)
     check_codex(missing, found)
     if missing:
         if found:
             print("OK: " + "; ".join(found))
         print("Missing:\n" + "\n".join(f"- {item}" for item in missing))
-        print("Fix each item, then run python reference-app/check_setup.py again.")
+        print("Fix each item, then run bash reference-app/setup.sh again.")
         return 1
     print("Setup OK: " + "; ".join(found))
     return 0

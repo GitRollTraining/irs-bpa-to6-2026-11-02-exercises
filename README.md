@@ -82,56 +82,27 @@ Use the path that `git pull` names.
 
 Week 2 works on one application, the case workbench in [reference-app](reference-app/README.md), and has Codex change it and run its tests. It has its own Python environment, made with venv at `reference-app/.venv`; week 1's notebooks keep theirs. Run each command in a terminal in the course folder (Terminal > New Terminal).
 
-1. Get week 2's files:
+1. Get week 2's files, then run week 2's setup script:
 
    ```sh
    cd ~/practice
    git pull
-   ```
-
-   If `git pull` stops and names a notebook you changed, follow [Get today's files](#get-todays-files).
-
-2. Check that Codex runs and is signed in:
-
-   ```sh
-   codex --version
-   codex login status
-   ```
-
-   `codex --version` prints a version number; if it says `command not found`, install Codex as in [Set up once](#set-up-once), step 1, and open a new terminal. If `codex login status` says you are not logged in, run `codex login --device-auth` in the hosted workspace (it gives a code to enter in your browser), or `codex login` on your own machine.
-
-3. Make week 2's Python environment:
-
-   ```sh
    bash reference-app/setup.sh
    ```
 
-   It runs `python3 -m venv .venv` and `pip install -r requirements.txt` in `reference-app`, which installs Flask and pytest. The first run needs internet access. It ends with `Done.`
+   `git pull` comes first because it brings the script. If it stops and names a notebook you changed, follow [Get today's files](#get-todays-files). The script makes week 2's Python environment at `reference-app/.venv` with venv and installs Flask, pytest and the notebooks' kernel into it; the first run needs internet access. Then it checks Python 3.10 or later, the packages, that the app's case list opens and its tests pass, that the notebooks' kernel runs the environment's Python, and that Codex answers and is signed in. Nothing is sent to a model. Continue when it prints `Setup OK`. If it prints `Missing`, follow each line and run the script again. If Codex is not installed or not signed in, the line says how to install it or sign in (in the hosted workspace, `codex login --device-auth` gives a code to enter in your browser).
 
-4. Turn the environment on in this terminal, and check the setup:
+2. Turn the environment on in this terminal:
 
    ```sh
    source reference-app/.venv/bin/activate
-   python reference-app/check_setup.py
    ```
 
-   Your prompt now starts with `(.venv)`. The check confirms Python 3.10 or later, the active environment, Flask and pytest, that the app's case list opens and its tests pass, and that Codex answers and is signed in. Nothing is sent to a model. Continue when it prints `Setup OK`. If it prints `Missing`, follow each line and run the check again.
-
-5. Run the app's tests, then the app:
-
-   ```sh
-   cd reference-app
-   pytest
-   flask --app app run
-   ```
-
-   `pytest` ends with a line such as `10 passed`. `flask` prints `Running on http://127.0.0.1:5000`: open that link (Ctrl+click, or Cmd+click on a Mac) to see the case list. Stop the app with Ctrl+C.
-
-In each new terminal, run `source ~/practice/reference-app/.venv/bin/activate` before you start Codex: Codex runs commands such as `pytest` with the Python of the terminal it starts in.
+   A script runs in a shell of its own, so it cannot turn the environment on in your terminal: this step does. Your prompt now starts with `(.venv)`. Each new terminal needs this step before you start Codex: Codex runs commands such as `pytest` with the Python of the terminal it starts in.
 
 ### If week 2 setup needs attention
 
-- **`python3` says `pyenv: version '3.12' is not installed`:** the course folder's `.python-version` names Python 3.12 for week 1's notebooks, and pyenv does not have it. `setup.sh` then makes the environment with the system Python. From then on, run the environment's own Python: turn the environment on (step 4), or run it by its path, `reference-app/.venv/bin/python reference-app/check_setup.py`.
+- **`python3` says `pyenv: version '3.12' is not installed`:** the course folder's `.python-version` names Python 3.12 for week 1's notebooks, and pyenv does not have it. `setup.sh` then makes the environment with the system Python. From then on, run the environment's own Python: turn the environment on (step 2), or run it by its path, `reference-app/.venv/bin/python reference-app/check_setup.py`.
 - **`setup.sh` prints `Missing: Python 3.10 or later`, or venv says `ensurepip is not available`:** tell your trainer. The workspace needs a newer Python or its venv package.
 - **The check says the environment is not active:** run `source reference-app/.venv/bin/activate` from the course folder. Each new terminal needs it.
 - **The app's link does not open from the hosted workspace:** run `echo "https://5000-$WEB_HOST"` in its terminal and open the address it prints. `WEB_HOST` is the workstation's own address ([Google Cloud Workstations: access HTTP servers running on a workstation](https://docs.cloud.google.com/workstations/docs/access-http-servers-running-on-workstations)).
@@ -141,7 +112,7 @@ In each new terminal, run `source ~/practice/reference-app/.venv/bin/activate` b
 | Question | Who answers | Proposed answer, and its source |
 |---|---|---|
 | Whether the hosted workspace's `python3` is 3.10 or later and includes venv | the hosting team | Yes; `setup.sh` stops with `Missing: Python 3.10 or later` if not. pytest 9 needs Python 3.10 or later. |
-| Whether Codex starts already signed in, so that a learner never sees a sign-in | the hosting team | Yes: the course's setup plan says Codex in the hosted workspace runs on an API key the course team configures; step 2's `codex login status` then says logged in. |
+| Whether Codex starts already signed in, so that a learner never sees a sign-in | the hosting team | Yes: the course's setup plan says Codex in the hosted workspace runs on an API key the course team configures; the setup script's Codex check then says signed in. |
 | How a learner opens the app's page from the hosted workspace | the hosting team | The link `flask` prints; else `https://5000-$WEB_HOST`, as Google's page above gives it. Not yet tried in the class's workspace. |
 | How a learner reaches the trainer when a step says "tell your trainer" | the trainers | In the live session, on Microsoft Teams, which the course's setup plan names for every live session. |
 

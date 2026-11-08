@@ -1,7 +1,8 @@
 #!/bin/sh
-# Week 2's Python environment: bash reference-app/setup.sh, from the course folder.
-# Makes reference-app/.venv with venv and installs the app's packages (Flask, pytest) into it.
-# Running it again keeps the environment and installs only what changed.
+# Week 2's setup: bash reference-app/setup.sh, from the course folder, after git pull.
+# Makes reference-app/.venv with venv, installs the app's packages (Flask, pytest, the notebooks'
+# kernel) into it, then runs check_setup.py in it: Python, the packages, the app's page and tests,
+# the notebooks' kernel, and Codex. Running it again keeps the environment and installs only what changed.
 set -e
 cd "$(dirname "$0")"
 
@@ -20,6 +21,9 @@ echo "Making the environment: python3 -m venv .venv"
 $PYTHON -m venv .venv
 echo "Installing the app's packages: pip install -r requirements.txt"
 .venv/bin/python -m pip install --quiet --disable-pip-version-check -r requirements.txt
-echo "Done. Next, in this terminal:"
-echo "  source reference-app/.venv/bin/activate"
-echo "  python reference-app/check_setup.py"
+
+# The environment is on for this script only: a script cannot turn it on in the learner's terminal.
+. .venv/bin/activate
+echo "Checking the setup: python reference-app/check_setup.py"
+python check_setup.py
+echo "Next, in this terminal and in each new one: source reference-app/.venv/bin/activate"
