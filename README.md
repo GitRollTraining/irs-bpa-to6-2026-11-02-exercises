@@ -157,6 +157,12 @@ In each new terminal, run `source ~/practice/reference-app/.venv/bin/activate` b
 | Codex | [Three exercise notebooks](week-01/day-special/README.md) | [Codex CLI: a hands-on start](week-01/day-special/README.md) |
 | Git | [Four exercise notebooks](week-01/day-git/README.md) | [Git basics](week-01/day-git/README.md) |
 
+## Week 2
+
+| Day | Notebook | Exercises |
+|---|---|---|
+| 1 | [Three exercise notebooks](week-02/day-01/README.md) | [Coding agents: Codex, AGENTS.md and a skill](week-02/day-01/README.md) |
+
 ## When an exercise needs AI access
 
 Two exercises call a model through `model.py`, which sends each request through the Codex CLI that you signed in to in step 1: `same-note-five-times` and `system-prompt` on Day 2. Before those exercises, check access from the course folder:
@@ -167,7 +173,7 @@ uv run check_setup.py --check-model
 
 This checks only the route to the model, with one short live request. If it reports a sign-in problem, run `codex login` again. The setup check and the exercise checks do not call a live model.
 
-Only the Codex exercises in [week-01/day-special](week-01/day-special/README.md) and [week-01/codex](week-01/codex/README.md) ask you to start a coding agent. Follow their instructions for launching it.
+Only the Codex exercises in [week-01/day-special](week-01/day-special/README.md), [week-01/codex](week-01/codex/README.md) and [week-02/day-01](week-02/day-01/README.md) ask you to start a coding agent. Follow their instructions for launching it.
 
 ## Start an exercise again
 

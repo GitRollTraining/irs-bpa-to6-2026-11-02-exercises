@@ -1,0 +1,16 @@
+[
+  {"case_id": "CS-2026-0001", "business_name": "Bluefin Harbor Bakery", "tax_year": 2023, "status": "Open", "opened": "2026-03-02", "closed": null, "assessed": 18400, "paid": 6150, "missed_filings": 1},
+  {"case_id": "CS-2026-0002", "business_name": "Copperline Auto Repair", "tax_year": 2022, "status": "In review", "opened": "2026-01-19", "closed": null, "assessed": 42750, "paid": 12000, "missed_filings": 2},
+  {"case_id": "CS-2026-0003", "business_name": "Maple Row Landscaping", "tax_year": 2023, "status": "Open", "opened": "2026-04-14", "closed": null, "assessed": 9800, "paid": 2300, "missed_filings": 0},
+  {"case_id": "CS-2026-0004", "business_name": "Northgate Print Studio", "tax_year": 2024, "status": "Open", "opened": "2026-06-08", "closed": null, "assessed": 5600, "paid": 0, "missed_filings": 1},
+  {"case_id": "CS-2026-0005", "business_name": "Silver Pine Catering", "tax_year": 2022, "status": "Closed", "opened": "2026-01-05", "closed": "2026-05-29", "assessed": 23100, "paid": 23100, "missed_filings": 0},
+  {"case_id": "CS-2026-0006", "business_name": "Tidewater Bike Works", "tax_year": 2023, "status": "In review", "opened": "2026-02-23", "closed": null, "assessed": 31200, "paid": 4500, "missed_filings": 3},
+  {"case_id": "CS-2026-0007", "business_name": "Red Clay Pottery Co.", "tax_year": 2024, "status": "Open", "opened": "2026-07-21", "closed": null, "assessed": 2950, "paid": 950, "missed_filings": 0},
+  {"case_id": "CS-2026-0008", "business_name": "Lantern Street Books", "tax_year": 2023, "status": "Open", "opened": "2026-05-11", "closed": null, "assessed": 14300, "paid": 7000, "missed_filings": 2},
+  {"case_id": "CS-2026-0009", "business_name": "Granite Ridge Hauling", "tax_year": 2022, "status": "In review", "opened": "2026-02-02", "closed": null, "assessed": 58900, "paid": 20000, "missed_filings": 1},
+  {"case_id": "CS-2026-0010", "business_name": "Orchard Lane Dental Lab", "tax_year": 2024, "status": "Open", "opened": "2026-08-17", "closed": null, "assessed": 7400, "paid": 1200, "missed_filings": 0},
+  {"case_id": "CS-2026-0011", "business_name": "Kestrel Signworks", "tax_year": 2023, "status": "Closed", "opened": "2026-03-16", "closed": "2026-09-04", "assessed": 11250, "paid": 11250, "missed_filings": 1},
+  {"case_id": "CS-2026-0012", "business_name": "Driftwood Coffee Roasters", "tax_year": 2024, "status": "Open", "opened": "2026-09-08", "closed": null, "assessed": 4100, "paid": 0, "missed_filings": 2},
+  {"case_id": "CS-2026-0013", "business_name": "Bramble & Birch Florists", "tax_year": 2023, "status": "In review", "opened": "2026-04-27", "closed": null, "assessed": 16800, "paid": 3600, "missed_filings": 1},
+  {"case_id": "CS-2026-0014", "business_name": "Quarry Hill Plumbing", "tax_year": 2022, "status": "Open", "opened": "2026-01-26", "closed": null, "assessed": 27500, "paid": 9500, "missed_filings": 4}
+]
