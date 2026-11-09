@@ -46,7 +46,7 @@ Use VS Code, or Code OSS in the hosted workspace, with the Python and Jupyter ex
 
    `uv sync` makes `.venv` with the course's Python packages; the first run needs internet access. `check_setup.py` checks Python, Git and the Codex CLI, then runs every cell of every notebook in a temporary copy of the course, with nothing sent to a model. It takes a minute or two. Continue when it prints `Setup OK`. If it prints `Missing`, follow each message and run the check again.
 
-6. Open the day's notebook, select **.venv** as its kernel (Select Kernel > Python Environments), and run its first cell.
+6. Open the day's notebook, select the course folder's **.venv** as its kernel (Select Kernel > Python Environments), and run its first cell. Both weeks use this same environment.
 
 For an exercise's terminal commands, run `source .venv/bin/activate` first in each new terminal.
 
@@ -78,6 +78,36 @@ git pull
 
 Use the path that `git pull` names.
 
+## Set up for week 2
+
+Week 2 uses the same uv environment as week 1: `.venv` in the course folder. Flask, pytest and the notebook kernel are installed together by `uv sync`. No separate environment or system package installation is needed.
+
+1. Open a terminal in the course folder (the folder containing `pyproject.toml`) and run:
+
+   ```sh
+   git pull
+   uv sync
+   uv run check_setup.py
+   ```
+
+   If `git pull` stops and names a notebook you changed, follow [Get today's files](#get-todays-files). The first sync needs internet access. Continue when the check prints `Setup OK`; follow any `Missing` messages before continuing.
+
+2. In the notebook, click **Select Kernel > Python Environments** and select the course folder's `.venv/bin/python`. If you previously selected another environment, restart the kernel and run from cell 1.
+
+3. Before starting Codex, activate the same environment in each new terminal, from the course folder:
+
+   ```sh
+   source .venv/bin/activate
+   ```
+
+The app you change is inside each exercise, for example [`week-02/day-01/exercise-01-fix-a-wrong-value/reference-app`](week-02/day-01/exercise-01-fix-a-wrong-value/reference-app/README.md). Each exercise supplies its own starting state; worked solutions are in `answers/`. There is no root `reference-app` folder.
+
+### If week 2 setup needs attention
+
+- **The kernel is missing:** run `uv sync`, then refresh the Python environment picker. If needed, run **Python: Select Interpreter** from the Command Palette, choose **Enter interpreter path**, and browse to the course folder's `.venv/bin/python`. Reopen the notebook's kernel picker and select it.
+- **You followed older instructions for a separate week 2 environment or saw `ensurepip is not available`:** use `uv sync` in the course folder and select `.venv/bin/python`. In each new terminal, activate it with `source .venv/bin/activate`.
+- **The app's link does not open from the hosted workspace:** run `echo "https://5000-$WEB_HOST"` in its terminal and open the address it prints. `WEB_HOST` is the workstation's own address ([Google Cloud Workstations: access HTTP servers running on a workstation](https://docs.cloud.google.com/workstations/docs/access-http-servers-running-on-workstations)).
+
 ## Week 1
 
 | Day | Notebook | Exercises |
@@ -90,6 +120,12 @@ Use the path that `git pull` names.
 | Codex | [Three exercise notebooks](week-01/day-special/README.md) | [Codex CLI: a hands-on start](week-01/day-special/README.md) |
 | Git | [Four exercise notebooks](week-01/day-git/README.md) | [Git basics](week-01/day-git/README.md) |
 
+## Week 2
+
+| Day | Notebook | Exercises |
+|---|---|---|
+| 1 | [Three exercise notebooks](week-02/day-01/README.md) | [Coding agents: Codex, AGENTS.md and a skill](week-02/day-01/README.md) |
+
 ## When an exercise needs AI access
 
 Two exercises call a model through `model.py`, which sends each request through the Codex CLI that you signed in to in step 1: `same-note-five-times` and `system-prompt` on Day 2. Before those exercises, check access from the course folder:
@@ -100,7 +136,7 @@ uv run check_setup.py --check-model
 
 This checks only the route to the model, with one short live request. If it reports a sign-in problem, run `codex login` again. The setup check and the exercise checks do not call a live model.
 
-Only the Codex exercises in [week-01/day-special](week-01/day-special/README.md) and [week-01/codex](week-01/codex/README.md) ask you to start a coding agent. Follow their instructions for launching it.
+Only the Codex exercises in [week-01/day-special](week-01/day-special/README.md), [week-01/codex](week-01/codex/README.md) and [week-02/day-01](week-02/day-01/README.md) ask you to start a coding agent. Follow their instructions for launching it.
 
 ## Start an exercise again
 
