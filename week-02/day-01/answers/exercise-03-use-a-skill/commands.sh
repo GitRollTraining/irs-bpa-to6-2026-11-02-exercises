@@ -1,6 +1,6 @@
 #!/bin/sh
 # Exercise 3's answer, applied and checked with no model call: sh week-02/day-01/answers/exercise-03-use-a-skill/commands.sh
-# Run it from the course folder, with week 2's environment active (source reference-app/.venv/bin/activate).
+# Run it from the course folder, with the course environment active (source .venv/bin/activate).
 # It installs the skill into the exercise's folder as step 2 does (this needs internet access and Node.js),
 # copies the kept run's three plan files and changes, then runs the notebook's check (cell 4).
 set -e
