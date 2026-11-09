@@ -1,6 +1,6 @@
 #!/bin/sh
 # Exercise 2's answer, applied and checked with no model call: sh week-02/day-01/answers/exercise-02-write-agents-md/commands.sh
-# Run it from the course folder, with week 2's environment active (source reference-app/.venv/bin/activate).
+# Run it from the course folder, with the course environment active (source .venv/bin/activate).
 # It copies the kept run's AGENTS.md and changes into the exercise's folder, runs pytest there as the
 # kept run's agent did after its change, then runs the notebook's check (cell 4).
 set -e

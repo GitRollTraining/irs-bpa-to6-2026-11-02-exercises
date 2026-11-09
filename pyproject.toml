@@ -6,6 +6,7 @@ version = "0.1.0"
 description = "The course's practice exercises: the day notebooks, their labs and their checks."
 requires-python = ">=3.10"
 dependencies = [
+    "flask==3.1.3",
     "pytest==9.1.0",
     "jsonschema==4.26.0",
     "ipykernel==7.3.0",

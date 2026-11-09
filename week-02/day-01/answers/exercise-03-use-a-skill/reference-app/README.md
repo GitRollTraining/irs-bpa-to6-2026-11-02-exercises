@@ -19,12 +19,12 @@ The selection score runs from 0 to 100 and adds three factors: 1 point per $1,00
 
 ## Run it
 
-Needs Python 3.10 or later. From this folder (`reference-app`), in a terminal:
+Uses the course's shared uv environment. From the course folder (containing `pyproject.toml`), run:
 
 ```sh
-python3 -m venv .venv
+uv sync
 source .venv/bin/activate
-pip install -r requirements.txt
+cd week-02/day-01/answers/exercise-03-use-a-skill/reference-app
 flask --app app run
 ```
 
@@ -32,7 +32,7 @@ Open http://127.0.0.1:5000 in a browser. Stop the app with Ctrl+C.
 
 ## Run its tests
 
-With `.venv` active, from this folder:
+With the course folder's `.venv` active, from this app folder:
 
 ```sh
 pytest

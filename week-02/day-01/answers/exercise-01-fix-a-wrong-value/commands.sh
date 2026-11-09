@@ -1,6 +1,6 @@
 #!/bin/sh
 # Exercise 1's answer, applied and checked with no model call: sh week-02/day-01/answers/exercise-01-fix-a-wrong-value/commands.sh
-# Run it from the course folder, with week 2's environment active (source reference-app/.venv/bin/activate).
+# Run it from the course folder, with the course environment active (source .venv/bin/activate).
 # It copies the kept run's change into the exercise's folder, then runs the notebook's check (cell 3).
 set -e
 EX=week-02/day-01/exercise-01-fix-a-wrong-value
