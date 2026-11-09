@@ -1,0 +1,9 @@
+# Week 2, day 2: mapping a codebase, and testing it
+
+Three exercises, in order, on one made-up batch job, `payment_job`. Each one starts from the job as the one before it ends. Each exercise builds its own `lab` folder, a Git repository of its own: run its reset command first, as its step 1 says.
+
+From the course folder (containing `pyproject.toml`), run `uv sync`: it adds coverage.py and pydeps to the course's `.venv`. Select the course folder's `.venv/bin/python` as the notebook kernel, and run `source .venv/bin/activate` in each new terminal before starting Codex. Full instructions: [Set up for week 2](../../README.md#set-up-for-week-2).
+
+1. [Write a mapping skill and correct its map](exercise-01-write-a-mapping-skill/exercise.ipynb). What you do: map a codebase with your own skill, and correct the map. Where you work: `exercise-01-write-a-mapping-skill/lab`, in the notebook and a terminal. Done when: cell 6 prints `Done:`. [Start](exercise-01-write-a-mapping-skill/) · [Answer](answers/exercise-01-write-a-mapping-skill/)
+2. [From a test plan to full branch coverage](exercise-02-test-plan-to-branch-coverage/exercise.ipynb). What you do: derive tests from a rule and reach full branch coverage. Where you work: `exercise-02-test-plan-to-branch-coverage/lab`, in the notebook and a terminal. Done when: cell 3 prints `Done:`. [Start](exercise-02-test-plan-to-branch-coverage/) · [Answer](answers/exercise-02-test-plan-to-branch-coverage/)
+3. [Add a rule test first](exercise-03-add-a-rule-test-first/exercise.ipynb). What you do: add a rule test first, its file reader stubbed. Where you work: `exercise-03-add-a-rule-test-first/lab`, in the notebook and a terminal. Done when: cell 3 prints `Done:`. [Start](exercise-03-add-a-rule-test-first/) · [Answer](answers/exercise-03-add-a-rule-test-first/)

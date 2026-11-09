@@ -24,7 +24,7 @@ import time
 
 KIT = pathlib.Path(__file__).resolve().parent
 STAND_INS = KIT / "tools" / "stand-ins"
-PACKAGES = ("flask", "pytest", "jsonschema", "ipykernel", "nbclient", "nbformat")
+PACKAGES = ("flask", "pytest", "jsonschema", "ipykernel", "nbclient", "nbformat", "coverage", "pydeps")
 MISSING_FILE = re.compile(r"No such file or directory|can't open file|not a git repository", re.I)
 CODEX_INSTALL = "curl -fsSL https://chatgpt.com/codex/install.sh | sh"
 
@@ -190,6 +190,9 @@ def run_notebooks(course, env, missing, found):
         day = path.parent
         where = day.relative_to(course).as_posix()
         began = time.time()
+        # An exercise notebook whose start.py builds lab/ runs after its reset, as a learner's does.
+        if path.name == "exercise.ipynb" and (day / "start.py").is_file():
+            subprocess.run([sys.executable, "reset.py", day.name], cwd=course, capture_output=True, env=env)
         nb = nbformat.read(path, as_version=4)
         client = nbclient.NotebookClient(nb, kernel_name="course-check", timeout=600, allow_errors=True,
                                          resources={"metadata": {"path": str(day)}})

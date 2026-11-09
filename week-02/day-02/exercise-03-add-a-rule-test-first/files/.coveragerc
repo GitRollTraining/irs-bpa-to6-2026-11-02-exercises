@@ -1,0 +1,6 @@
+# Today's tests are of the rule, so coverage measures payment_job/rules.py only.
+[run]
+include = payment_job/rules.py
+
+[report]
+show_missing = True
