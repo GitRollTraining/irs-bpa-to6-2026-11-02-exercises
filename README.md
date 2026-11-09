@@ -85,7 +85,6 @@ Week 2 works on one application, the case workbench in [reference-app](reference
 1. Get week 2's files, then run week 2's setup script:
 
    ```sh
-   cd ~/practice
    git pull
    bash reference-app/setup.sh
    ```
