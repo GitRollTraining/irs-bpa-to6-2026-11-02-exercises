@@ -177,12 +177,9 @@ def run_notebooks(course, env, missing, found):
     import nbformat
 
 
-    # An exercise that works in its own reference-app runs on that app's environment, and
-    # reference-app/check_setup.py checks it there; this kernel (week 1's) has none of its packages.
     notebooks = [p for p in sorted(course.glob("week-*/day-*/week-*-day-*.ipynb"))
                  + sorted(course.glob("week-*/day-*/exercise-*/exercise.ipynb"))
-                 if not (p.parent / "reference-app").is_dir()
-                 and any(c.cell_type == "code" for c in nbformat.read(p, as_version=4).cells)]
+                 if any(c.cell_type == "code" for c in nbformat.read(p, as_version=4).cells)]
     if not notebooks:
         missing.append("the notebooks: none found; run this check in the course folder")
         return
