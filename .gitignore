@@ -14,3 +14,6 @@ week-01/day-02/model-and-reasoning-level/lab/
 # Written by a Codex exercise's setup cell, for Codex to work on:
 week-*/day-*/exercise-*/practice/
 week-*/day-*/answers/exercise-*/practice/
+
+# Built by week 2 day 2's start.py, through reset.py; each is a Git repository of its own:
+week-02/day-02/exercise-*/lab/
