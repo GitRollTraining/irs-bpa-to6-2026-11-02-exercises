@@ -78,6 +78,43 @@ git pull
 
 Use the path that `git pull` names.
 
+## Set up for week 2
+
+Week 2 works on one application, the case workbench in [reference-app](reference-app/README.md), and has Codex change it and run its tests. It has its own Python environment, made with venv at `reference-app/.venv`; week 1's notebooks keep theirs. Run each command in a terminal in the course folder (Terminal > New Terminal).
+
+1. Get week 2's files, then run week 2's setup script:
+
+   ```sh
+   git pull
+   bash reference-app/setup.sh
+   ```
+
+   `git pull` comes first because it brings the script. If it stops and names a notebook you changed, follow [Get today's files](#get-todays-files). The script makes week 2's Python environment at `reference-app/.venv` with venv and installs Flask, pytest and the notebooks' kernel into it; the first run needs internet access. Then it checks Python 3.10 or later, the packages, that the app's case list opens and its tests pass, that the notebooks' kernel runs the environment's Python, and that Codex answers and is signed in. Nothing is sent to a model. Continue when it prints `Setup OK`. If it prints `Missing`, follow each line and run the script again. If Codex is not installed or not signed in, the line says how to install it or sign in (in the hosted workspace, `codex login --device-auth` gives a code to enter in your browser).
+
+2. Turn the environment on in this terminal:
+
+   ```sh
+   source reference-app/.venv/bin/activate
+   ```
+
+   A script runs in a shell of its own, so it cannot turn the environment on in your terminal: this step does. Your prompt now starts with `(.venv)`. Each new terminal needs this step before you start Codex: Codex runs commands such as `pytest` with the Python of the terminal it starts in.
+
+### If week 2 setup needs attention
+
+- **`python3` says `pyenv: version '3.12' is not installed`:** the course folder's `.python-version` names Python 3.12 for week 1's notebooks, and pyenv does not have it. `setup.sh` then makes the environment with the system Python. From then on, run the environment's own Python: turn the environment on (step 2), or run it by its path, `reference-app/.venv/bin/python reference-app/check_setup.py`.
+- **`setup.sh` prints `Missing: Python 3.10 or later`, or venv says `ensurepip is not available`:** tell your trainer. The workspace needs a newer Python or its venv package.
+- **The check says the environment is not active:** run `source reference-app/.venv/bin/activate` from the course folder. Each new terminal needs it.
+- **The app's link does not open from the hosted workspace:** run `echo "https://5000-$WEB_HOST"` in its terminal and open the address it prints. `WEB_HOST` is the workstation's own address ([Google Cloud Workstations: access HTTP servers running on a workstation](https://docs.cloud.google.com/workstations/docs/access-http-servers-running-on-workstations)).
+
+### Not known yet, for the course team
+
+| Question | Who answers | Proposed answer, and its source |
+|---|---|---|
+| Whether the hosted workspace's `python3` is 3.10 or later and includes venv | the hosting team | Yes; `setup.sh` stops with `Missing: Python 3.10 or later` if not. pytest 9 needs Python 3.10 or later. |
+| Whether Codex starts already signed in, so that a learner never sees a sign-in | the hosting team | Yes: the course's setup plan says Codex in the hosted workspace runs on an API key the course team configures; the setup script's Codex check then says signed in. |
+| How a learner opens the app's page from the hosted workspace | the hosting team | The link `flask` prints; else `https://5000-$WEB_HOST`, as Google's page above gives it. Not yet tried in the class's workspace. |
+| How a learner reaches the trainer when a step says "tell your trainer" | the trainers | In the live session, on Microsoft Teams, which the course's setup plan names for every live session. |
+
 ## Week 1
 
 | Day | Notebook | Exercises |
@@ -90,6 +127,12 @@ Use the path that `git pull` names.
 | Codex | [Three exercise notebooks](week-01/day-special/README.md) | [Codex CLI: a hands-on start](week-01/day-special/README.md) |
 | Git | [Four exercise notebooks](week-01/day-git/README.md) | [Git basics](week-01/day-git/README.md) |
 
+## Week 2
+
+| Day | Notebook | Exercises |
+|---|---|---|
+| 1 | [Three exercise notebooks](week-02/day-01/README.md) | [Coding agents: Codex, AGENTS.md and a skill](week-02/day-01/README.md) |
+
 ## When an exercise needs AI access
 
 Two exercises call a model through `model.py`, which sends each request through the Codex CLI that you signed in to in step 1: `same-note-five-times` and `system-prompt` on Day 2. Before those exercises, check access from the course folder:
@@ -100,7 +143,7 @@ uv run check_setup.py --check-model
 
 This checks only the route to the model, with one short live request. If it reports a sign-in problem, run `codex login` again. The setup check and the exercise checks do not call a live model.
 
-Only the Codex exercises in [week-01/day-special](week-01/day-special/README.md) and [week-01/codex](week-01/codex/README.md) ask you to start a coding agent. Follow their instructions for launching it.
+Only the Codex exercises in [week-01/day-special](week-01/day-special/README.md), [week-01/codex](week-01/codex/README.md) and [week-02/day-01](week-02/day-01/README.md) ask you to start a coding agent. Follow their instructions for launching it.
 
 ## Start an exercise again
 
