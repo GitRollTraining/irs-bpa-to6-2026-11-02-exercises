@@ -58,7 +58,7 @@ The curated file is the day's own file, `days/day-03/curated.md`. All headings b
 | "Codex reads AGENTS.md files before doing any work." | Run a coding agent as a second reviewer, line 218 | deck slide 12 |
 | "should favor approving a CL once it is in a state where it definitely improves the overall code health of the system being worked on, even if the CL isn’t perfect." | Approve a change that improves the code, line 146 | not on a slide (deck slide 11 says it in other words) |
 | "Check every rule that Codex cites against the diff yourself." | Run a coding agent as a second reviewer, line 237 | not on a slide (deck slide 12 says it in other words) |
-| "Squash merging works best for short-lived branches." | Choose a merge method, line 176 | deck slide 16 |
+| "preserves every commit from the pull request branch and adds an explicit merge point." | Choose a merge method, line 169 | not on a slide (deck slide 15 says it in other words) |
 
 ## Quotes with no source in the day's files
 

@@ -37,7 +37,6 @@ The curated file is the day's own file, `days/day-03/curated.md`. Both quotes be
 | Quote in the notebook | Curated file: heading and line | Deck slide |
 |---|---|---|
 | "a list of every match, in document order" | Know what each search call returns, line 586 | not on a slide (deck slide 41 says it in other words) |
-| "On a return with no W-2 it is `[]`, an empty list." | Know what each search call returns, line 604 | not on a slide (deck slide 42 says it in other words) |
 
 ## Quotes with no source in the day's files
 
