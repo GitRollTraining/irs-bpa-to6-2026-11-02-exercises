@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Written for the course: a small schema for its sample returns, not an IRS schema. It keeps the
+     shape of an MeF return (a ReturnHeader, then ReturnData holding the Form 1040) and only the
+     fields the exercises read. -->
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema"
+           xmlns:efile="http://www.irs.gov/efile"
+           targetNamespace="http://www.irs.gov/efile"
+           elementFormDefault="qualified">
+  <xs:import namespace="urn:course:instructor" schemaLocation="course.xsd"/>
+
+  <xs:element name="Return">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element name="ReturnHeader" type="efile:ReturnHeaderType"/>
+        <xs:element name="ReturnData" type="efile:ReturnDataType"/>
+      </xs:sequence>
+      <xs:attribute name="returnVersion" type="xs:string" use="required"/>
+    </xs:complexType>
+  </xs:element>
+
+  <xs:complexType name="ReturnHeaderType">
+    <xs:sequence>
+      <xs:element name="ReturnTs" type="xs:dateTime"/>
+      <xs:element name="TaxYr" type="xs:gYear"/>
+      <xs:element name="SoftwareId" type="xs:string"/>
+      <xs:element name="ReturnTypeCd" type="xs:string"/>
+      <xs:element name="Filer">
+        <xs:complexType>
+          <xs:sequence>
+            <xs:element name="PrimarySSN" type="efile:SSNType"/>
+            <xs:element name="NameLine1Txt" type="xs:string"/>
+            <xs:element name="USAddress">
+              <xs:complexType>
+                <xs:sequence>
+                  <xs:element name="AddressLine1Txt" type="xs:string"/>
+                  <xs:element name="CityNm" type="xs:string"/>
+                  <xs:element name="StateAbbreviationCd" type="xs:string"/>
+                  <xs:element name="ZIPCd" type="xs:string"/>
+                </xs:sequence>
+              </xs:complexType>
+            </xs:element>
+          </xs:sequence>
+        </xs:complexType>
+      </xs:element>
+    </xs:sequence>
+    <xs:attribute name="binaryAttachmentCnt" type="xs:nonNegativeInteger" use="required"/>
+  </xs:complexType>
+
+  <xs:complexType name="ReturnDataType">
+    <xs:sequence>
+      <xs:element name="IRS1040" type="efile:IRS1040Type"/>
+      <xs:element name="IRSW2" type="efile:IRSW2Type" minOccurs="0" maxOccurs="unbounded"/>
+    </xs:sequence>
+    <xs:attribute name="documentCnt" type="xs:positiveInteger" use="required"/>
+  </xs:complexType>
+
+  <xs:complexType name="IRS1040Type">
+    <xs:sequence>
+      <xs:element name="IndividualReturnFilingStatusCd" type="xs:string"/>
+      <!-- A dependent may be missing, or repeat up to 100 times, as the MeF schema allows. -->
+      <xs:element name="DependentDetail" type="efile:DependentDetailType" minOccurs="0" maxOccurs="100"/>
+      <xs:element name="WagesAmt" type="xs:nonNegativeInteger"/>
+      <!-- Taxable interest may be missing: a return with none leaves the element out. -->
+      <xs:element name="TaxableInterestAmt" type="xs:nonNegativeInteger" minOccurs="0"/>
+      <xs:element name="AdjustedGrossIncomeAmt" type="xs:integer"/>
+      <xs:element name="TotalTaxAmt" type="xs:nonNegativeInteger"/>
+      <xs:any namespace="urn:course:instructor" processContents="strict" minOccurs="0"/>
+    </xs:sequence>
+    <xs:attribute name="documentId" type="xs:string" use="required"/>
+  </xs:complexType>
+
+  <xs:complexType name="DependentDetailType">
+    <xs:sequence>
+      <xs:element name="DependentFirstNm" type="xs:string"/>
+      <xs:element name="DependentLastNm" type="xs:string"/>
+      <xs:element name="DependentSSN" type="efile:SSNType"/>
+      <xs:element name="DependentRelationshipCd" type="xs:string"/>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="IRSW2Type">
+    <xs:sequence>
+      <xs:element name="EmployeeSSN" type="efile:SSNType"/>
+      <xs:element name="EmployerEIN" type="xs:string"/>
+      <xs:element name="WagesAmt" type="xs:nonNegativeInteger"/>
+    </xs:sequence>
+    <xs:attribute name="documentId" type="xs:string" use="required"/>
+  </xs:complexType>
+
+  <xs:simpleType name="SSNType">
+    <xs:restriction base="xs:string">
+      <xs:pattern value="[0-9]{9}"/>
+    </xs:restriction>
+  </xs:simpleType>
+</xs:schema>
