@@ -58,7 +58,7 @@
     <xs:sequence>
       <xs:element name="IndividualReturnFilingStatusCd" type="xs:string"/>
       <!-- A dependent may be missing, or repeat up to four times. -->
-      <xs:element name="DependentDetail" type="efile:DependentDetailType" minOccurs="0" maxOccurs="4"/>
+      <xs:element name="DependentDetail" type="efile:DependentDetailType" minOccurs="0" maxOccurs="100"/>
       <xs:element name="WagesAmt" type="xs:nonNegativeInteger"/>
       <!-- Taxable interest may be missing: a return with none leaves the element out. -->
       <xs:element name="TaxableInterestAmt" type="xs:nonNegativeInteger" minOccurs="0"/>
