@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Written for the course: the instructor-only label, in the course's own namespace. No real
+     return holds it. -->
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema"
+           targetNamespace="urn:course:instructor"
+           elementFormDefault="qualified">
+  <xs:element name="ReviewLabel" type="xs:string"/>
+</xs:schema>
