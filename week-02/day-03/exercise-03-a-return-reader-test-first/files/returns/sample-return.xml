@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Made up for the course: no real taxpayer and no real return. Its parts and tag names follow
+     the IRS Modernized e-File (MeF) conventions; the course wrote its schema, schema/return.xsd. -->
+<Return xmlns="http://www.irs.gov/efile" xmlns:course="urn:course:instructor" returnVersion="2023v5.0">
+  <ReturnHeader binaryAttachmentCnt="0">
+    <ReturnTs>2024-03-04T09:30:00-05:00</ReturnTs>
+    <TaxYr>2023</TaxYr>
+    <SoftwareId>00000000</SoftwareId>
+    <ReturnTypeCd>1040</ReturnTypeCd>
+    <Filer>
+      <PrimarySSN>000000001</PrimarySSN>
+      <NameLine1Txt>ALEX Q SAMPLE</NameLine1Txt>
+      <USAddress>
+        <AddressLine1Txt>100 EXAMPLE ST</AddressLine1Txt>
+        <CityNm>ANYTOWN</CityNm>
+        <StateAbbreviationCd>MD</StateAbbreviationCd>
+        <ZIPCd>20000</ZIPCd>
+      </USAddress>
+    </Filer>
+  </ReturnHeader>
+  <ReturnData documentCnt="2">
+    <IRS1040 documentId="IRS1040-0001">
+      <IndividualReturnFilingStatusCd>1</IndividualReturnFilingStatusCd>
+      <DependentDetail>
+        <DependentFirstNm>JORDAN</DependentFirstNm>
+        <DependentLastNm>SAMPLE</DependentLastNm>
+        <DependentSSN>000000002</DependentSSN>
+        <DependentRelationshipCd>DAUGHTER</DependentRelationshipCd>
+      </DependentDetail>
+      <WagesAmt>52340</WagesAmt>
+      <TaxableInterestAmt>120</TaxableInterestAmt>
+      <AdjustedGrossIncomeAmt>52460</AdjustedGrossIncomeAmt>
+      <TotalTaxAmt>3912</TotalTaxAmt>
+      <course:ReviewLabel>not selected: the wages match the W-2</course:ReviewLabel>
+    </IRS1040>
+    <IRSW2 documentId="IRSW2-0001">
+      <EmployeeSSN>000000001</EmployeeSSN>
+      <EmployerEIN>000000000</EmployerEIN>
+      <WagesAmt>52340</WagesAmt>
+    </IRSW2>
+  </ReturnData>
+</Return>
