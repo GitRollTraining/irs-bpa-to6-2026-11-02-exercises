@@ -8,7 +8,7 @@
   <tbody>
     {% for case in cases %}
     <tr>
-      <td><a href="{{ url_for('case_page', case_id=case.case_id) }}">{{ case.case_id }}</a></td>
+      <td><a href="{{ url_for('case_page', case_id=case.case_id) }}">{{ case.case_id }}</a>{% if case.score >= 50 %} <span>Review first</span>{% endif %}</td>
       <td>{{ case.business_name }}</td>
       <td>{{ case.tax_year }}</td>
       <td>{{ case.status }}</td>

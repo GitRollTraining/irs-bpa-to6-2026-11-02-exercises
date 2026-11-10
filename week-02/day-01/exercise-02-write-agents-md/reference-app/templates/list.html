@@ -3,7 +3,7 @@
 <h1>Cases</h1>
 <table>
   <thead>
-    <tr><th>Case</th><th>Business</th><th>Tax year</th><th>Status</th><th>Score</th></tr>
+    <tr><th>Case</th><th>Business</th><th>Tax year</th><th>Status</th><th>Balance due</th><th>Score</th></tr>
   </thead>
   <tbody>
     {% for case in cases %}
@@ -12,6 +12,7 @@
       <td>{{ case.business_name }}</td>
       <td>{{ case.tax_year }}</td>
       <td>{{ case.status }}</td>
+      <td class="number">{{ case.balance_due | money }}</td>
       <td class="number">{{ case.score }}</td>
     </tr>
     {% endfor %}
