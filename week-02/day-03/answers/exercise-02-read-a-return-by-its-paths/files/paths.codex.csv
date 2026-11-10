@@ -1,0 +1,4 @@
+field,path,label
+wages on Form 1040,efile:ReturnData/efile:IRS1040/efile:WagesAmt,
+the dependent's SSN on Form 1040,efile:ReturnData/efile:IRS1040/efile:DependentDetail/efile:DependentSSN,
+the review label on Form 1040,efile:ReturnData/efile:IRS1040/course:ReviewLabel,
