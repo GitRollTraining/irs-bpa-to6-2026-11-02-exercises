@@ -57,7 +57,7 @@
   <xs:complexType name="IRS1040Type">
     <xs:sequence>
       <xs:element name="IndividualReturnFilingStatusCd" type="xs:string"/>
-      <!-- A dependent may be missing, or repeat up to four times. -->
+      <!-- A dependent may be missing, or repeat up to 100 times, as the MeF schema allows. -->
       <xs:element name="DependentDetail" type="efile:DependentDetailType" minOccurs="0" maxOccurs="100"/>
       <xs:element name="WagesAmt" type="xs:nonNegativeInteger"/>
       <!-- Taxable interest may be missing: a return with none leaves the element out. -->
