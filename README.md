@@ -126,13 +126,10 @@ The app you change is inside each exercise, for example [`week-02/day-01/exercis
 |---|---|---|
 | 1 | [Three exercise notebooks](week-02/day-01/README.md) | [Coding agents: Codex, AGENTS.md and a skill](week-02/day-01/README.md) |
 | 2 | [Three exercise notebooks](week-02/day-02/README.md) | [Mapping a codebase, and testing it](week-02/day-02/README.md) |
-<<<<<<< HEAD
+| 3 | [Four exercise notebooks](week-02/day-03/README.md) | [Code review, and a return's XML](week-02/day-03/README.md) |
 | 4 | No notebook: Friday is worked in the Challenge repository | [Challenge 1: IT Access Requests](https://github.com/GitRollTraining/ai-full-stack-it-access-requests), starting with its `docs/00-prerequisites.md` |
 
 Friday (day 4) has no folder here. You work Challenge 1 in your own clone of [its repository](https://github.com/GitRollTraining/ai-full-stack-it-access-requests), with Codex, following the files in its `docs/` folder in order.
-=======
-| 3 | [Four exercise notebooks](week-02/day-03/README.md) | [Code review, and a return's XML](week-02/day-03/README.md) |
->>>>>>> origin/main
 
 ## When an exercise needs AI access
 
