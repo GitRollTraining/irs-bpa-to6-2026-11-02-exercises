@@ -80,7 +80,7 @@ Use the path that `git pull` names.
 
 ## Set up for week 2
 
-Week 2 uses the same uv environment as week 1: `.venv` in the course folder. Flask, pytest, coverage.py, pydeps and the notebook kernel are installed together by `uv sync`. No separate environment or system package installation is needed.
+Week 2 uses the same uv environment as week 1: `.venv` in the course folder. Flask, pytest, coverage.py, pydeps, lxml and the notebook kernel are installed together by `uv sync`. No separate environment or system package installation is needed.
 
 1. Open a terminal in the course folder (the folder containing `pyproject.toml`) and run:
 
@@ -126,6 +126,7 @@ The app you change is inside each exercise, for example [`week-02/day-01/exercis
 |---|---|---|
 | 1 | [Three exercise notebooks](week-02/day-01/README.md) | [Coding agents: Codex, AGENTS.md and a skill](week-02/day-01/README.md) |
 | 2 | [Three exercise notebooks](week-02/day-02/README.md) | [Mapping a codebase, and testing it](week-02/day-02/README.md) |
+| 3 | [Four exercise notebooks](week-02/day-03/README.md) | [Code review, and a return's XML](week-02/day-03/README.md) |
 
 ## When an exercise needs AI access
 
@@ -137,7 +138,7 @@ uv run check_setup.py --check-model
 
 This checks only the route to the model, with one short live request. If it reports a sign-in problem, run `codex login` again. The setup check and the exercise checks do not call a live model.
 
-Only the Codex exercises in [week-01/day-special](week-01/day-special/README.md), [week-01/codex](week-01/codex/README.md), [week-02/day-01](week-02/day-01/README.md) and [week-02/day-02](week-02/day-02/README.md) ask you to start a coding agent. Follow their instructions for launching it.
+Only the Codex exercises in [week-01/day-special](week-01/day-special/README.md), [week-01/codex](week-01/codex/README.md), [week-02/day-01](week-02/day-01/README.md), [week-02/day-02](week-02/day-02/README.md) and [week-02/day-03](week-02/day-03/README.md) ask you to start a coding agent. Follow their instructions for launching it.
 
 ## Start an exercise again
 
