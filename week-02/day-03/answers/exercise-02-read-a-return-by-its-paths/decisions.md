@@ -26,8 +26,8 @@ For the trainer. The exercise is deck slide 34, "Read a return by its paths". Ea
 ## 4. The three labels
 
 - **The answer.** Wages: `made-up test value`. The dependent's SSN: `protected data`. The review label: `instructor-only label`.
-- **Reason.** The learner asks three questions in order and stops at the first yes. First: did the course add the field for the trainer? Then the label is `instructor-only label`. Second: does the field identify a person? Then the label is `protected data`, even when the course invented the value. Otherwise the label is `made-up test value`. The sorting is about the field, not about this file's values.
-- **The notebook line.** "Then it is protected data, even when the value is made up, because the same field on a real return is taxpayer data."
+- **Reason.** The learner asks three questions in order and stops at the first yes. First: did the course add the field for the trainer? Then the label is `instructor-only label`. Second: does the field identify a person? Then the label is `protected data`, even when the course invented the value. Otherwise the label is `made-up test value`. The sorting is about the field, not about this file's values. Step 3 gives the three questions, then a table with each row's label and its reason. The learner types the label after the row's last comma. This follows the SOP's test 6: the step gives the answer and its reason, and the learner does the move.
+- **The notebook line.** Above step 3's table: "you never print, log or paste a protected field into a coding agent." The table's SSN row: "the same field on a real return is taxpayer data."
 - **What else the check accepts.** Capitals and spaces around the label do not matter. The check accepts no other label. A wrong label gets a message that gives the reason for the right one.
 
 ## 5. A broken copy of the return
@@ -54,7 +54,8 @@ The curated file is the day's own file, `days/day-03/curated.md`. All headings b
 | "Every element of the return is in a namespace, so the path has a prefix on every step." | Write a path from the root to a value, line 421 | not on a slide |
 | "Selects all subelements, on all levels beneath the current element." | Write a path from the root to a value, line 425 | deck slide 27 |
 | "The sample has two elements named `WagesAmt`: one in the Form 1040 and one in the W-2." | Write a path from the root to a value, line 426 | not on a slide (deck slide 27 says it in other words) |
-| "Then it is protected data, even when the value is made up, because the same field on a real return is taxpayer data." | Sort each field before you use it, line 438 | deck slide 29 |
+| "you never print, log or paste a protected field into a coding agent." | Sort each field before you use it, line 443 | not on a slide (deck slide 29 says it in other words) |
+| "the same field on a real return is taxpayer data." | Sort each field before you use it, line 439 | deck slide 29 |
 | "A path with `//` finds both, and nothing in it says which form you mean." | Write a path from the root to a value, line 427 | not on a slide |
 | "The sorting is about the field, not this file's values." | Sort each field before you use it, line 442 | not on a slide |
 | "Read upward from the reported line to the element that was never closed." | Read the parser's error on a broken document, line 473 | not on a slide (deck slide 30 says it in other words) |
@@ -65,4 +66,4 @@ None.
 
 ## Findings of the linter inside quotes
 
-The linter flags the quote on protected data, in section 4 and in the table. It holds two passives. Both findings are advisory. The words stay as the source has them.
+None.

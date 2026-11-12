@@ -6,14 +6,14 @@ For the trainer. The exercise is deck slide 52, "Extra: an element that repeats"
 
 - **The answer.** The first `DependentDetail` holds `DAUGHTER`. The second holds `SON`. The learner reads only the `DependentRelationshipCd` of each.
 - **Reason.** The expected values come from the file, before the function exists. The names and SSNs beside the codes stay unread, because they count as protected data even though the course made them up.
-- **The notebook line.** "Read only that code. The names and SSNs beside it count as protected data, even though the course made them up."
+- **The notebook line.** "Read only the `DependentRelationshipCd` of each: `DAUGHTER` in the first, `SON` in the second. The names and SSNs beside it count as protected data, even though the course made them up."
 - **What else the check accepts.** The check does not read the learner's notes. It tests the function on this file, and the answer must be `["DAUGHTER", "SON"]`.
 
 ## 2. Write the test first and watch it fail
 
-- **The answer.** A new test in `tests/test_form1040.py`. It calls `dependent_relationships` on `returns/two-dependents.xml` and expects `["DAUGHTER", "SON"]`. The kept name is `test_a_repeated_dependent_detail_comes_back_as_a_list`. `files/tests/test_form1040.py` holds it.
-- **Reason.** The test expects a list in the order the file holds the codes, because `findall` gives a list in document order and `find` gives only the first. A test that fails first shows that it calls the function.
-- **The notebook line.** "expects a list of the two codes, in the order the file holds them". Its reason column says that `findall` gives "a list of every match, in document order".
+- **The answer.** Two changes in `tests/test_form1040.py`. The import line becomes `from form1040 import dependent_relationships, read_form_1040`. A new test at the end, `test_a_repeated_dependent_comes_back_as_a_list`, calls `dependent_relationships` on `returns/two-dependents.xml` and expects `["DAUGHTER", "SON"]`. `files/tests/test_form1040.py` holds both.
+- **Reason.** The return has two dependents, so the test expects two codes, in the order the file holds them. The learner reads the codes in the file, not from the function. A test that fails first shows that it calls the function. Step 2 gives the import line and the test whole, then a reason for each part. This follows the SOP's test 6: the step gives the answer and its reason, and the learner does the move.
+- **The notebook line.** The table's row for `["DAUGHTER", "SON"]`: "You read the expected values from the sample return yourself, before the code exists." Below the table: "If you didn't watch the test fail, you don't know if it tests the right thing."
 - **What else the check accepts.** Any new test, with any name, that fails when `dependent_relationships` is not written. The check compares the test names with the start's names to find the new ones. A new test that passes on the unwritten function fails the check, with a message that says it was never red.
 
 ## 3. Make it pass
@@ -32,11 +32,12 @@ For the trainer. The exercise is deck slide 52, "Extra: an element that repeats"
 
 ## Where each quote comes from
 
-The curated file is the day's own file, `days/day-03/curated.md`. Both quotes below sit under the heading "Write a return reader test first", in its part "Know what each search call returns". The deck is the day's `deck.json`. Slide numbers count its `slides` from 1.
+The curated file is the day's own file, `days/day-03/curated.md`. Both quotes below sit under the heading "Write a return reader test first", in its part "Write the test before the reader". The deck is the day's `deck.json`. Slide numbers count its `slides` from 1.
 
 | Quote in the notebook | Curated file: heading and line | Deck slide |
 |---|---|---|
-| "a list of every match, in document order" | Know what each search call returns, line 586 | not on a slide (deck slide 41 says it in other words) |
+| "You read the expected values from the sample return yourself, before the code exists." | Write the test before the reader, line 618 | not on a slide (deck slides 43 and 45 say it in other words) |
+| "If you didn't watch the test fail, you don't know if it tests the right thing." | Write the test before the reader, line 614 | deck slide 43 |
 
 ## Quotes with no source in the day's files
 
