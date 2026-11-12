@@ -29,5 +29,5 @@ def test_a_missing_taxable_interest_gives_none(tmp_path: Path) -> None:
     assert values["adjusted_gross_income"] == 52460
 
 
-def test_a_repeated_dependent_detail_comes_back_as_a_list() -> None:
+def test_a_repeated_dependent_comes_back_as_a_list() -> None:
     assert dependent_relationships(Path("returns/two-dependents.xml")) == ["DAUGHTER", "SON"]
