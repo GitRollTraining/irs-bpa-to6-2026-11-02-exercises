@@ -24,7 +24,7 @@ import time
 
 KIT = pathlib.Path(__file__).resolve().parent
 STAND_INS = KIT / "tools" / "stand-ins"
-PACKAGES = ("flask", "pytest", "jsonschema", "ipykernel", "nbclient", "nbformat", "coverage", "pydeps")
+PACKAGES = ("flask", "pytest", "jsonschema", "ipykernel", "nbclient", "nbformat", "coverage", "pydeps", "lxml")
 MISSING_FILE = re.compile(r"No such file or directory|can't open file|not a git repository", re.I)
 CODEX_INSTALL = "curl -fsSL https://chatgpt.com/codex/install.sh | sh"
 
