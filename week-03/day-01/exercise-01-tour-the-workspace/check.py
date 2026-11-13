@@ -5,14 +5,15 @@ cells 1 to 3 and counts the table's rows again with spark. Without Databricks, f
     python3 week-03/day-01/exercise-01-tour-the-workspace/check.py --start
 
 reads the values from a JSON file (or the notebook's starting values) and takes the table's row count
-from the setup's made-up rows, week-03/day-01/setup/course_data.py. No model is called.
+from the setup's made-up rows, week-03/setup/day-01-course-data.py. No model is called.
 """
 import json
 import sys
 from pathlib import Path
 
 HERE = Path(__file__).resolve().parent if "__file__" in globals() else None
-START = {"CATALOG": "workspace", "full_name": "", "notebook_count": None, "sql_editor_count": None, "explain": ""}
+TABLE = "course.returns.return_header"
+START = {"full_name": "", "notebook_count": None, "sql_editor_count": None, "explain": ""}
 
 
 def plain(name: str) -> str:
@@ -24,23 +25,22 @@ def left(values: dict, true_count: int) -> list[str]:
     """Return what is left: one line for each thing that is not yet right.
 
     Args:
-        values: CATALOG, full_name, notebook_count, sql_editor_count and explain, as the cells hold them.
+        values: full_name, notebook_count, sql_editor_count and explain, as the cells hold them.
         true_count: the number of rows the table holds.
 
     Returns:
         One line per problem; an empty list when the exercise is done.
     """
     out = []
-    want = f"{values['CATALOG']}.case_selection.returns".lower()
     name = plain(values["full_name"] or "")
     if not name:
         out.append("Cell 1 has no full name yet. Copy it from Catalog Explorer. Step 1.")
     elif name.count(".") != 2:
         out.append(f'"{values["full_name"]}" is not a full name: it needs three parts, catalog.schema.table. Step 1.')
-    elif name != want:
-        out.append(f'"{values["full_name"]}" is not the returns table of the course catalog. Open case_selection, then returns. Step 1.')
+    elif name != TABLE:
+        out.append(f'"{values["full_name"]}" is not the return table. Open the catalog course, the schema returns, then return_header. Step 1.')
     if values["notebook_count"] != true_count:
-        out.append("Cell 2 has not counted the returns table yet. Attach compute and run cell 2. Step 2.")
+        out.append("Cell 2 has not counted the return table yet. Attach compute and run cell 2. Step 2.")
     sql = values["sql_editor_count"]
     if sql is None:
         out.append("Cell 3 has no SQL editor count yet. Type the number the SQL editor showed. Step 3.")
@@ -55,23 +55,21 @@ def report(values: dict, true_count: int) -> str:
     """Return what cell 4 prints: Done, or Not yet with each thing left."""
     out = left(values, true_count)
     if not out:
-        return (f"Done: {plain(values['full_name'])} has {true_count} rows, in the notebook and in "
-                "the SQL editor.")
+        return f"Done: {plain(values['full_name'])} has {true_count} rows, in the notebook and in the SQL editor."
     return "\n".join([f"Not yet: {len(out)} left."] + ["- " + line for line in out])
 
 
 def in_notebook(spark: object, values: dict) -> str:
-    """Count the course table's rows with spark, then return what cell 4 prints."""
-    full = f"{values['CATALOG']}.case_selection.returns"
-    true_count = spark.sql(f"SELECT COUNT(*) AS row_count FROM {full}").first()["row_count"]
+    """Count the return table's rows with spark, then return what cell 4 prints."""
+    true_count = spark.sql(f"SELECT COUNT(*) AS row_count FROM {TABLE}").first()["row_count"]
     return report(values, true_count)
 
 
 def course_count() -> int:
-    """The returns table's row count, from the setup's made-up rows."""
+    """The return table's row count, from the setup's made-up rows."""
     data = {"__name__": "course_data"}
-    exec((HERE.parent / "setup" / "course_data.py").read_text(encoding="utf-8"), data)
-    return data["column_facts"]()["returns.return_id"]["rows"]
+    exec((HERE.parents[1] / "setup" / "day-01-course-data.py").read_text(encoding="utf-8"), data)
+    return data["column_facts"]()["return_header.return_id"]["rows"]
 
 
 if __name__ == "__main__":

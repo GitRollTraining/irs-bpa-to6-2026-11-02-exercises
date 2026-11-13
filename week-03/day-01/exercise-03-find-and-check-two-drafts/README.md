@@ -10,12 +10,12 @@
 
 **Done when:** cell 4 prints `Done:`: two entries, each with its check.
 
-**Optional part:** in a new cell, run `display(spark.table(f"{CATALOG}.case_selection.returns"))`, then select **+** above the result, then **Data Profile**. Which column's profile surprises you?
+**Optional part:** in a new cell, run `display(spark.table("course.returns.return_header"))`, then select **+** above the result, then **Data Profile**. Which column's profile surprises you?
 
 **What you have:**
 
 - Your list from exercise 2.
-- The tables of the schema `case_selection` in the course catalog. The course made up every row.
+- The return table `course.returns.return_header`: one row per return, with a comment on most columns. The course made up every row.
 - `drafts.md`, beside this notebook: drafts that the course prepared in the form AI generate gives. Use it when you do not see **AI generate**, or when AI generate gives you no draft.
 - `check.py`, beside this notebook. Cell 4 runs it.
 
@@ -23,26 +23,25 @@
 
 ### Step 1. Search the catalog for an item of your list
 
-Why: you know a word of the item, not its table. A search of the catalog's columns finds every column whose name or comment holds the word. "A table missing from your results may exist and be one you lack permission to see."
+Why: you know a word of the item, not its column. A search of the catalog's columns finds every column whose name or comment holds the word. "A table missing from your results may exist and be one you lack permission to see."
 
-1. In cell 1, check `CATALOG`. Put a word of an item on your list between the quotes of `word = "income"`. The cell starts with `income`: "the first entry to check is the line item the question depends on most: the income the return reports."
-2. Run cell 1. You should see a table: one row per column that matches, with its table's full name, the column's name, its type and its comment.
+1. In cell 1, put a word of an item on your list between the quotes of `word = "income"`. The cell starts with `income`: "the first entry to check is the line item the question depends on most: the income the return reports."
+2. Run cell 1. You should see a table: one row per column of `return_header` that matches, with the table's full name, the column's name, its type and its comment. No row means no column matches: try another word.
 3. Change the word to a second item of your list, and run cell 1 again.
 
-Choose two columns to check. Take `returns.total_income` as one of them. Write each as table and column with a dot between, such as `returns.total_income`.
+Choose two columns to check. Take `return_header.total_income` as one of them. Write each as table and column with a dot between, such as `return_header.total_income`.
 
 Notebook cell 1:
 
 ```python
 # 1. Search the catalog's columns for a word.
-CATALOG = "workspace"  # the course catalog: the trainer tells you if it is different
 word = "income"  # change this to a word of an item on your list
 
 display(spark.sql(f"""
 SELECT table_catalog || '.' || table_schema || '.' || table_name AS full_name,
        column_name, data_type, comment
-FROM {CATALOG}.information_schema.columns
-WHERE table_schema = 'case_selection'
+FROM course.information_schema.columns
+WHERE table_schema = 'returns' AND table_name = 'return_header'
   AND (column_name ILIKE '%{word}%' OR comment ILIKE '%{word}%')
 ORDER BY full_name, column_name
 """))
@@ -78,17 +77,17 @@ Notebook cell 2:
 
 ```python
 # 2. One column's facts: type and comment, tags, then its values.
-column = "returns.total_income"  # table.column, from cell 1
+column = "return_header.total_income"  # table.column, from cell 1
 predict = ""  # before you run this cell: the smallest total_income you expect, and why
 
 table, name = column.split(".")
-where = f"table_schema = 'case_selection' AND table_name = '{table}' AND column_name = '{name}'"
-display(spark.sql(f"SELECT data_type, comment FROM {CATALOG}.information_schema.columns WHERE {where}"))
-display(spark.sql(f"SELECT tag_name, tag_value FROM {CATALOG}.information_schema.column_tags "
-                  f"WHERE schema_name = 'case_selection' AND table_name = '{table}' AND column_name = '{name}'"))
+where = f"table_schema = 'returns' AND table_name = '{table}' AND column_name = '{name}'"
+display(spark.sql(f"SELECT data_type, comment FROM course.information_schema.columns WHERE {where}"))
+display(spark.sql(f"SELECT tag_name, tag_value FROM course.information_schema.column_tags "
+                  f"WHERE schema_name = 'returns' AND table_name = '{table}' AND column_name = '{name}'"))
 display(spark.sql(f"SELECT count_if({name} IS NULL) AS empty, min({name}) AS smallest, max({name}) AS largest "
-                  f"FROM {CATALOG}.case_selection.{table}"))
-display(spark.sql(f"SELECT DISTINCT {name} FROM {CATALOG}.case_selection.{table} LIMIT 20"))
+                  f"FROM course.returns.{table}"))
+display(spark.sql(f"SELECT DISTINCT {name} FROM course.returns.{table} LIMIT 20"))
 ```
 
 ### Step 4. Record each check, and its verdict
@@ -111,7 +110,7 @@ Notebook cell 3:
 # 3. Your two entries: one per column, each with its check.
 entries = [
     {
-        "column": "",  # table.column, such as returns.total_income
+        "column": "",  # table.column, such as return_header.total_income
         "draft": "",  # the draft, word for word
         "type": "",  # the type cell 2 shows
         "comment_and_tags": "",  # the comment and tags cell 2 shows, or "none"
@@ -138,7 +137,7 @@ for entry in entries:
 Run cell 4. It reads each column's type and values again. It prints `Done:` when these things are true:
 
 - `predict` holds 5 words or more.
-- Each entry names a different column of `case_selection`, with its draft.
+- Each entry names a different column of `return_header`, with its draft.
 - Each entry's type, empty count, smallest and largest value are the ones the column has, and it records the comment and tags.
 - Each entry has the verdict `keep` or `change` and a reason of 4 words or more. A draft that a value contradicts has `change`.
 
@@ -155,6 +154,6 @@ Notebook cell 4:
 
 1. AI generate reads names, not values. Which words of your two drafts come only from the column's name?
 2. Your two entries got the same verdict, or two different ones. What in the values decided each?
-3. "The model should not be relied on for data classification tasks such as detecting columns with PII." Which column of `returns` would you not trust a draft to classify, and what would you read instead?
+3. "The model should not be relied on for data classification tasks such as detecting columns with PII." Which column of `return_header` would you not trust a draft to classify, and what would you read instead?
 
 The answer, after you try: [`answers/exercise-03-find-and-check-two-drafts`](../answers/exercise-03-find-and-check-two-drafts/).

@@ -14,8 +14,7 @@
 
 **What you have:**
 
-- The course catalog. Its name is the value of `CATALOG` in cell 1. The trainer tells you if it is different.
-- In it, the schema `case_selection`, and in that, the table `returns`: one row for each return of the course. The course made up every row. No row is a real taxpayer.
+- The catalog `course`, its schema `returns`, and in that, the table `return_header`: one row for each return of the course. The course made up every row. No row is a real taxpayer.
 - `check.py`, beside this notebook. Cell 4 runs it.
 
 **Start from:** this notebook as the course gives it. The trainer showed the same steps on another table just before this exercise. To start again, set the values you typed back to `""` and `None`.
@@ -25,7 +24,7 @@
 Why: every query this week names a table by its full name. "A full name joins the three with dots": catalog, schema, table.
 
 1. In the left bar, select **Catalog**. Catalog Explorer opens.
-2. Open the course catalog, then the schema `case_selection`, then the table `returns`.
+2. Open the catalog `course`, then the schema `returns`, then the table `return_header`.
 3. At the top of the table's page, find the table's full name. Select the copy icon beside it. If you see no copy icon, type the name: catalog, a dot, schema, a dot, table.
 4. In cell 1, paste the full name between the quotes of `full_name = ""`.
 5. Run cell 1. You should see the three parts of the name, one on each line: the table, the schema, the catalog.
@@ -34,7 +33,6 @@ Notebook cell 1:
 
 ```python
 # 1. The table's full name.
-CATALOG = "workspace"  # the course catalog: the trainer tells you if it is different
 full_name = ""  # paste the full name from Catalog Explorer here
 
 parts = full_name.replace("`", "").split(".")
@@ -103,7 +101,7 @@ print("SQL editor:", sql_editor_count, "| notebook:", notebook_count)
 
 Run cell 4. It counts the table's rows again. It prints `Done:` when these things are true:
 
-- `full_name` names the table `returns` in the schema `case_selection` of the course catalog.
+- `full_name` names the table `return_header` in the schema `returns` of the catalog `course`.
 - The notebook's count and the SQL editor's count are both the table's count.
 - `explain` holds 8 words or more.
 
@@ -119,7 +117,7 @@ Notebook cell 4:
 ### Afterwards, together
 
 1. The notebook and the SQL editor ran on different compute. When would you open the SQL editor instead of a notebook in your own work?
-2. Two tables can share a short name, and "only the full name tells them apart." A schema `staging` could also hold a table `returns`. How would you know which of the two you counted?
+2. Two tables can share a short name, and "only the full name tells them apart." A schema `staging` could also hold a table `return_header`. How would you know which of the two you counted?
 3. Catalog Explorer showed the table before you ran a query. What did it tell you that the count did not?
 
 The answer, after you try: [`answers/exercise-01-tour-the-workspace`](../answers/exercise-01-tour-the-workspace/).

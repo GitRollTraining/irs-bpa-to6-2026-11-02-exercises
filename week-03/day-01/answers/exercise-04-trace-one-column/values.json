@@ -1,10 +1,9 @@
 {
- "CATALOG": "workspace",
- "income_gap_sources": [
-  "returns.wages",
-  "third_party_reports.wages_reported"
+ "non_wage_income_sources": [
+  "return_header.total_income",
+  "return_header.wages_amt"
  ],
- "income_gap_stops_at": "returns and third_party_reports: the setup notebook filled both with values it wrote itself, so no table feeds them.",
- "predict": "No. The band was computed in Python after one query read total_income, so no single query links the two columns.",
- "income_band_stops_at": "income_bands: the graph shows no column of returns before it."
+ "non_wage_income_stops_at": "return_header: the setup notebook filled it with values it wrote itself, so no table feeds it.",
+ "predict": "Not for sure. The band comes from a Python function, which can hide the link to total_income.",
+ "income_band_trace": "Recorded at the run-through: the graph highlights return_header.total_income, or nothing; either way it is noted beside the column."
 }

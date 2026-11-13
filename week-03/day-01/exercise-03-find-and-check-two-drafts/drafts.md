@@ -4,14 +4,10 @@ Use these drafts when you do not see **AI generate** in Catalog Explorer, or whe
 
 | Column | Draft |
 |---|---|
-| `returns.wages` | Wages, salaries and tips reported by the taxpayer on the return, in dollars. |
-| `returns.taxable_interest` | Taxable interest income reported by the taxpayer, in dollars. |
-| `returns.business_income` | Net business income reported on the return, in dollars. |
-| `returns.total_income` | Annual income in dollars, always positive. |
-| `returns.filing_status` | The taxpayer's filing status for the tax year. |
-| `third_party_reports.wages_reported` | Total wages reported by employers on Forms W-2 for the taxpayer, in dollars. |
-| `third_party_reports.interest_reported` | Interest income reported by banks and other payers for the taxpayer, in dollars. |
-| `third_party_reports.payer_count` | The number of payers that sent a report for the taxpayer. |
-| `exam_outcomes.tax_changed` | Whether the examination resulted in a change to the tax. |
-| `exam_outcomes.selection_method` | The method used to select the return for examination. |
-| `exam_outcomes.change_amount` | The amount of the tax change found by the examination, in dollars. |
+| `return_header.filer_key` | A unique key that identifies the filer of the return. |
+| `return_header.tax_year` | The tax year of the return. |
+| `return_header.agi_amt` | Adjusted gross income reported on the return, in dollars. |
+| `return_header.wages_amt` | Wages, salaries and tips reported on the return, in dollars. |
+| `return_header.total_tax_amt` | The total tax reported on the return, in dollars. |
+| `return_header.total_income` | Annual income in dollars, always positive. |
+| `return_header.exam_changed_tax` | Whether an examination changed the tax on the return: yes or no. |

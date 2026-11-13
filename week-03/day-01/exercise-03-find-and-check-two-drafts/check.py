@@ -5,7 +5,7 @@ Without Databricks, from the course folder:
     python3 week-03/day-01/exercise-03-find-and-check-two-drafts/check.py <values.json>
     python3 week-03/day-01/exercise-03-find-and-check-two-drafts/check.py --start
 
-takes each column's facts from the setup's made-up rows, week-03/day-01/setup/course_data.py.
+takes each column's facts from the setup's made-up rows, week-03/setup/day-01-course-data.py.
 It checks the record, never the draft's wording, and calls no model.
 """
 import json
@@ -16,7 +16,7 @@ from pathlib import Path
 HERE = Path(__file__).resolve().parent if "__file__" in globals() else None
 EMPTY_ENTRY = {"column": "", "draft": "", "type": "", "comment_and_tags": "", "empty": None,
                "smallest": None, "largest": None, "verdict": "", "reason": ""}
-START = {"CATALOG": "workspace", "predict": "", "entries": [dict(EMPTY_ENTRY), dict(EMPTY_ENTRY)]}
+START = {"predict": "", "entries": [dict(EMPTY_ENTRY), dict(EMPTY_ENTRY)]}
 SAYS_POSITIVE = re.compile(r"\b(always positive|never negative|positive|non-negative|nonnegative)\b", re.IGNORECASE)
 SAYS_PRESENT = re.compile(r"\b(never empty|always present|always filled|not null|never null|required)\b", re.IGNORECASE)
 
@@ -46,8 +46,8 @@ def entry_left(n: int, entry: dict, facts: dict | None) -> list[str]:
     column = (entry.get("column") or "").strip()
     if not column:
         return [f"Entry {n} names no column yet. Write table.column, as cell 1 shows it. Step 1."]
-    if facts is None:
-        return [f'Entry {n}: "{column}" is not a column of case_selection. Write table.column, as cell 1 shows it. Step 1.']
+    if facts is None or not column.startswith("return_header."):
+        return [f'Entry {n}: "{column}" is not a column of return_header. Write return_header.<column>, as cell 1 shows it. Step 1.']
     out = []
     if len((entry.get("draft") or "").split()) < 3:
         out.append(f"Entry {n} ({column}): copy the draft, word for word. Step 2.")
@@ -76,7 +76,7 @@ def left(values: dict, facts: dict) -> list[str]:
 
     Args:
         values: predict and entries, as cells 2 and 3 hold them.
-        facts: for each "table.column" of case_selection, its type, empty, min and max.
+        facts: for each "table.column" of course.returns, its type, empty, min and max.
     """
     out = []
     if len((values.get("predict") or "").split()) < 5:
@@ -103,19 +103,19 @@ def report(values: dict, facts: dict) -> str:
 
 def in_notebook(spark: object, values: dict) -> str:
     """Read each entry's column from the catalog with spark, then return what cell 4 prints."""
-    catalog, facts = values["CATALOG"], {}
+    facts = {}
     for entry in values.get("entries") or []:
         column = (entry.get("column") or "").strip()
         if column.count(".") != 1:
             continue
         table, name = column.split(".")
         found = spark.sql(
-            f"SELECT data_type FROM {catalog}.information_schema.columns WHERE table_schema = 'case_selection' "
+            "SELECT data_type FROM course.information_schema.columns WHERE table_schema = 'returns' "
             f"AND table_name = '{table}' AND column_name = '{name}'").collect()
         if not found:
             continue
         row = spark.sql(f"SELECT count_if({name} IS NULL) AS empty, min({name}) AS low, max({name}) AS high "
-                        f"FROM {catalog}.case_selection.{table}").first()
+                        f"FROM course.returns.{table}").first()
         facts[column] = {"type": found[0]["data_type"], "empty": row["empty"], "min": row["low"], "max": row["high"]}
     return report(values, facts)
 
@@ -123,7 +123,7 @@ def in_notebook(spark: object, values: dict) -> str:
 def course_facts() -> dict:
     """Each column's facts, from the setup's made-up rows."""
     data = {"__name__": "course_data"}
-    exec((HERE.parent / "setup" / "course_data.py").read_text(encoding="utf-8"), data)
+    exec((HERE.parents[1] / "setup" / "day-01-course-data.py").read_text(encoding="utf-8"), data)
     return data["column_facts"]()
 
 
