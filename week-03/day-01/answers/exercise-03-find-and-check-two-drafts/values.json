@@ -1,0 +1,27 @@
+{
+ "predict": "Above zero, since the column name says income and a draft would call it positive; but losses could make it negative.",
+ "entries": [
+  {
+   "column": "return_header.total_income",
+   "draft": "Annual income in dollars, always positive.",
+   "type": "INT",
+   "comment_and_tags": "comment: none; tags: none",
+   "empty": 0,
+   "smallest": -10565,
+   "largest": 97900,
+   "verdict": "change",
+   "reason": "The smallest value is -10565, below 0: losses sit in the same column, so it is not always positive."
+  },
+  {
+   "column": "return_header.wages_amt",
+   "draft": "Wages, salaries and tips reported on the return, in dollars.",
+   "type": "INT",
+   "comment_and_tags": "comment: Wages, salaries and tips the filer reported, in whole dollars.; tags: none",
+   "empty": 0,
+   "smallest": 29750,
+   "largest": 98000,
+   "verdict": "keep",
+   "reason": "The type, the comment and the values agree with the draft; no value is empty or negative."
+  }
+ ]
+}

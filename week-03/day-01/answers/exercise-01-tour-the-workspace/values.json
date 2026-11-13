@@ -1,0 +1,6 @@
+{
+ "full_name": "course.returns.return_header",
+ "notebook_count": 40,
+ "sql_editor_count": 40,
+ "explain": "Yes, the same: both tools read the one table that the full name names. The compute only runs the query, and the rows stay in that table."
+}
