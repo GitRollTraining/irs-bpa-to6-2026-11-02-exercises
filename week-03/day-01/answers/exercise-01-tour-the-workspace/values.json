@@ -1,0 +1,7 @@
+{
+ "CATALOG": "workspace",
+ "full_name": "workspace.case_selection.returns",
+ "notebook_count": 40,
+ "sql_editor_count": 40,
+ "explain": "Yes, the same: both tools read the one table that the full name names. The compute only runs the query, and the rows stay in that table."
+}

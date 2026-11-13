@@ -16,7 +16,7 @@ import sys
 
 ROOT = pathlib.Path(__file__).resolve().parents[1]
 LINK = re.compile(r"\]\(([^)\s#]+)(?:#[^)]*)?\)")
-NOT_EXERCISES = {"answers", "figures"}           # a day's folders that hold no exercise
+NOT_EXERCISES = {"answers", "figures", "setup"}  # a day's folders that hold no exercise (setup: the trainer's)
 
 
 def tracked() -> list[pathlib.Path]:
