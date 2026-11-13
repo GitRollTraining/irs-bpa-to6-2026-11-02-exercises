@@ -1,0 +1,117 @@
+{
+ "record": [
+  {
+   "field": "return_id",
+   "monday": "not listed",
+   "needed": "yes",
+   "class": "sensitive but unclassified",
+   "action": "keep",
+   "reason": "It belongs to one return of a tax account; the use tells returns apart by it."
+  },
+  {
+   "field": "tin",
+   "monday": "transformed",
+   "needed": "no",
+   "class": "sensitive but unclassified",
+   "action": "transform",
+   "reason": "FTI. The model needs no number, but Wednesday matches a filer's returns, so a case key replaces it."
+  },
+  {
+   "field": "taxpayer_name",
+   "monday": "not needed",
+   "needed": "no",
+   "class": "sensitive but unclassified",
+   "action": "remove",
+   "reason": "FTI that names a person; the model ranks returns, not names."
+  },
+  {
+   "field": "street_address",
+   "monday": "not needed",
+   "needed": "no",
+   "class": "sensitive but unclassified",
+   "action": "remove",
+   "reason": "FTI that names a household; the use does not need it."
+  },
+  {
+   "field": "zip_code",
+   "monday": "not listed",
+   "needed": "no",
+   "class": "sensitive but unclassified",
+   "action": "remove",
+   "reason": "FTI that can name a person with other fields; no feature uses a region."
+  },
+  {
+   "field": "filing_status",
+   "monday": "not listed",
+   "needed": "yes",
+   "class": "sensitive but unclassified",
+   "action": "keep",
+   "reason": "FTI from the return. The use needs it to compare like returns."
+  },
+  {
+   "field": "wages_amt",
+   "monday": "needed",
+   "needed": "yes",
+   "class": "sensitive but unclassified",
+   "action": "keep",
+   "reason": "An income figure the model learns from; FTI from the return."
+  },
+  {
+   "field": "agi_amt",
+   "monday": "not listed",
+   "needed": "yes",
+   "class": "sensitive but unclassified",
+   "action": "keep",
+   "reason": "An income figure the model learns from; FTI from the return."
+  },
+  {
+   "field": "total_income",
+   "monday": "needed",
+   "needed": "yes",
+   "class": "sensitive but unclassified",
+   "action": "keep",
+   "reason": "The income the question depends on most; FTI from the return."
+  },
+  {
+   "field": "total_tax_amt",
+   "monday": "not listed",
+   "needed": "yes",
+   "class": "sensitive but unclassified",
+   "action": "keep",
+   "reason": "The tax on the return; FTI the model learns from."
+  },
+  {
+   "field": "tax_year",
+   "monday": "not listed",
+   "needed": "yes",
+   "class": "sensitive but unclassified",
+   "action": "keep",
+   "reason": "The use ranks this year's returns and learns from earlier years."
+  },
+  {
+   "field": "received_date",
+   "monday": "not listed",
+   "needed": "no",
+   "class": "sensitive but unclassified",
+   "action": "remove",
+   "reason": "When a return of a tax account arrived; the use does not need it."
+  },
+  {
+   "field": "loaded_by",
+   "monday": "not listed",
+   "needed": "no",
+   "class": "personally identifiable",
+   "action": "remove",
+   "reason": "A clerk's user name: it names a person with no tax account behind it."
+  },
+  {
+   "field": "batch_id",
+   "monday": "not listed",
+   "needed": "no",
+   "class": "neither",
+   "action": "remove",
+   "reason": "It names no person and no tax account, and the model does not need it."
+  }
+ ],
+ "explain": "The key lets Wednesday match a filer's returns across tax years, and without the secret nobody can work back from it to the number."
+}

@@ -1,0 +1,43 @@
+{
+ "schema": "course.learner_00",
+ "files": 52,
+ "predict_file_name": "no",
+ "tests_ran": true,
+ "tables": {
+  "return_table": {
+   "rows": 52,
+   "columns": [
+    "return_id",
+    "filer_key",
+    "tax_year",
+    "filing_status",
+    "wages_amt",
+    "total_income",
+    "agi_amt",
+    "total_tax_amt",
+    "exam_changed_tax",
+    "tax_added_by_exam",
+    "file_name"
+   ]
+  },
+  "dependents": {
+   "rows": 77,
+   "columns": [
+    "return_id",
+    "relationship"
+   ]
+  },
+  "w2s": {
+   "rows": 62,
+   "columns": [
+    "return_id",
+    "wages_amt"
+   ]
+  }
+ },
+ "distinct_files": 52,
+ "duplicate_ids": 0,
+ "reader_dependents": 77,
+ "orphan_dependents": 0,
+ "w2_elements": 62
+}

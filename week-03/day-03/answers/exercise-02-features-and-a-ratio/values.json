@@ -1,0 +1,37 @@
+{
+ "schema": "course.learner_00",
+ "predict_rows": "more",
+ "return_rows": 52,
+ "features_rows": 52,
+ "features_columns": [
+  "return_id",
+  "filer_key",
+  "tax_year",
+  "filing_status",
+  "wages_amt",
+  "total_income",
+  "agi_amt",
+  "total_tax_amt",
+  "exam_changed_tax",
+  "tax_added_by_exam",
+  "file_name",
+  "tax_to_agi",
+  "w2_wage_share"
+ ],
+ "share_mismatches": 0,
+ "tax_to_agi_mismatches": 0,
+ "record": [
+  [
+   "tax_to_agi",
+   "return_table",
+   "total_tax_amt, agi_amt",
+   "total_tax_amt / agi_amt where agi_amt > 0, else null"
+  ],
+  [
+   "w2_wage_share",
+   "w2s, return_table",
+   "w2s.wages_amt, return_table.wages_amt",
+   "sum of w2s.wages_amt for each return_id, joined on return_id, over wages_amt where wages_amt > 0, else null"
+  ]
+ ]
+}

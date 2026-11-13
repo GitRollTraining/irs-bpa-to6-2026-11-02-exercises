@@ -1,0 +1,137 @@
+{
+ "schema": "course.learner_00",
+ "tests_ran": true,
+ "features_columns": [
+  "return_id",
+  "filer_key",
+  "tax_year",
+  "filing_status",
+  "wages_amt",
+  "total_income",
+  "agi_amt",
+  "total_tax_amt",
+  "exam_changed_tax",
+  "file_name",
+  "tax_to_agi",
+  "w2_wage_share",
+  "mean_prior_wages",
+  "wages_change_pct"
+ ],
+ "record": {
+  "tax_to_agi": [
+   "yes",
+   "both amounts are on the filed return"
+  ],
+  "w2_wage_share": [
+   "yes",
+   "the W-2s and the wages are filed with the return"
+  ],
+  "mean_prior_wages": [
+   "yes",
+   "it reads earlier years only, the frame ends at -1"
+  ],
+  "wages_change_pct": [
+   "yes",
+   "it reads last year's return, which is on file"
+  ],
+  "filing_status": [
+   "yes",
+   "it is on the filed return"
+  ],
+  "wages_amt": [
+   "yes",
+   "it is on the filed return"
+  ],
+  "total_income": [
+   "yes",
+   "it is on the filed return"
+  ],
+  "agi_amt": [
+   "yes",
+   "it is on the filed return"
+  ],
+  "total_tax_amt": [
+   "yes",
+   "it is on the filed return"
+  ],
+  "tax_added_by_exam": [
+   "no",
+   "the examination writes it after selection"
+  ]
+ },
+ "sets": {
+  "train": {
+   "rows": 21,
+   "columns": [
+    "return_id",
+    "filer_key",
+    "tax_year",
+    "filing_status",
+    "wages_amt",
+    "total_income",
+    "agi_amt",
+    "total_tax_amt",
+    "exam_changed_tax",
+    "file_name",
+    "tax_to_agi",
+    "w2_wage_share",
+    "mean_prior_wages",
+    "wages_change_pct"
+   ],
+   "cases": 3
+  },
+  "valid": {
+   "rows": 15,
+   "columns": [
+    "return_id",
+    "filer_key",
+    "tax_year",
+    "filing_status",
+    "wages_amt",
+    "total_income",
+    "agi_amt",
+    "total_tax_amt",
+    "exam_changed_tax",
+    "file_name",
+    "tax_to_agi",
+    "w2_wage_share",
+    "mean_prior_wages",
+    "wages_change_pct"
+   ],
+   "cases": 3
+  },
+  "test": {
+   "rows": 16,
+   "columns": [
+    "return_id",
+    "filer_key",
+    "tax_year",
+    "filing_status",
+    "wages_amt",
+    "total_income",
+    "agi_amt",
+    "total_tax_amt",
+    "exam_changed_tax",
+    "file_name",
+    "tax_to_agi",
+    "w2_wage_share",
+    "mean_prior_wages",
+    "wages_change_pct"
+   ],
+   "cases": 5
+  }
+ },
+ "shared_ids": 0,
+ "years": [
+  [
+   2020,
+   2021
+  ],
+  [
+   2022
+  ],
+  [
+   2023
+  ]
+ ]
+}

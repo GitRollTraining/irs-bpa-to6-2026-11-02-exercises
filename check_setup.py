@@ -177,9 +177,11 @@ def run_notebooks(course, env, missing, found):
     import nbformat
 
 
+    # A notebook whose metadata names the platform databricks runs only in Databricks (week 3): skipped here.
     notebooks = [p for p in sorted(course.glob("week-*/day-*/week-*-day-*.ipynb"))
                  + sorted(course.glob("week-*/day-*/exercise-*/exercise.ipynb"))
-                 if any(c.cell_type == "code" for c in nbformat.read(p, as_version=4).cells)]
+                 if any(c.cell_type == "code" for c in nbformat.read(p, as_version=4).cells)
+                 and nbformat.read(p, as_version=4).metadata.get("platform") != "databricks"]
     if not notebooks:
         missing.append("the notebooks: none found; run this check in the course folder")
         return

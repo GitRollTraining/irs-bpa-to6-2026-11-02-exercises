@@ -1,0 +1,10 @@
+{
+ "predict": "Tax year 2023 only, 10 rows, and tin as a pattern of stars.",
+ "rows_per_year": {
+  "2023": 10
+ },
+ "identifier_seen": "***-**-****",
+ "grants": "The learners' group holds SELECT, granted on the schema course.returns and inherited by the table.",
+ "why_differs": "The row filter shows my group tax year 2023 only, and the mask shows my group a pattern in place of tin.",
+ "fallback": ""
+}

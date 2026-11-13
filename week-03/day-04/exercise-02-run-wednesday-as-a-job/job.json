@@ -1,0 +1,12 @@
+{
+  "run_name": "Week 3 features, learner_NN",
+  "tasks": [
+    {
+      "task_key": "features",
+      "notebook_task": {
+        "notebook_path": "/Workspace/Users/YOUR_USER_NAME/irs-bpa-to6-2026-11-02-exercises/week-03/day-03/wednesday-tables",
+        "source": "WORKSPACE"
+      }
+    }
+  ]
+}

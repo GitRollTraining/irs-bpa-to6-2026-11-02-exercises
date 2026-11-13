@@ -1,0 +1,54 @@
+{
+ "schema": "course.learner_00",
+ "predict_mean": 48000,
+ "predict_change": 0.15,
+ "named": {
+  "mean_prior_wages": 48000,
+  "wages_change_pct": 0.15
+ },
+ "features_columns": [
+  "return_id",
+  "filer_key",
+  "tax_year",
+  "filing_status",
+  "wages_amt",
+  "total_income",
+  "agi_amt",
+  "total_tax_amt",
+  "exam_changed_tax",
+  "tax_added_by_exam",
+  "file_name",
+  "tax_to_agi",
+  "w2_wage_share",
+  "mean_prior_wages",
+  "wages_change_pct"
+ ],
+ "mean_mismatches": 0,
+ "change_mismatches": 0,
+ "record": [
+  [
+   "tax_to_agi",
+   "return_table",
+   "total_tax_amt, agi_amt",
+   "total_tax_amt / agi_amt where agi_amt > 0, else null"
+  ],
+  [
+   "w2_wage_share",
+   "w2s, return_table",
+   "w2s.wages_amt, return_table.wages_amt",
+   "sum of w2s.wages_amt for each return_id, joined on return_id, over wages_amt where wages_amt > 0, else null"
+  ],
+  [
+   "mean_prior_wages",
+   "return_table",
+   "filer_key, tax_year, wages_amt",
+   "mean of wages_amt over the filer's earlier years: frame unboundedPreceding to -1"
+  ],
+  [
+   "wages_change_pct",
+   "return_table",
+   "filer_key, tax_year, wages_amt",
+   "(wages_amt - wages of the row before) / wages of the row before, LAG by filer_key in tax_year order, null for a first return"
+  ]
+ ]
+}

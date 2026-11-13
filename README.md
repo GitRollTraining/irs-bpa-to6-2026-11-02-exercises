@@ -131,6 +131,16 @@ The app you change is inside each exercise, for example [`week-02/day-01/exercis
 
 Friday (day 4) has no folder here. You work Challenge 1 in your own clone of [its repository](https://github.com/GitRollTraining/ai-full-stack-it-access-requests), with Codex, following the files in its `docs/` folder in order.
 
+## Week 3
+
+Monday to Wednesday run in the class's Databricks workspace, from your Git folder of this repository. Pull it at the start of each day. Thursday runs in your Workstation's terminal, with the Databricks CLI and Codex.
+
+| Day | Exercises |
+|---|---|
+| 2 | [Check the data, keep out what the use does not need, and question it with Genie](week-03/day-02/README.md) |
+| 3 | [From parsed returns to features and leak-free sets](week-03/day-03/README.md) |
+| 4 | [Run Databricks from outside it](week-03/day-04/README.md) |
+
 ## When an exercise needs AI access
 
 Two exercises call a model through `model.py`, which sends each request through the Codex CLI that you signed in to in step 1: `same-note-five-times` and `system-prompt` on Day 2. Before those exercises, check access from the course folder:

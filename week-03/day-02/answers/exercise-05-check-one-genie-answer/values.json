@@ -1,0 +1,11 @@
+{
+ "question": "For each tax year in the clean batch, how many returns are there and what is their total wages_amt?",
+ "genie_answer": "The batch holds 2 returns for tax year 2019, 8 for 2021, 12 for 2022 and 10 for 2023. Their total wages are 91,470, 552,830, 821,860 and 666,679.",
+ "genie_query": "SELECT tax_year, COUNT(*) AS returns, SUM(wages_amt) AS total_wages\nFROM course.returns.batch_dirty\nGROUP BY tax_year\nORDER BY tax_year",
+ "reads": "course.returns.batch_dirty",
+ "filters": "none",
+ "counts": "rows",
+ "column": "wages_amt",
+ "verdict": "does not hold",
+ "deciding_line": "FROM course.returns.batch_dirty"
+}
