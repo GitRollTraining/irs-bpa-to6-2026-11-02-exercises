@@ -1,0 +1,36 @@
+{
+ "tests": [
+  {
+   "name": "total income always present",
+   "kind": "completeness",
+   "action": "fail",
+   "rule": "total_income IS NOT NULL",
+   "predict": "fails",
+   "passed_why": "No fault of this kind is in total_income: the empty values of the dirty batch are in agi_amt."
+  },
+  {
+   "name": "wages never below 0",
+   "kind": "validity",
+   "action": "fail",
+   "rule": "wages_amt >= 0",
+   "predict": "fails",
+   "passed_why": ""
+  },
+  {
+   "name": "each return_id once",
+   "kind": "uniqueness",
+   "action": "fail",
+   "rule": "count(*) OVER (PARTITION BY return_id) = 1",
+   "predict": "fails",
+   "passed_why": ""
+  },
+  {
+   "name": "wages not above total income",
+   "kind": "consistency",
+   "action": "warn",
+   "rule": "wages_amt <= total_income",
+   "predict": "fails",
+   "passed_why": ""
+  }
+ ]
+}

@@ -6,6 +6,8 @@ Fails, naming each problem, when:
   - an exercise folder has no answer beside it, week-NN/day-NN/answers/<exercise>/;
   - an exercise-NN-<name>/ folder, whose one notebook is the whole exercise, has no exercise.ipynb,
     or no solved copy at week-NN/day-NN/answers/exercise-NN-<name>/exercise.ipynb (it needs no README.md);
+    an exercise-NN-<name>/ folder with a README.md and no notebook is worked in a terminal (week 3
+    Thursday: the Databricks CLI and Codex) and is held to the README and answer-folder rule below;
   - a relative link in a Markdown file points at nothing in this repository.
 Standard library only. Exit 0 prints "OK" and what was checked.
 """
@@ -42,7 +44,8 @@ for day in days:
         problems.append(f"{day.relative_to(ROOT)}/: no README.md")
     for folder in (p for p in day.iterdir() if p.is_dir() and not p.name.startswith(".") and p.name not in NOT_EXERCISES):
         exercises += 1
-        if folder.name.startswith("exercise-"):
+        terminal = not (folder / "exercise.ipynb").is_file() and (folder / "README.md").is_file()
+        if folder.name.startswith("exercise-") and not terminal:
             if not (folder / "exercise.ipynb").is_file():
                 problems.append(f"{folder.relative_to(ROOT)}/: no exercise.ipynb")
             if not (day / "answers" / folder.name / "exercise.ipynb").is_file():

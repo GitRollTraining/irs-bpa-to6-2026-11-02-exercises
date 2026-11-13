@@ -1,0 +1,8 @@
+{
+ "answer": "The clean batch holds 30 returns: 8 with filing status 1, 7 with 2, 5 with 3 and 10 with 4.",
+ "result_table": "1: 8, 2: 7, 3: 5, 4: 10",
+ "query": "SELECT filing_status, COUNT(*) AS returns\nFROM course.returns.batch_clean\nGROUP BY filing_status\nORDER BY filing_status",
+ "table_read": "course.returns.batch_clean",
+ "second": "same",
+ "what_changed": ""
+}

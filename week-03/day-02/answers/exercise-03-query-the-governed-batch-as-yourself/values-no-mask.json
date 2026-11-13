@@ -1,0 +1,13 @@
+{
+ "predict": "Tax year 2023 only, 10 rows, and tin as a pattern of stars.",
+ "rows_per_year": {
+  "2019": 2,
+  "2021": 8,
+  "2022": 12,
+  "2023": 10
+ },
+ "identifier_seen": "000-11-4037",
+ "grants": "The learners' group holds SELECT, granted on the schema course.returns and inherited by the table.",
+ "why_differs": "",
+ "fallback": "The learners' group could read every identification number: its SELECT on the schema reaches this table, more than need to know."
+}

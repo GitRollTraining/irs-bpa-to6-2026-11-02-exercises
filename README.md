@@ -133,11 +133,14 @@ Friday (day 4) has no folder here. You work Challenge 1 in your own clone of [it
 
 ## Week 3
 
-Monday to Wednesday run in the class's Databricks workspace, from your Git folder of this repository. Pull it at the start of each day.
+Monday to Wednesday run in the class's Databricks workspace, from your Git folder of this repository. Pull it at the start of each day. Thursday runs in your Workstation's terminal, with the Databricks CLI and Codex.
 
 | Day | Notebook | Exercises |
 |---|---|---|
 | 1 | [Four exercise notebooks](week-03/day-01/README.md) | [Find the data a case-selection model needs, in Databricks](week-03/day-01/README.md) |
+| 2 | [Five exercise notebooks](week-03/day-02/README.md) | [Check the data, keep out what the use does not need, and question it with Genie](week-03/day-02/README.md) |
+| 3 | [Four exercise notebooks](week-03/day-03/README.md) | [From parsed returns to features and leak-free sets](week-03/day-03/README.md) |
+| 4 | No notebook: terminal steps | [Run Databricks from outside it](week-03/day-04/README.md) |
 
 ## When an exercise needs AI access
 
