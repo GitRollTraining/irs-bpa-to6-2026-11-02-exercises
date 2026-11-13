@@ -12,7 +12,7 @@ from pathlib import Path
 
 KINDS = ["the return's lines", "data to match against", "past outcomes"]
 VERDICTS = ["needed", "not needed", "transformed"]
-IDENTIFYING = re.compile(r"\b(name|ssn|tin|identif\w*|address)\b", re.IGNORECASE)
+IDENTIFYING = re.compile(r"\b(names?|ssn|tin|ein|ids?|identif\w*|address)\b", re.IGNORECASE)
 SELECTION = re.compile(r"\b(select\w*|random|sample|score\w*|chose|chosen)\b", re.IGNORECASE)
 START = {
     "question": "\nUnit:\nTarget:\nTime:\n",
@@ -42,7 +42,7 @@ def rows(items: str) -> list[list[str]]:
     for line in (items or "").splitlines():
         if not line.strip().startswith("|") or set(line.replace("|", "").strip()) <= {"-", " ", ":"}:
             continue
-        cells = [c.strip() for c in line.strip().strip("|").split("|")]
+        cells = [c.replace("`", "").strip() for c in line.strip().strip("|").split("|")]
         if cells[:2] == ["Item", "Kind"] or not any(cells):
             continue
         found.append((cells + [""] * 5)[:5])
@@ -57,6 +57,8 @@ def items_left(items: str) -> list[str]:
         out.append(f"Cell 2 has {len(table)} filled rows. Write 6 or more, two of each kind. Step 2.")
     for item, kind, serves, verdict, reason in table:
         label = item or "a row with no item"
+        if not item:
+            out.append("A row has no item. Write the piece of information in its first column. Step 2.")
         if kind.lower() not in KINDS:
             out.append(f'"{label}": its kind is "{kind}". Write one of: ' + ", ".join(KINDS) + ". Step 2.")
         if not serves:
@@ -66,7 +68,7 @@ def items_left(items: str) -> list[str]:
         if len(reason.split()) < 4:
             out.append(f'"{label}": give a reason of 4 words or more. Step 2.')
         if IDENTIFYING.search(item) and verdict.lower() == "needed":
-            out.append(f'"{label}" identifies a person. Does the prediction need it? See the guide\'s row for the name. Step 2.')
+            out.append(f'"{label}" identifies a person. Does the prediction need it? See the row for the taxpayer\'s name in Step 2\'s table. Step 2.')
     kinds = [kind.lower() for _, kind, _, _, _ in table]
     for kind in KINDS:
         if kinds.count(kind) < 2 and len(table) >= 6:

@@ -21,7 +21,7 @@ For the trainer. Exercise 1, "Tour the workspace: one table, two counts", follow
 - **The answer.** 40, typed into `sql_editor_count`. `explain`: the counts are the same, because both tools read the one table the full name names. The compute only runs the query.
 - **Reason.** A notebook's cluster and the SQL editor's warehouse are two kinds of compute over one catalog.
 - **The notebook line.** "A SQL warehouse is the compute behind the SQL editor."
-- **What else the check accepts.** Any `explain` of 8 words or more: the check looks for the prediction, and the debrief judges it.
+- **What else the check accepts.** Any `explain` of 8 words or more: the check looks for the prediction, and the talk after the exercise judges it. A count typed in quotes, such as "40", is refused with a message to type the digits only.
 
 ## Where it ran
 

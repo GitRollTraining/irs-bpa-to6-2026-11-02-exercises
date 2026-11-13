@@ -33,17 +33,17 @@ def left(values: dict) -> list[str]:
     given = {short(s) for s in values.get("non_wage_income_sources") or [] if s.strip()}
     given.discard("return_header.return_id")
     if not given:
-        out.append("Cell 1 lists no source column yet. Select non_wage_income in the lineage graph. Step 1.")
+        out.append("Cell 1 lists no source column yet. Write each column the graph highlights for non_wage_income. Step 1.")
     else:
         if SOURCES - given:
             out.append("non_wage_income_sources lacks a column the graph highlights in return_header. Step 1.")
         for extra in sorted(given - SOURCES):
-            out.append(f'"{extra}" is not a source of non_wage_income. Write each highlighted column as table.column. Step 1.')
+            out.append(f'"{extra}" is not a source of non_wage_income. Keep only the columns the graph highlights, as table.column. Step 1.')
     stops = (values.get("non_wage_income_stops_at") or "").lower()
     if len(stops.split()) < 4 or "return_header" not in stops:
-        out.append("non_wage_income_stops_at: name the table where the trace stops, and why, in 4 words or more. Step 1.")
+        out.append("non_wage_income_stops_at: write the table at the left end of the trace and what the graph shows to its left, in 4 words or more. Step 1.")
     if len((values.get("predict") or "").split()) < 5:
-        out.append("Cell 2's predict has fewer than 5 words. Write it before you select income_band. Step 2.")
+        out.append("Cell 2's predict has fewer than 5 words. Write yes or no and the reason, before you select income_band. Step 2.")
     if len((values.get("income_band_trace") or "").split()) < 4:
         out.append("income_band_trace: write what the graph shows for income_band, in 4 words or more. Step 2.")
     return out

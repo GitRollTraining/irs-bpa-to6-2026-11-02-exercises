@@ -40,14 +40,16 @@ def left(values: dict, true_count: int) -> list[str]:
     elif name != TABLE:
         out.append(f'"{values["full_name"]}" is not the return table. Open the catalog course, the schema returns, then return_header. Step 1.')
     if values["notebook_count"] != true_count:
-        out.append("Cell 2 has not counted the return table yet. Attach compute and run cell 2. Step 2.")
+        out.append("Cell 2 has not counted the return table yet. Run cell 2, on the compute of step 2. Step 2.")
     sql = values["sql_editor_count"]
     if sql is None:
         out.append("Cell 3 has no SQL editor count yet. Type the number the SQL editor showed. Step 3.")
+    elif isinstance(sql, str):
+        out.append(f'The SQL editor count, "{sql}", is text in quotes. Type the digits only, with no quotes. Step 3.')
     elif sql != true_count:
         out.append(f"The SQL editor count, {sql}, is not the table's count. Run the query on the full name of step 1. Step 3.")
     if len((values["explain"] or "").split()) < 8:
-        out.append("Cell 3's explain has fewer than 8 words. Say if the counts match, and why. Step 3.")
+        out.append("Cell 3's explain has fewer than 8 words. Write 8 words or more on why the counts match or differ. Step 3.")
     return out
 
 

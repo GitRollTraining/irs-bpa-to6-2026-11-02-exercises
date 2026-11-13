@@ -45,16 +45,16 @@ def entry_left(n: int, entry: dict, facts: dict | None) -> list[str]:
     """
     column = (entry.get("column") or "").strip()
     if not column:
-        return [f"Entry {n} names no column yet. Write table.column, as cell 1 shows it. Step 1."]
+        return [f"Entry {n} names no column yet. Write table.column, as cell 1 shows it. Step 2."]
     if facts is None or not column.startswith("return_header."):
-        return [f'Entry {n}: "{column}" is not a column of return_header. Write return_header.<column>, as cell 1 shows it. Step 1.']
+        return [f'Entry {n}: "{column}" is not a column of return_header. Write return_header.<column>, as cell 1 shows it. Step 2.']
     out = []
     if len((entry.get("draft") or "").split()) < 3:
         out.append(f"Entry {n} ({column}): copy the draft, word for word. Step 2.")
     if not same((entry.get("type") or "").lower(), facts["type"].lower()):
         out.append(f"Entry {n} ({column}): the type is not the one the catalog shows. Run cell 2 on it. Step 3.")
     if not (entry.get("comment_and_tags") or "").strip():
-        out.append(f'Entry {n} ({column}): write the comment and tags cell 2 shows, or "none". Step 3.')
+        out.append(f'Entry {n} ({column}): write the comment and tags cell 2 shows, such as "comment: none; tags: none". Step 3.')
     for key, fact in [("empty", "empty"), ("smallest", "min"), ("largest", "max")]:
         if not same(entry.get(key), facts[fact]):
             out.append(f"Entry {n} ({column}): {key} is not what cell 2 shows. Step 3.")
@@ -65,7 +65,7 @@ def entry_left(n: int, entry: dict, facts: dict | None) -> list[str]:
     if verdict not in ("keep", "change"):
         out.append(f"Entry {n} ({column}): write the verdict keep or change. Step 4.")
     elif must_change and verdict == "keep":
-        out.append(f"Entry {n} ({column}): a value in cell 2 contradicts the draft. Read the guide's first row. Step 4.")
+        out.append(f"Entry {n} ({column}): a value in cell 2 contradicts the draft. Read the first row of the verdict table in Step 4.")
     if len((entry.get("reason") or "").split()) < 4:
         out.append(f"Entry {n} ({column}): give the reason, 4 words or more: what in the facts decides it. Step 4.")
     return out

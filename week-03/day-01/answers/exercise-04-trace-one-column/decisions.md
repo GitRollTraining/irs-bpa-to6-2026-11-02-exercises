@@ -15,14 +15,14 @@ One `CREATE TABLE ... AS SELECT` query on `course.returns.return_header` (`week-
 
 - **The answer.** `return_header.total_income` and `return_header.wages_amt`. The trace stops at `return_header`.
 - **Reason.** `non_wage_income` is `total_income - wages_amt`, two source columns in one query.
-- **The notebook lines.** "Unity Catalog captures lineage automatically for queries run on Databricks, down to the column level" "A feature built from two return fields leaves the same two-row trace."
-- **What else the check accepts.** Full names (`course.returns.return_header.wages_amt`) or short ones, any case. It ignores `return_id`. `non_wage_income_stops_at` must name `return_header`, in 4 words or more.
+- **The notebook line.** "Unity Catalog captures lineage automatically for queries run on Databricks, down to the column level"
+- **What else the check accepts.** Full names (`course.returns.return_header.wages_amt`) or short ones, any case. It ignores `return_id`. `non_wage_income_stops_at` must name `return_header`, in 4 words or more; the kept answer adds what the graph shows to its left: no table.
 
 ## 2. The prediction, and the trace of `income_band`
 
-- **The answer.** Prediction: not for sure, since a Python function can hide the link. The trace: what the graph shows, recorded beside the prediction.
-- **The notebook lines.** "Use of user-defined functions (UDFs) can obscure the mapping between source and target columns." "So an empty trace does not prove a column has no source."
-- **What else the check accepts.** A `predict` of 5 words or more and an `income_band_trace` of 4 words or more, either way: the debrief compares them. The check cannot know what the graph shows, so it does not judge it.
+- **The answer.** Prediction: no, or not for sure, since a Python function can hide the link. The trace: what the graph shows, recorded beside the prediction.
+- **The notebook line.** "Use of user-defined functions (UDFs) can obscure the mapping between source and target columns." The step says the rest in its own words: an empty trace does not prove a column has no source.
+- **What else the check accepts.** A `predict` of 5 words or more and an `income_band_trace` of 4 words or more, either way: the talk after the exercise compares them. The check cannot know what the graph shows, so it does not judge it.
 
 ## Where it ran
 
@@ -36,11 +36,8 @@ The curated file is `days/day-01/curated.md` in the Program repository, all unde
 | Quote in the notebook | Line |
 |---|---|
 | "Unity Catalog captures lineage automatically for queries run on Databricks, down to the column level" | 487 |
-| "A feature built from two return fields leaves the same two-row trace." | 504 |
 | "Use of user-defined functions (UDFs) can obscure the mapping between source and target columns." | 514 |
-| "So an empty trace does not prove a column has no source." | 520 |
-| "The system tables are `system.access.table_lineage` and `system.access.column_lineage`." | 499 |
 
 ## Findings of the linter inside quotes
 
-None. Outside quotes: the Goal has 27 words (cap 25) and the Scenario has one passive verb ("is traced"). Both are the exercise block's lines in the day's activities, kept word for word; a rewording is proposed to the block's owner.
+None. Outside quotes: the Scenario has one passive verb ("is traced"), the exercise block's line in the day's activities, kept word for word.
