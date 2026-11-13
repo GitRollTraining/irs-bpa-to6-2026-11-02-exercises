@@ -1,8 +1,9 @@
 """The done check for week 3, day 1, exercise 1. In the notebook it is cell 3. In a terminal in the
 course folder: python3 week-03/day-01/exercise-01-the-question-the-list-each-verdict/check.py
 
-It reads record.json, which cell 2 writes beside this file, and checks the question, the target line
-and each field's kind, verdict and reason. No model is called.
+It reads record.json, which cell 2 writes beside this file, and checks the question, each field's
+kind, verdict and reason, the sentence that explains exam_picked_by, and the target line. It names
+each field that is not yet right, never the right value. No model is called.
 """
 import csv
 import json
@@ -12,16 +13,16 @@ from pathlib import Path
 HERE = Path(__file__).resolve().parent
 KINDS = {"line item", "compare", "outcome", "none"}
 VERDICTS = {"needed", "not needed", "transform"}
-# Each field: the kind, the verdict, and why, as the guide in step 2 gives them.
+# Each field: its kind and its verdict, as the decisions file in the answer folder explains them.
 ANSWER = {
-    "wages_amt": ("line item", "needed", "a line item the ranking compares with similar returns"),
-    "total_income_amt": ("line item", "needed", "a line item the ranking compares with similar returns"),
-    "w2_wages_amt": ("compare", "needed", "a third-party report to compare with the wages on the return"),
-    "exam_changed_tax": ("outcome", "needed", "it is the target: the answer the model learns from"),
-    "exam_picked_by": ("outcome", "needed", "it records which outcomes came from a random sample and which from a score"),
-    "taxpayer_name": ("none", "not needed", "a name tells the ranking nothing it needs"),
-    "tin": ("none", "transform", "it joins the tables, and Tuesday replaces it"),
-    "street_address": ("none", "not needed", "an address identifies a person and tells the ranking nothing it needs"),
+    "tin": ("none", "transform"),
+    "taxpayer_name": ("none", "not needed"),
+    "street_address": ("none", "not needed"),
+    "wages_amt": ("line item", "needed"),
+    "total_income_amt": ("line item", "needed"),
+    "w2_wages_amt": ("compare", "needed"),
+    "exam_changed_tax": ("outcome", "needed"),
+    "exam_picked_by": ("outcome", "needed"),
 }
 
 
@@ -36,15 +37,66 @@ def question_left(question: str) -> list[str]:
     """
     q = question.lower()
     if not q.strip():
-        return ["question is empty. Write it in one sentence. Step 1."]
+        return ["question is empty. Write it in one sentence. Step 2."]
     left = []
     if "return" not in q:
-        left.append("The question does not name its unit: one return. Step 1.")
+        left.append("The question does not name its unit: one return. Step 2.")
     if "chang" not in q or "tax" not in q:
-        left.append("The question does not name its target: whether an examination changes the tax. Step 1.")
+        left.append("The question does not name its target: whether an examination changes the tax. Step 2.")
     if "year" not in q and not any(ch.isdigit() for ch in q):
-        left.append("The question does not name its time, such as this year's returns. Step 1.")
+        left.append("The question does not name its time, such as this year's returns. Step 2.")
     return left
+
+
+def fields_left(rows: dict) -> list[str]:
+    """Return what is not yet right in the field rows.
+
+    Args:
+        rows: field name to a dict with the keys kind, verdict and reason.
+
+    Returns:
+        One line for each field that is not yet right; a wrong value is named, the right one is not.
+    """
+    left = []
+    with open(HERE / "fields.csv", newline="", encoding="utf-8") as file:
+        names = [row["field"] for row in csv.DictReader(file)]
+    for name in names:
+        row = rows.get(name) or {}
+        kind = (row.get("kind") or "").strip().lower()
+        verdict = (row.get("verdict") or "").strip().lower()
+        reason = (row.get("reason") or "").strip()
+        want_kind, want_verdict = ANSWER[name]
+        if not (kind or verdict or reason):
+            left.append(f"{name}: fill in its kind, verdict and reason. Step 3.")
+            continue
+        if kind not in KINDS:
+            left.append(f'{name}: kind is "{kind or "empty"}". Use line item, compare, outcome or none. Step 3.')
+        elif kind != want_kind:
+            left.append(f'{name}: the kind "{kind}" does not fit what the field holds. Read its comment again. Step 3.')
+        if verdict not in VERDICTS:
+            left.append(f'{name}: verdict is "{verdict or "empty"}". Use needed, not needed or transform. Step 3.')
+        elif verdict != want_verdict:
+            left.append(f'{name}: the verdict "{verdict}" does not follow the rule. Do the model or its training read its value? Step 3.')
+        if len(reason.split()) < 3:
+            left.append(f"{name}: write a reason of three words or more. Step 3.")
+    return left
+
+
+def explain_left(explain: str) -> list[str]:
+    """Return what is missing from the sentence that explains exam_picked_by.
+
+    Args:
+        explain: the sentence the learner typed in cell 2.
+
+    Returns:
+        One line when the sentence does not name the random sample; empty when it does.
+    """
+    if not explain.strip():
+        return ["explain is empty. Write one or two sentences about exam_picked_by. Step 3."]
+    if "random" not in explain.lower():
+        return ["explain does not say which two kinds of past examination exam_picked_by tells apart. "
+                "Read its comment again. Step 3."]
+    return []
 
 
 def target_left(target: str) -> list[str]:
@@ -58,46 +110,12 @@ def target_left(target: str) -> list[str]:
     """
     t = target.lower()
     if not t.strip():
-        return ["target is empty. Write the target you chose, why, and what you considered. Step 3."]
+        return ["target is empty. Write the target you chose, why, and what you considered. Step 4."]
     left = []
     if "chang" not in t:
-        left.append("The target line does not say the target: a change to the tax, yes or no. Step 3.")
+        left.append("The target line does not say the target: a change to the tax, yes or no. Step 4.")
     if "amount" not in t:
-        left.append("The target line does not name what you considered: predicting the amount. Step 3.")
-    return left
-
-
-def fields_left(rows: dict) -> list[str]:
-    """Return what is not yet right in the field rows.
-
-    Args:
-        rows: field name to a dict with the keys kind, verdict and reason.
-
-    Returns:
-        One line for each field that is not yet right.
-    """
-    left = []
-    with open(HERE / "fields.csv", newline="", encoding="utf-8") as file:
-        names = [row["field"] for row in csv.DictReader(file)]
-    for name in names:
-        row = rows.get(name) or {}
-        kind = (row.get("kind") or "").strip().lower()
-        verdict = (row.get("verdict") or "").strip().lower()
-        reason = (row.get("reason") or "").strip()
-        want_kind, want_verdict, why = ANSWER[name]
-        if not (kind or verdict or reason):
-            left.append(f"{name}: fill in its kind, verdict and reason. Step 2.")
-            continue
-        if kind not in KINDS:
-            left.append(f'{name}: kind is "{kind or "empty"}". Use line item, compare, outcome or none. Step 2.')
-        elif kind != want_kind:
-            left.append(f'{name}: the kind "{kind}" does not fit what the field holds. Step 2.')
-        if verdict not in VERDICTS:
-            left.append(f'{name}: verdict is "{verdict or "empty"}". Use needed, not needed or transform. Step 2.')
-        elif verdict != want_verdict:
-            left.append(f'{name}: the verdict "{verdict}" is not the one the rule gives: {why}. Step 2.')
-        if len(reason.split()) < 3:
-            left.append(f"{name}: write a reason of three words or more. Step 2.")
+        left.append("The target line does not name what you considered: predicting the amount. Step 4.")
     return left
 
 
@@ -115,22 +133,23 @@ def check(path: Path = HERE / "record.json") -> list[str]:
     record = json.loads(path.read_text(encoding="utf-8"))
     return (question_left(record.get("question", ""))
             + fields_left(record.get("fields", {}))
+            + explain_left(record.get("explain", ""))
             + target_left(record.get("target", "")))
 
 
 def main() -> None:
-    """Print Done: when the record is complete, else Not yet: and each thing left.
+    """Print Done: when the record is complete, else Not yet: N left. and each thing left.
 
     A path given on the command line is checked instead of record.json; the answer's commands.sh uses it.
     """
     left = check(Path(sys.argv[1])) if len(sys.argv) > 1 and sys.argv[1].endswith(".json") else check()
     if left:
-        print("Not yet:")
+        print(f"Not yet: {len(left)} left.")
         for line in left:
             print("-", line)
     else:
-        print("Done: your question names its unit, target and time; each field has its kind, verdict and reason; "
-              "your target line names what you considered.")
+        print("Done: the question names its unit, target and time. Each field has its kind, verdict and reason. "
+              "The sentence on exam_picked_by names the random sample. The target line names what you considered.")
 
 
 if __name__ == "__main__":

@@ -1,20 +1,35 @@
 {
   "question": "For each return filed this year, how likely is an examination to change the tax?",
   "fields": {
+    "tin": {
+      "kind": "none",
+      "verdict": "transform",
+      "reason": "joins the tables; Tuesday replaces it"
+    },
+    "taxpayer_name": {
+      "kind": "none",
+      "verdict": "not needed",
+      "reason": "a name tells the ranking nothing"
+    },
+    "street_address": {
+      "kind": "none",
+      "verdict": "not needed",
+      "reason": "identifies a person; the ranking does not need it"
+    },
     "wages_amt": {
       "kind": "line item",
       "verdict": "needed",
-      "reason": "the ranking compares it with similar returns"
+      "reason": "reported on the return itself"
     },
     "total_income_amt": {
       "kind": "line item",
       "verdict": "needed",
-      "reason": "the ranking compares it with similar returns"
+      "reason": "reported on the return itself"
     },
     "w2_wages_amt": {
       "kind": "compare",
       "verdict": "needed",
-      "reason": "matched against the wages on the return"
+      "reason": "compared with the wages on the return"
     },
     "exam_changed_tax": {
       "kind": "outcome",
@@ -25,22 +40,8 @@
       "kind": "outcome",
       "verdict": "needed",
       "reason": "tells random-sample outcomes from score-chosen ones"
-    },
-    "taxpayer_name": {
-      "kind": "none",
-      "verdict": "not needed",
-      "reason": "says nothing the ranking needs"
-    },
-    "tin": {
-      "kind": "none",
-      "verdict": "transform",
-      "reason": "joins the tables; Tuesday replaces it"
-    },
-    "street_address": {
-      "kind": "none",
-      "verdict": "not needed",
-      "reason": "identifies a person; the ranking does not need it"
     }
   },
+  "explain": "It tells outcomes from a random sample apart from outcomes of returns a score chose, so the model does not learn only from the score's own picks.",
   "target": "We predict a change to the tax, yes or no, because examiner time is scarce. We considered predicting the amount, which moves audits toward higher incomes, and we note that cost."
 }

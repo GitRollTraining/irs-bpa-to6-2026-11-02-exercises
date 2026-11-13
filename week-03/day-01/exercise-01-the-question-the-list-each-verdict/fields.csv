@@ -1,9 +1,9 @@
 field,table,what_it_holds
+tin,"returns, wage_statements, exam_outcomes","the taxpayer identification number, which joins the three tables"
+taxpayer_name,returns,the name of the taxpayer
+street_address,returns,the street address of the taxpayer
 wages_amt,returns,the wages the taxpayer reported on the return
 total_income_amt,returns,the total income the taxpayer reported on the return
 w2_wages_amt,wage_statements,the wages the employer reported on the W-2 for the same year
 exam_changed_tax,exam_outcomes,"for a return examined in the past: did the examination change the tax, yes or no"
 exam_picked_by,exam_outcomes,"for a return examined in the past: how it was picked, random sample or score"
-taxpayer_name,returns,the taxpayer's name
-tin,returns,"the taxpayer identification number, which joins the three tables"
-street_address,returns,the taxpayer's street address
