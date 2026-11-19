@@ -142,6 +142,14 @@ Monday to Wednesday run in the class's Databricks workspace, from your Git folde
 | 3 | [Four exercise notebooks](week-03/day-03/README.md) | [From parsed returns to features and leak-free sets](week-03/day-03/README.md) |
 | 4 | No notebook: terminal steps | [Run Databricks from outside it](week-03/day-04/README.md) |
 
+## Week 4
+
+Monday runs in the class's Databricks workspace, from your Git folder of this repository. Pull it at the start of the day.
+
+| Day | Notebook | Exercises |
+|---|---|---|
+| 1 | [Three exercise notebooks](week-04/day-01/README.md) | [What a model is, a baseline to beat, and the defence of each feature](week-04/day-01/README.md) |
+
 ## When an exercise needs AI access
 
 Two exercises call a model through `model.py`, which sends each request through the Codex CLI that you signed in to in step 1: `same-note-five-times` and `system-prompt` on Day 2. Before those exercises, check access from the course folder:
