@@ -16,3 +16,4 @@ jobs:
       - uses: astral-sh/setup-uv@v9.0.0
       - run: uv sync --locked
       - run: uv run python .github/check_day_one.py
+      - run: sh .github/check_new_weeks_self_contained.sh
