@@ -23,7 +23,7 @@
 - `fields.csv`: two made-up columns, matched to the returns by `return_id`. Its first lines say what each column holds.
 - `refund-held.csv` (the trainer's demo), `load.py` and `check.py` (given code).
 
-**Start from:** this notebook as the course gives it, on the trainer's compute. No cell changes your tables. New here: a column beside the course tables that gives the label away.
+**Start from:** this notebook as the course gives it, on the trainer's compute. No cell changes your tables. New here: a file of two more columns, `fields.csv`.
 
 ### Step 1. Load
 
@@ -64,7 +64,7 @@ Notebook cell 3:
 
 ```python
 # 3. Count the values of one label in the training set.
-label_column = "refund_held"  # the demo's label. For the exercise, type exam_changed_tax in its place.
+label_column = "refund_held"  # the label to count: the demo's refund_held, or the course's exam_changed_tax
 
 counts = train[label_column].value_counts(dropna=False)
 for value, n in counts.items():
@@ -80,7 +80,7 @@ In cell 4, type an answer of two words or more between each pair of quotes, from
 | Question | The fact that decides it |
 |---|---|
 | `decision` | `yes` means that the examination changed the tax |
-| `made by` | on a real return, an examiner; here, "The course's data gives some returns a label that stands for an examination's result." (the day's reading) |
+| `made by` | the course's data: "The course's data gives some returns a label that stands for an examination's result." (the day's reading) On a real return, an examiner would make it. |
 | `when` | an examination closes after the return was filed and selected |
 
 Notebook cell 4:
@@ -100,13 +100,15 @@ for question, answer in origin.items():
 
 "A feature that matches the label almost exactly is a warning sign of leakage." (the day's reading)
 
-In cell 5, type `fields.csv` in place of `refund-held.csv`, and run it. For each column of the file, you should see how many labelled returns agree with the label (a value above zero where the label is `yes`, or zero where it is `no`), then what the file says of each column.
+A column agrees with the label on a return when it is above zero and the label is `yes`, or zero and the label is `no`.
+
+In cell 5, type `fields.csv` in place of `refund-held.csv`, and run it. For each column of the file, you should see how many labelled returns agree with the label, then what the file says of each column.
 
 Notebook cell 5:
 
 ```python
 # 5. Put each column of a file beside the label, and count how often each one agrees with it.
-beside = "refund-held.csv"  # the demo's file. For the exercise, type fields.csv in its place.
+beside = "refund-held.csv"  # the file to read: the demo's refund-held.csv, or the exercise's fields.csv
 
 columns = [c for c in read_csv(beside).columns if c not in ("return_id", "refund_held")]  # not the key or the demo's label
 labelled = train[train[label_column].notna()]
@@ -122,10 +124,10 @@ for column, note in read_notes(beside).items():
 
 ### Step 5. Trace the column that matches
 
-"When you find such a feature, trace it to where it came from: which table holds it, which step wrote it, and when. The answer to *when* decides." (the day's reading) Here *step* means a stage of the tax work, not a step of this exercise.
+"When you find such a feature, trace it to where it came from: which table holds it, which step wrote it, and when. The answer to *when* decides." (the day's reading) The reading's *step* is a stage of the tax work, so the slot below is called `which stage wrote it`.
 
 1. In cell 6, type the name of the column that agrees with the label on nearly every return.
-2. Answer which step of the tax work wrote it: what changes the tax on an account after a return is filed? The trace's first question, which table holds it, is filled in for you: `fields.csv`. Its last, *when*, is your mark in cell 7. Run cell 6.
+2. Answer which stage of the tax work wrote it: what changes the tax on an account after a return is filed? The trace's first question, which table holds it, is filled in for you: `fields.csv`. The trace's last question, *when*, is answered by your mark (`before` or `after`) in cell 7. Run cell 6.
 
 Notebook cell 6:
 
@@ -134,7 +136,7 @@ Notebook cell 6:
 suspect = ""  # its name, from cell 5's counts
 trace = {
     "which table holds it": beside,  # given: the file cell 5 read
-    "which step wrote it": "",       # which stage of the tax work writes this column
+    "which stage wrote it": "",       # which stage of the tax work writes this column
 }
 print("The column:", suspect or "(not yet)")
 for question, answer in trace.items():
@@ -145,7 +147,7 @@ for question, answer in trace.items():
 
 Ask one question of each feature: "was it known before the case was selected? Mark each feature *before* or *after*. Train only on the features marked *before*." (the day's reading)
 
-The course supplies Monday's record, which already marks its four rows: cell 7 gives them. In cell 7, mark the column you traced: its slot already holds its name. Type `before` or `after`, then a reason of three words or more: the reason is *when* it was written. The other column cell 5 counted, `days_to_file`, is given, marked the same way. Run cell 7. You should see four features under `Train on:` and two under `Leave out:`.
+The course supplies Monday's record, which already marks its four rows: cell 7 gives them. In cell 7, mark the column you traced: its slot already holds its name. Type `before` or `after`, then a reason of three words or more that says when the column was written. The other column cell 5 counted, `days_to_file`, is given, marked the same way. Run cell 7. You should see four features under `Train on:` and two under `Leave out:`.
 
 Notebook cell 7:
 
@@ -172,7 +174,7 @@ print("Leave out:", ", ".join(f for f, (mark, _) in marks.items() if mark.strip(
 
 ### Step 7. Check
 
-Run cell 8. It prints `Done:`, or `Not yet:` and what is left. Exercise 2's given cells train on twelve features of the course tables: Monday's three marked `before`, and nine more from the filed return (the filing status, amounts and a ratio), which the day's reading marks `before`. They read nothing from `fields.csv`.
+Run cell 8. It prints `Done:`, or `Not yet:` and what is left.
 
 Notebook cell 8:
 

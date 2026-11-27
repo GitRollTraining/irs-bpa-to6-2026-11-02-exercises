@@ -8,7 +8,7 @@
 
 **Time:** 15 minutes: 11 to do it, 4 for setup problems.
 
-**Where you work:** this notebook, `week-04/day-02/exercise-03-record-two-runs/exercise.ipynb`, in your Git folder of the course in Databricks, then the workspace's Experiments page.
+**Where you work:** this notebook, `week-04/day-02/exercise-03-record-two-runs/exercise.ipynb`, in your Git folder of the course in Databricks, then the workspace's Experiments page. Databricks may show tips under a cell, such as one about MLflow or Genie Code. Close them: they change nothing.
 
 **Done when:** cell 8 prints `Done:`.
 
@@ -21,7 +21,7 @@
 - `course.returns.model_train` and `course.returns.model_valid`, the course's training and validation sets. If they cannot be read, cell 2 makes the same rows from the course's setup file and says so.
 - `load.py` and `check.py`: given code.
 
-**Start from:** this notebook as the course gives it, on the trainer's compute. No cell changes your tables. New here: a run and its record.
+**Start from:** this notebook as the course gives it, on the trainer's compute. No cell changes your tables. Cell 3 makes an experiment, `week-04-candidates`, in your Home folder; cell 5 records 2 runs in it. New here: a run and its record.
 
 ### Step 1. Fit the two candidates again, and open your experiment
 
@@ -84,13 +84,21 @@ for name, accuracy in expected.items():
 1. Run cell 5. You should see `Recorded the run logistic-regression`.
 2. In cell 5, type `decision-tree` in place of `logistic-regression`. Change nothing else. Run cell 5 again. You should see `Recorded the run decision-tree`.
 
-`start_run` starts a run; each `log_param` writes one parameter into it: a setting, the split or the measure; `log_metric` writes the measured accuracy; `log_model` saves the fitted model with the run, and `set_tag` notes that it did. Red warnings while the model is saved are normal. The cell works on any MLflow version: an older one calls the model's name `artifact_path`, and the cell tries that when `name` fails.
+What cell 5 calls:
+
+- `start_run` starts a run.
+- `log_param` writes one parameter into it: a setting, the split or the measure.
+- `log_metric` writes the measured accuracy.
+- `log_model` saves the fitted model with the run.
+- `set_tag` notes that the model was saved.
+
+Two warnings may show while the model is saved: `Encountered unexpected error during resolving tags` and `Model logged without a signature`. They are normal: the run is still saved.
 
 Notebook cell 5:
 
 ```python
 # 5. Record one candidate as a run. Change only the run name, then run this cell again.
-run_name = "logistic-regression"  # the first run. For the second run, type decision-tree in its place.
+run_name = "logistic-regression"  # the run's name: logistic-regression first, then decision-tree
 
 assert run_name in candidates, "Type logistic-regression or decision-tree as the run name."
 model, accuracy = candidates[run_name]
@@ -129,8 +137,8 @@ for _, run in newest.iterrows():
 
 ### Step 4. Compare the two runs on the Experiments page
 
-1. In the workspace's left sidebar, click **Experiments**, then open `week-04-candidates`. You should see one row for each run.
-2. Tick the boxes of the two newest runs, one of each name, then click **Compare**. You should see each run's parameters and its `validation_accuracy`, the same numbers as cell 6.
+1. In the workspace's left sidebar, click **Experiments**, then **Owned by me**, then open `week-04-candidates`. Every learner's experiment has this name, so open your own. You should see one row for each run.
+2. Tick the boxes of the two newest runs, one of each name, then click **Compare**. You should see each run's parameters and its `validation_accuracy`, the same numbers as cell 6. Use the **Bar Chart** tab: the plot of lines draws the logistic regression on the `max_depth` axis, which only the tree has.
 3. Optional: open one run and look for its logged model. The trainer shows where it is.
 
 This step has no cell.

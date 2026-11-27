@@ -19,7 +19,7 @@
  },
  "trace": {
   "which table holds it": "fields.csv",
-  "which step wrote it": "the examination, when it closed"
+  "which stage wrote it": "the examination, when it closed"
  },
  "marks": {
   "tax_to_agi": [

@@ -14,19 +14,19 @@
   "deduction_to_agi"
  ],
  "guess": {
-  "LogisticRegression": "a lot",
-  "DecisionTreeClassifier": "a little"
+  "logistic-regression": "a lot",
+  "decision-tree": "a little"
  },
  "results": {
   "baseline": 0.8,
-  "LogisticRegression": 0.955,
-  "DecisionTreeClassifier": 0.895
+  "logistic-regression": 0.955,
+  "decision-tree": 0.895
  },
  "tree_depth": 3,
  "expected": {
   "baseline": 0.8,
-  "LogisticRegression": 0.955,
-  "DecisionTreeClassifier": 0.895
+  "logistic-regression": 0.955,
+  "decision-tree": 0.895
  },
  "valid_rows": 200
 }

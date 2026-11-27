@@ -14,9 +14,9 @@ from pathlib import Path
 FEATURES = ["filing_status", "wages_amt", "taxable_interest_amt", "other_income_amt", "total_income", "agi_amt",
             "deduction_amt", "deduction_missing", "total_tax_amt", "withholding_amt", "tax_to_agi", "deduction_to_agi"]
 GUESSES = ("a lot", "a little", "not better")
-NAMES = ("LogisticRegression", "DecisionTreeClassifier")
+NAMES = ("logistic-regression", "decision-tree")
 START = {"features": FEATURES, "guess": {name: "" for name in NAMES}, "results": {"baseline": 0.8}, "tree_depth": None,
-         "expected": {"baseline": 0.8, "LogisticRegression": 0.955, "DecisionTreeClassifier": 0.895}, "valid_rows": 200}
+         "expected": {"baseline": 0.8, "logistic-regression": 0.955, "decision-tree": 0.895}, "valid_rows": 200}
 
 
 def plain(text) -> str:
@@ -41,12 +41,12 @@ def left(f: dict) -> list[str]:
                    + ". Run cells 3 and 4 again. Step 1.")
     if any(plain(f["guess"].get(name, "")) not in GUESSES for name in NAMES):
         out.append('Cell 5: type "a lot", "a little" or "not better" for each candidate, before you fit it. Step 2.')
-    for name, line in (("LogisticRegression", "make_pipeline(StandardScaler(), LogisticRegression())"),
-                       ("DecisionTreeClassifier", "DecisionTreeClassifier(max_depth=3, random_state=0)")):
+    for name, line in (("logistic-regression", "make_pipeline(StandardScaler(), LogisticRegression())"),
+                       ("decision-tree", "DecisionTreeClassifier(max_depth=3, random_state=0)")):
         got, want = f["results"].get(name), f["expected"].get(name)
         if got is None:
             out.append(f"Cell 6 has not fitted {name} yet. Make its model line {line}, then run cells 6 and 7. Step 3.")
-        elif name == "DecisionTreeClassifier" and f.get("tree_depth") != 3:
+        elif name == "decision-tree" and f.get("tree_depth") != 3:
             out.append(f"The tree in cell 6 must be {line}: max_depth=3. Run cell 6 again. Step 3.")
         elif want is None or abs(got - want) > 0.0005:
             out.append(f"The accuracy of {name} does not match a fit of {line} on these rows. Run cells 3 to 7 "
@@ -60,8 +60,8 @@ def report(f: dict) -> str:
     if not out:
         r = f["results"]
         return (f"Done: on the same {f['valid_rows']} validation rows, the baseline {r['baseline']:.3f}, "
-                f"LogisticRegression {r['LogisticRegression']:.3f}, DecisionTreeClassifier "
-                f"{r['DecisionTreeClassifier']:.3f}. Compare each with your guess.")
+                f"logistic-regression {r['logistic-regression']:.3f}, decision-tree "
+                f"{r['decision-tree']:.3f}. Compare each with your guess.")
     return "\n".join([f"Not yet: {len(out)} left."] + ["- " + item for item in out])
 
 
@@ -73,8 +73,8 @@ def expected(X_train, y_train, X_valid, y_valid) -> dict:
     from sklearn.preprocessing import StandardScaler
     from sklearn.tree import DecisionTreeClassifier
     out = {"baseline": accuracy_score(y_valid, ["no"] * len(y_valid))}
-    for name, model in (("LogisticRegression", make_pipeline(StandardScaler(), LogisticRegression())),
-                        ("DecisionTreeClassifier", DecisionTreeClassifier(max_depth=3, random_state=0))):
+    for name, model in (("logistic-regression", make_pipeline(StandardScaler(), LogisticRegression())),
+                        ("decision-tree", DecisionTreeClassifier(max_depth=3, random_state=0))):
         model.fit(X_train, y_train)
         out[name] = accuracy_score(y_valid, model.predict(X_valid))
     return out
@@ -82,7 +82,7 @@ def expected(X_train, y_train, X_valid, y_valid) -> dict:
 
 def facts_of(g: dict) -> dict:
     """The facts, from the notebook's values."""
-    tree = g.get("fitted", {}).get("DecisionTreeClassifier")
+    tree = g.get("fitted", {}).get("decision-tree")
     return {"features": list(g["features"]), "guess": dict(g["guess"]),
             "results": {k: float(v) for k, v in g.get("results", {}).items()},
             "tree_depth": getattr(tree, "max_depth", None),

@@ -25,7 +25,7 @@ START = {"label_column": "refund_held",
          "origin": {"decision": "", "made by": "", "when": ""},
          "beside": "refund-held.csv", "agreement_label": "refund_held", "agreement": {"refund_hold_days": 16},
          "labelled": 16, "suspect": "", "file_agreement": {},
-         "trace": {"which table holds it": "refund-held.csv", "which step wrote it": ""},
+         "trace": {"which table holds it": "refund-held.csv", "which stage wrote it": ""},
          "marks": dict({name: [mark, "given in cell 7"] for name, mark in GIVEN.items()}, **{"": ["", ""]}),
          "counts": {"no": 320, "yes": 80}, "empty": 100}
 
@@ -69,8 +69,8 @@ def left(f: dict) -> list[str]:
         out.append(f"Cell 6: type the name of the column of {FILE} that agrees with {LABEL} on nearly every "
                    "return, as cell 5 counted it. Step 5.")
     trace = {k: plain(v) for k, v in f["trace"].items()}
-    if not any(w in trace.get("which step wrote it", "") for w in STEPS_AFTER_FILING):
-        out.append("Cell 6: answer which step of the tax work wrote the column: what changes the tax on an account "
+    if not any(w in trace.get("which stage wrote it", "") for w in STEPS_AFTER_FILING):
+        out.append("Cell 6: answer which stage of the tax work wrote the column: what changes the tax on an account "
                    "after a return is filed? Then run cell 6. Step 5.")
     wanted = dict(GIVEN, **{column: ("after" if column == leak else "before") for column in found})
     wrong = set()
@@ -104,8 +104,8 @@ def report(f: dict) -> str:
         counts, n = f["counts"], sum(f["counts"].values())
         return (f"Done: {LABEL} counts no {counts.get('no', 0)}, yes {counts.get('yes', 0)}, and {f['empty']} empty, "
                 f"not counted. Of the columns of {FILE}, {f['suspect']} agrees with it on "
-                f"{f['file_agreement'][f['suspect']]} of {n} returns; you traced it to a step after selection and "
-                "marked it after, beside tax_added_by_exam. Exercise 2 trains on twelve features, all marked before."
+                f"{f['file_agreement'][f['suspect']]} of {n} returns; you traced it to a stage after selection and "
+                "marked it after, beside tax_added_by_exam."
                 + note(f))
     return "\n".join([f"Not yet: {len(out)} left."] + ["- " + item for item in out]) + note(f)
 

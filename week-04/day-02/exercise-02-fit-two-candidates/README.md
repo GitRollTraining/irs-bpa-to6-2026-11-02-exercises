@@ -8,7 +8,7 @@
 
 **Time:** 15 minutes: 11 to do it, 4 for setup problems.
 
-**Where you work:** this notebook, `week-04/day-02/exercise-02-fit-two-candidates/exercise.ipynb`, in your Git folder of the course in Databricks.
+**Where you work:** this notebook, `week-04/day-02/exercise-02-fit-two-candidates/exercise.ipynb`, in your Git folder of the course in Databricks. Databricks may show tips under a cell, such as one about MLflow or Genie Code. Close them: they change nothing.
 
 **Done when:** cell 8 prints `Done:`.
 
@@ -27,11 +27,16 @@
 
 "A comparison is fair only on the same rows." (the day's reading)
 
+Cell 3 keeps twelve features of the course tables: Monday's three marked `before` in exercise 1, and nine more from the filed return (the filing status, amounts and a ratio), which the day's reading marks `before`. None comes from `fields.csv`.
+
 Run cells 1 to 4. You do not need to change them. You should see:
 
 1. Which tables cell 2 uses.
-2. 400 training rows and 200 validation rows with a label. Cell 3 keeps the twelve features known before selection and reads an empty amount as 0; `deduction_missing` still says which deduction lines were empty.
-3. The baseline, always `no`: 0.8 on the training rows, counted as in Monday's exercise 2, and 0.8 on the validation rows. One more return right moves an accuracy by 0.005.
+2. 400 training rows and 200 validation rows with a label.
+   - Cell 3 keeps the twelve features known before selection.
+   - It reads an empty amount as 0.
+   - `deduction_missing` still says which deduction lines were empty.
+3. The baseline always predicts `no`. Its accuracy is 0.8 on the training rows, counted as in Monday's exercise 2, and 0.8 on the validation rows. There are 200 validation returns, so each one more right moves an accuracy by 0.005: step 2's guess counts in returns.
 
 Notebook cell 1:
 
@@ -102,8 +107,8 @@ print("The baseline on the validation rows:", round(baseline_accuracy, 3))
 
 In cell 5, type your guess for each candidate, the logistic regression and the decision tree you fit in step 3: will it beat the baseline? Then run cell 5.
 
-- `a lot`: twenty or more returns more right than the baseline, of 200.
-- `a little`: one to nineteen more right.
+- `a lot`: right on 20 or more of the 200 returns beyond the baseline.
+- `a little`: right on 1 to 19 more.
 - `not better`: the same or fewer.
 
 Notebook cell 5:
@@ -111,8 +116,8 @@ Notebook cell 5:
 ```python
 # 5. Your guess: will each candidate beat the baseline? Type "a lot", "a little" or "not better".
 guess = {
-    "LogisticRegression": "",
-    "DecisionTreeClassifier": "",
+    "logistic-regression": "",
+    "decision-tree": "",
 }
 print("Your guess:", guess)
 ```
@@ -130,7 +135,7 @@ DecisionTreeClassifier(max_depth=3, random_state=0)
 
 `max_depth=3` is a setting: a tree at most three questions deep.
 
-3. Run cell 6 again, by itself, not with Run all. You should see the tree's accuracy.
+3. Run cell 6 again, by itself, not with Run all, so the logistic regression's result from your first run stays beside it. You should see the tree's accuracy.
 
 Notebook cell 6:
 
@@ -141,7 +146,8 @@ model = make_pipeline(StandardScaler(), LogisticRegression())  # the one line th
 model.fit(X_train, y_train)                      # fit: training, on the training rows
 predictions = model.predict(X_valid)             # predict: one outcome for each validation return
 accuracy = accuracy_score(y_valid, predictions)  # accuracy: the share of predictions that match the label
-name = type(model[-1] if hasattr(model, "steps") else model).__name__  # its type, inside the pipeline
+kind = type(model[-1] if hasattr(model, "steps") else model).__name__  # its type, inside the pipeline
+name = {"LogisticRegression": "logistic-regression", "DecisionTreeClassifier": "decision-tree"}.get(kind, kind)  # as exercise 3 names its runs
 results[name], fitted[name] = accuracy, model
 print(name, "validation accuracy:", round(accuracy, 3))
 print("Right:", int((predictions == y_valid).sum()), "of", len(y_valid), "validation returns")
@@ -149,7 +155,11 @@ print("Right:", int((predictions == y_valid).sum()), "of", len(y_valid), "valida
 
 ### Step 4. Set the three numbers side by side, and check
 
-1. Run cell 7. You should see three accuracies on the same validation rows. Compare each with your guess. A large gain is the moment to ask whether a column gave the label away. The course supplies those checks: exercise 1 checked the label's counts, the two columns of `fields.csv` and the four rows of Monday's record, and the day's reading marks the other features of cell 3 `before`, as each comes from the filed return. An accuracy close to 1.000 is a warning: suspect a leak.
+1. Run cell 7. You should see three accuracies on the same validation rows. Compare each with your guess.
+   - A large gain is the moment to ask whether a column gave the label away.
+   - The course supplies those checks: exercise 1 checked the label's counts, the two columns of `fields.csv` and the four rows of Monday's record.
+   - The day's reading marks the other features of cell 3 `before`, as each comes from the filed return.
+   - An accuracy close to 1.000 → suspect a leak.
 2. Run cell 8. It prints `Done:`, or `Not yet:` and what is left.
 
 Notebook cell 7:
@@ -157,7 +167,7 @@ Notebook cell 7:
 ```python
 # 7. Three numbers side by side, on the same validation rows.
 assert "results" in globals(), "Run cells 3 and 4 first."
-for name in ("baseline", "LogisticRegression", "DecisionTreeClassifier"):
+for name in ("baseline", "logistic-regression", "decision-tree"):
     if name in results:
         print(f"{name}: {results[name]:.3f}")
     else:
@@ -191,7 +201,7 @@ print(by_how_much or "Write your sentence between the quotes.")
 ### Afterwards, together
 
 1. Why measure the baseline again on the validation rows?
-2. What does a gain of 31 more right in 200 not tell you about the 40 change returns?
+2. What does the logistic regression's gain over the baseline not tell you about the 40 returns whose tax changed (`yes`)?
 3. What would you check first if a candidate's accuracy were 0.999?
 
 The answer, after you try: [`answers/exercise-02-fit-two-candidates`](../answers/exercise-02-fit-two-candidates/).
