@@ -10,7 +10,7 @@
 
 **Done when:** cell 4 prints `Done:`.
 
-**Optional part:** Finished early? In a new cell, write one sentence: why does the baseline pick out no change, although its accuracy looks good?
+**Optional part:** Finished early? In a new cell, write one sentence: why does the baseline find no return whose tax changed, although its accuracy looks good?
 
 **What you need to know first:** accuracy is "the share of predictions that are right." A baseline is "the simplest prediction; its accuracy is the one every model must beat." Here the baseline always predicts the most common outcome.
 
@@ -45,7 +45,7 @@ else:
 
 ### Step 2. Guess the baseline's accuracy
 
-Why: a guess you write before cell 3 divides the right predictions by the labelled returns shows what you expected. Then the number can surprise you.
+Why: writing a guess before cell 3 computes the accuracy shows what you expected, so the real number can surprise you.
 
 The baseline always predicts `no`, the most common outcome. In cell 2, replace `None` with your guess of its accuracy, a share from 0 to 1, such as `0.6`. Any share counts. Run cell 2. You should see your guess printed.
 

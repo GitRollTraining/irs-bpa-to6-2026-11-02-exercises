@@ -67,16 +67,13 @@ Why: the reading gives two reasons a question can lack a label. Q2 has the first
 
 In cell 3, between the quotes of `needs = ""`, write what the table would have to record for Q2 to have a label: 8 words or more. Run cell 3. You should see your sentence printed.
 
-<details><summary>Stuck? One way to say it</summary>
-
-A column that records, for each past return, whether the taxpayer later filed an amended return, yes or no.
-
-</details>
+Stuck? Cell 3's comment gives an example for a different question, not Q2. Copy its shape, not its words: a column, for each past return, that records a decision, yes or no.
 
 Notebook cell 3:
 
 ```python
 # 3. What would the table have to record for Q2 to have a label?
+# An example for a different question, not Q2: "A column that records, for each past return, whether the IRS sent the taxpayer a notice, yes or no."
 needs = ""
 print(needs or "Write your sentence between the quotes.")
 ```

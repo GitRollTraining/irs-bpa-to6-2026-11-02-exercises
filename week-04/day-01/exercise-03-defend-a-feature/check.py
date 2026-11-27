@@ -54,7 +54,7 @@ def left(spark: object, values: dict) -> list[str]:
     """
     schema, flag = values["schema"].strip(), values["flag"].strip()
     if schema.endswith("_NN"):
-        return ["Cell 1 still names course.learner_NN. Type your own number, then run cells 1 to 5. Step 1."]
+        return ["Cell 1 still names course.learner_NN. Type the part of your schema's name after learner_, then run cells 1 to 5. Step 1."]
     out = []
     meaning = values["empty_means"].strip().lower()
     if meaning not in ("zero", "unknown"):

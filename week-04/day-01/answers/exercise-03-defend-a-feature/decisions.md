@@ -7,9 +7,9 @@ The answer is `exercise.ipynb` beside this file, with the schema `course.learner
 | Cell | Answer | Why |
 |---|---|---|
 | 2 | `amount = "deduction_amt"` | It prints 1000 returns, 937 filled, 63 empty. The trainer's `withholding_amt` prints 0 empty. |
-| 3 | `empty_means = "unknown"` | The learner decides it: the step gives no answer, only a folded hint with the reason. Line 12e is the standard or the itemized deduction: every return takes one, so an empty line cannot mean none. No return in the course tables has a deduction of 0. `zero` prints a Not yet line that sends the learner back to what line 12e holds, without the answer. |
+| 3 | `empty_means = "unknown"` | The learner decides it: the step gives no answer, and its Stuck? hint and cell 3's comment give an example for a different line (line 2b on a paper Form 1040, where a blank line means zero), so the learner sees the shape of a reason, not this one. The reason, which the notebook does not show (its folded hint showed open in Databricks): every return takes the standard deduction or itemized deductions, and line 12e holds the one it took, so an empty line 12e cannot mean that the taxpayer had none. No return in the course tables has a deduction of 0. `zero` prints a Not yet line that sends the learner back to what line 12e holds, without the answer. |
 | 3 | `why_empty = "every return takes the standard deduction or itemized deductions, so an empty line 12e cannot mean none"` | The reason above, in the learner's words; the check asks 6 words or more and does not read its meaning. |
-| 3 | `flag = "deduction_missing"`, given | The name the reading gives it (curated line 272); given so the new reason costs no extra typed value. Cell 3 writes `course.learner_NN.features_flagged`: every column of `course.returns.model_features` and the flag, 1 on the 63 empty rows. |
+| 3 | `flag = "deduction_missing"`, given | The name the reading gives it (curated line 272); given so the new reason costs no extra typed value. Cell 3 reads `deduction_amt` itself, not cell 2's `amount`, so a learner who skips or restarts cell 2 still flags the right column. Cell 3 writes `course.learner_NN.features_flagged`: every column of `course.returns.model_features` and the flag, 1 on the 63 empty rows. |
 | 4 | `deduction_amt`: line 12e, a reason, `yes` | Line 12e is on the return as filed. |
 | 4 | the flag's row, all given | Its source field, reason, `yes` and timing are given: typing them teaches nothing the `deduction_amt` row does not. |
 
@@ -19,7 +19,7 @@ The feature record starts in the exercise's own cell 4 with the reading's two ro
 
 The reason for `deduction_amt` is general on purpose: it says nothing about any one return's score, a later day's topic.
 
-The learner types 7 values: the schema number, the amount's name, `empty_means`, `why_empty`, and three slots of the `deduction_amt` row. Step 1 says where the schema's number is (Catalog, `course`).
+The learner types 7 values: the end of the schema's name, the amount's name, `empty_means`, `why_empty`, and three slots of the `deduction_amt` row. Step 1 says where the schema is (Catalog, `course`); its name may end in two digits or not (`learner_07`, `learner_ctv`).
 
 ## Where each rule comes from (for the trainer, never in a learner cell)
 

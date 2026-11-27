@@ -22,7 +22,7 @@
 **What you have:**
 
 - `course.returns.model_features`, the week's feature table in Unity Catalog, where Databricks keeps the course's tables: 1,000 returns, made up by the course.
-- Your own schema, `course.learner_NN`, from week 3. Your number is the same as in week 3.
+- Your own schema, `course.learner_NN`, from week 3.
 - The trainer's example, shown before this exercise: two features recorded, and the same count and flag cells on `withholding_amt`.
 - `check.py`, beside this notebook. Cell 5 runs it. It reads the two tables you write.
 
@@ -32,12 +32,12 @@
 
 Why: cells 3 and 4 write two tables in your own schema.
 
-In cell 1, type your two-digit number in place of `NN`, such as `07`: the number you used in week 3. To find it: in the Databricks sidebar, select Catalog, then open `course`. Your schema is the `learner_` schema you made in week 3. If you cannot tell which one, ask the trainer. Run cell 1. You should see `Your tables go in course.learner_07`, with your own number.
+In cell 1, type the end of your schema's name in place of `NN`: the part after `learner_`, such as `07` or `ctv`. To find it: in the Databricks sidebar, select Catalog, then open `course`. Your schema is the `learner_` schema you made in week 3. If you cannot tell which one, ask the trainer. Run cell 1. You should see `Your tables go in course.learner_07`, with your own schema's name.
 
 Notebook cell 1:
 
 ```python
-# 1. Your schema, where your tables go. Type your number in place of NN.
+# 1. Your schema, where your tables go. Type the part of its name after learner_ in place of NN.
 schema = "course.learner_NN"
 print("Your tables go in", schema)
 ```
@@ -74,11 +74,7 @@ In cell 3, type two values between the quotes:
 
 The flag's name is given: `deduction_missing`. It holds 1 where line 12e is empty and 0 where it is filled.
 
-<details><summary>Stuck? The reason</summary>
-
-Every return takes the standard deduction or itemized deductions, and line 12e holds the one it took. So an empty line 12e cannot mean that the taxpayer had none.
-
-</details>
+Stuck? Cell 3's comment gives an example reason for a different line, not 12e. Copy its shape, not its answer: what the line holds, so what its being empty tells you.
 
 Run cell 3. It writes `features_flagged` in your schema: every column of `course.returns.model_features`, and the flag. You should see two rows: `0` with 937 returns, and `1` with 63.
 
@@ -87,13 +83,13 @@ Notebook cell 3:
 ```python
 # 3. What an empty line 12e means, and why. Then the flag, named for you.
 empty_means = ""   # "zero" or "unknown"
-why_empty = ""
+why_empty = ""   # example for a different line, not 12e: "On a paper Form 1040, a filer with no taxable interest may leave line 2b blank, so a blank line 2b there means zero."
 flag = "deduction_missing"
 if schema.endswith("_NN") or not flag:
-    print("Type your number in cell 1 first, then run this cell again.")
+    print("Type the part of your schema's name after learner_ in cell 1 first, then run this cell again.")
 else:
     spark.sql(f"CREATE OR REPLACE TABLE {schema}.features_flagged AS SELECT *, "
-              f"CASE WHEN {amount} IS NULL THEN 1 ELSE 0 END AS {flag} FROM course.returns.model_features")
+              f"CASE WHEN deduction_amt IS NULL THEN 1 ELSE 0 END AS {flag} FROM course.returns.model_features")
     spark.sql(f"SELECT {flag}, COUNT(*) AS returns FROM {schema}.features_flagged GROUP BY {flag} ORDER BY {flag}").show()
 ```
 
@@ -133,7 +129,7 @@ record = [
      "whether line 12e is empty shows on the return as filed"),   # why: given
 ]
 if schema.endswith("_NN"):
-    print("Type your number in cell 1 first, then run this cell again.")
+    print("Type the part of your schema's name after learner_ in cell 1 first, then run this cell again.")
 else:
     spark.createDataFrame(record, "feature string, source_field string, reason string, "
                                   "known_at_selection string, timing string") \
@@ -148,7 +144,7 @@ Run cell 5. It prints `Done:` when these things are true:
 - `empty_means` is the reading that line 12e supports, and `why_empty` has 6 words or more.
 - `features_flagged` in your schema has the flag, 1 on each return whose `deduction_amt` is empty and 0 on the others.
 - `model_feature_record`, the feature record in your schema, holds the two given rows, a row for `deduction_amt` and a row for your flag.
-- The `deduction_amt` row and the flag's row each name line 12e, has a reason of 6 words or more, and says `yes` or `no`.
+- The `deduction_amt` row and the flag's row each name line 12e, have a reason of 6 words or more, and say `yes` or `no`.
 
 Otherwise it prints `Not yet:` and each thing still to do. It reads your two tables. You do not need to read its code.
 
