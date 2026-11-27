@@ -1,0 +1,73 @@
+{
+ "ten": {
+  "4": [
+   0.058392580055834746,
+   "no change"
+  ],
+  "11": [
+   4.40804331042121e-07,
+   "no change"
+  ],
+  "37": [
+   0.4741488557743093,
+   "no change"
+  ],
+  "50": [
+   0.0710207638435466,
+   "change"
+  ],
+  "123": [
+   0.9637527689794351,
+   "change"
+  ],
+  "205": [
+   0.9968023355064627,
+   "change"
+  ],
+  "224": [
+   0.9832616145359416,
+   "change"
+  ],
+  "463": [
+   0.6517197633766073,
+   "no change"
+  ],
+  "471": [
+   0.17931556001059396,
+   "change"
+  ],
+  "905": [
+   0.9417748011019473,
+   "no change"
+  ]
+ },
+ "my_cells": {
+  "205": "TP",
+  "224": "TP",
+  "123": "TP",
+  "905": "FP",
+  "463": "FP",
+  "37": "TN",
+  "471": "FN",
+  "50": "FN",
+  "4": "TN",
+  "11": "TN"
+ },
+ "meaning": {
+  "FP": "an examiner spends hours on a return whose examination changes nothing",
+  "FN": "a return an examination would have changed, and nobody looks at it"
+ },
+ "guess": 2,
+ "all_counts": {
+  "TP": 34,
+  "FP": 3,
+  "FN": 6,
+  "TN": 157
+ },
+ "expected_all": {
+  "TP": 34,
+  "FP": 3,
+  "FN": 6,
+  "TN": 157
+ }
+}

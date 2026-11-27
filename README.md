@@ -144,12 +144,15 @@ Monday to Wednesday run in the class's Databricks workspace, from your Git folde
 
 ## Week 4
 
-Monday and Tuesday run in the class's Databricks workspace, from your Git folder of this repository. Pull it at the start of each day.
+Monday to Thursday run in the class's Databricks workspace, from your Git folder of this repository. Pull it at the start of each day. Friday is Challenge 4, in Databricks too, from your own public fork of this repository: its README says how.
 
 | Day | Notebook | Exercises |
 |---|---|---|
 | 1 | [Three exercise notebooks](week-04/day-01/README.md) | [What a model is, a baseline to beat, and the defence of each feature](week-04/day-01/README.md) |
 | 2 | [Three exercise notebooks](week-04/day-02/README.md) | [The labels and each feature checked, two candidates trained and recorded in MLflow](week-04/day-02/README.md) |
+| 3 | [Three exercise notebooks](week-04/day-03/README.md) | [The two candidates judged: four cells, precision and recall, a threshold from capacity](week-04/day-03/README.md) |
+| 4 | [Three exercise notebooks](week-04/day-04/README.md) | [Case #123 explained, selection rates by channel, and the technique chosen](week-04/day-04/README.md) |
+| 5 | [Challenge 4's notebook](week-04/day-05/README.md) | [A second examination group's list: the error that costs more, its list, and its defence](week-04/day-05/README.md) |
 
 ## When an exercise needs AI access
 

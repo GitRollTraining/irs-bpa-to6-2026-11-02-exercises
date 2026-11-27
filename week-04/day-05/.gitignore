@@ -1,0 +1,9 @@
+.tools/
+.venv/
+.platform/
+__pycache__/
+*.pyc
+
+# Local capture configuration and authentication stay off the project branch.
+.codex/
+.entire/

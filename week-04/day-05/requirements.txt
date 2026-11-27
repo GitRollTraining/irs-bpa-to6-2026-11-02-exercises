@@ -1,0 +1,2 @@
+databricks-sdk==0.166.0
+mcp==1.30.0

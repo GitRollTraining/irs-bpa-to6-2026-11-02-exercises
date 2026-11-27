@@ -1,0 +1,245 @@
+# Exercise 1: Sort ten returns into four cells, then count every examined return (we do)
+
+**Goal:** After this exercise, you can sort scored returns into the four cells at 0.5 and say what each cell means for an examiner.
+
+**Scenario:** The examiners' manager asks how Tuesday's logistic regression would have done on ten returns of `model_valid` whose examinations have closed, case #123 among them. Six are sorted for you; you sort the other four into their cells at 0.5 and say what the two errors mean for an examiner. Then a given cell counts the 200 examined returns of `model_valid`.
+
+**AI tool:** none.
+
+**Time:** 15 minutes: 11 to do it, 4 for setup problems.
+
+**Where you work:** this notebook, `week-04/day-03/exercise-01-four-cells/exercise.ipynb`, in your Git folder of the course in Databricks.
+
+**Done when:** cell 8 prints `Done:`.
+
+**Cells:** a cell's number is the `# N.` comment on its first line, such as `# 1.`; text cells have no number.
+
+**Optional part:** Finished early? Cell 9 moves the threshold to 0.7.
+
+**What you have:**
+
+- `course.returns.model_train` and `course.returns.model_valid`, the course's training and validation sets, as on Tuesday. If they cannot be read, cell 1 makes the same rows from the course's setup file and says so.
+- `load.py` and `check.py`, given code that cells 1 and 8 run.
+
+**Start from:** this notebook as the course gives it, attached to the compute the trainer names. No cell changes your tables. New here: the four cells, counted at one threshold.
+
+### Step 1. Score the validation returns, and read the ten
+
+Run cells 1 and 2. You do not need to change them. You should see:
+
+1. Which tables cell 1 uses, then 500 returns in `model_train` and 250 in `model_valid`.
+2. Cell 2 fits Tuesday's two candidates again, with Tuesday's lines, on the 400 examined returns of `model_train`. Then each one gives a score to every return of `model_valid`. `predict_proba` gives each return's score from 0 to 1; Tuesday's `predict` gave only `yes` or `no`. You should see 40 returns labelled `change`, 160 `no change` and 50 `never examined`.
+
+A score is one return's number from 0 to 1: a relative risk indicator that a person acts on, never a finding about the taxpayer. A label records a past examination: `change` means it changed the tax (`exam_changed_tax` is `yes`).
+
+Then run cell 3. You should see the day's ten returns, highest score first: `case_id`, `logistic_score` and `label`.
+
+Notebook cell 1:
+
+```python
+# 1. Read the course's training and validation sets. You do not need to change this cell.
+import os
+course_folder = os.getcwd().split("/week-04/")[0]  # your Git folder of the course
+folder = f"{course_folder}/week-04/day-03/exercise-01-four-cells"
+try:
+    train_table = spark.table("course.returns.model_train")  # the training set: tax years 2020 and 2021
+    valid_table = spark.table("course.returns.model_valid")  # the validation set: tax year 2022
+except Exception:
+    train_table, valid_table = None, None  # not there: load.py makes the same rows
+exec(open(f"{folder}/load.py", encoding="utf-8").read())  # you do not need to read load.py
+train, valid = load_sets(train_table, valid_table)
+```
+
+Notebook cell 2:
+
+```python
+# 2. Tuesday's two candidates, fitted again as Tuesday fitted them; each scores every return of model_valid.
+assert "valid" in globals(), "Run cell 1 first."
+from sklearn.linear_model import LogisticRegression
+from sklearn.pipeline import make_pipeline
+from sklearn.preprocessing import StandardScaler
+from sklearn.tree import DecisionTreeClassifier
+
+features = ["filing_status", "wages_amt", "taxable_interest_amt", "other_income_amt",
+            "total_income", "agi_amt", "deduction_amt", "deduction_missing",
+            "total_tax_amt", "withholding_amt", "tax_to_agi", "deduction_to_agi"]  # Tuesday's twelve
+examined = train[train["exam_changed_tax"].notna()]  # the 400 examined returns of model_train
+X_train, y_train = examined[features].fillna(0), examined["exam_changed_tax"]
+logistic = make_pipeline(StandardScaler(), LogisticRegression()).fit(X_train, y_train)
+tree = DecisionTreeClassifier(max_depth=3, random_state=0).fit(X_train, y_train)
+
+scores = valid[["case_id", "exam_changed_tax"]].copy()  # all 250 returns of model_valid
+scores["label"] = scores["exam_changed_tax"].map({"yes": "change", "no": "no change"}).fillna("never examined")
+scores["logistic_score"] = logistic.predict_proba(valid[features].fillna(0))[:, 1]  # column 1 is "yes"
+scores["tree_score"] = tree.predict_proba(valid[features].fillna(0))[:, 1]
+print(len(scores), "returns of model_valid scored by both candidates:", scores["label"].value_counts().to_dict())
+```
+
+Notebook cell 3:
+
+```python
+# 3. The ten returns of the day's reading, highest score first. You do not need to change this cell.
+assert "scores" in globals(), "Run cells 1 and 2 first."
+ten = scores[scores["case_id"].isin([205, 224, 123, 905, 463, 37, 471, 50, 4, 11])]
+ten = ten.sort_values("logistic_score", ascending=False)
+print(ten[["case_id", "logistic_score", "label"]].round(3).to_string(index=False))
+```
+
+### Step 2. Sort each of the ten into its cell
+
+"The first word of each cell's name, *true* or *false*, says whether the list agreed with the label." (the day's reading)
+
+The threshold is 0.5. A score at or above 0.5 puts the return on the list; below 0.5, the return stays off. For a score exactly at the threshold, the day's reading says: "in this course, it goes on the list".
+
+| Type | Where the return landed | Its label |
+|---|---|---|
+| `TP`, true positive | on the list | change |
+| `FP`, false positive | on the list | no change |
+| `FN`, false negative | off the list | change |
+| `TN`, true negative | off the list | no change |
+
+Six of the ten are sorted for you. Case 205, for example: score 0.997, on the list; label change: `"TP"`.
+
+1. In cell 4, type the cell of the four returns left, cases 905, 463, 37 and 471, between their quotes. The comment beside each gives its score and label.
+2. Run cell 4. It counts your four cells and prints the two sums: all four should add up to 10, and `TP + FN` to the 5 returns labelled change. If a sum does not hold, look again at cell 4.
+
+Notebook cell 4:
+
+```python
+# 4. Your sort at 0.5. Type the cell of cases 905, 463, 37 and 471: TP, FP, FN or TN.
+my_cells = {
+    205: "TP",  # score 0.997, label change
+    224: "TP",  # score 0.983, label change
+    123: "TP",  # case #123: score 0.964, label change
+    905: "",  # score 0.942, label no change
+    463: "",  # score 0.652, label no change
+    37: "",   # score 0.474, label no change
+    471: "",  # score 0.179, label change
+    50: "FN",   # score 0.071, label change
+    4: "TN",    # score 0.058, label no change
+    11: "TN",   # score 0.000, label no change
+}
+assert "ten" in globals(), "Run cell 3 first."
+my_counts = {cell: sum(str(v).strip().upper() == cell for v in my_cells.values()) for cell in ("TP", "FP", "FN", "TN")}
+print("Your four counts:", my_counts)
+print("Sum 1, all four:", sum(my_counts.values()), "of", len(ten), "returns")
+print("Sum 2, TP + FN:", my_counts["TP"] + my_counts["FN"], "of", (ten["label"] == "change").sum(), "labelled change")
+```
+
+### Step 3. Say what each error means for an examiner
+
+"The two cells whose name starts with *false* are the model's two kinds of error." (the day's reading) A true positive is a case that was worth the hours; a true negative, a return correctly left alone.
+
+1. In cell 5, between the quotes, write what each error means for an examiner, four words or more. Think of who spends hours, and who looks at the return.
+2. Run cell 5. You should see your two sentences.
+
+*True* and *false* say whether the list agreed with a past examination's result. They say nothing about a taxpayer.
+
+Notebook cell 5:
+
+```python
+# 5. What each error means for an examiner, in your words: four words or more.
+meaning = {
+    "FP": "",  # on the list, labelled no change
+    "FN": "",  # off the list, labelled change
+}
+for cell, words in meaning.items():
+    print(cell, ":", words or "(not yet)")
+```
+
+### Step 4. Guess, then count the 200 examined returns with the given code
+
+1. In cell 6, type your guess in place of `None`: the logistic regression leaves 6 returns labelled change off the list at 0.5. How many of those 6 score above 0.4, close to the line? Any whole number from 0 to 6 counts.
+2. Run cell 6. It puts each of the 200 examined returns on the list or off it at 0.5, and `confusion_matrix` from scikit-learn counts the four cells. You should see a table of two rows, two numbers in each, then the scores of the returns labelled change that stay off the list, beside your guess.
+
+"Tools arrange the rows and columns differently" (the day's reading). scikit-learn puts the label in the rows: the first row is the returns labelled `change`, the second those labelled `no change`. In each row, the first number is the returns on the list, the second those off it.
+
+Notebook cell 6:
+
+```python
+# 6. Your guess first, then the counting code on the 200 examined returns at 0.5.
+guess = None  # of the 6 returns labelled change off the list at 0.5: how many score above 0.4?
+
+from sklearn.metrics import confusion_matrix
+assert "scores" in globals(), "Run cells 1 and 2 first."
+examined_scores = scores[scores["label"] != "never examined"]  # the 200 examined returns
+if guess is None:
+    print("Type your guess in place of None, then run this cell again.")
+else:
+    on_list = ["change" if s >= 0.5 else "no change" for s in examined_scores["logistic_score"]]  # on the list counts as change
+    table = confusion_matrix(examined_scores["label"], on_list, labels=["change", "no change"])
+    print(table)
+    print(len(examined_scores), "examined returns,", (examined_scores["label"] == "change").sum(), "labelled change.")
+    missed = examined_scores[(examined_scores["label"] == "change") & (examined_scores["logistic_score"] < 0.5)]
+    print("Labelled change, off the list, their scores:", sorted(missed["logistic_score"].round(3)), " Your guess:", guess)
+```
+
+### Step 5. Name each count of the table, then check
+
+"The four counts add up to 200, the examined returns. The true positives plus the false negatives equal 40, the returns labelled *change*." (the day's reading)
+
+1. In cell 7, type each count from cell 6's table in place of `None`. The table says where each one is.
+
+| Value | Where it is in cell 6's table | Why |
+|---|---|---|
+| `TP` | row 1, the first number | labelled change, on the list |
+| `FN` | row 1, the second number | labelled change, off the list |
+| `FP` | row 2, the first number | labelled no change, on the list |
+| `TN` | row 2, the second number | labelled no change, off the list |
+
+2. Run cell 7. You should see sum 1 beside 200 and sum 2 beside 40.
+3. Run cell 8. It prints `Done:`, or `Not yet:` and what is left.
+
+Notebook cell 7:
+
+```python
+# 7. The four counts of cell 6's table, by name. Type each in place of None.
+all_counts = {"TP": None, "FN": None, "FP": None, "TN": None}
+
+if None in all_counts.values():
+    print("Type the four counts first.")
+else:
+    print("Sum 1, all four:", sum(all_counts.values()), " The examined returns: 200")
+    print("Sum 2, TP + FN:", all_counts["TP"] + all_counts["FN"], " Labelled change: 40")
+```
+
+Notebook cell 8:
+
+```python
+# 8. Check. You do not need to read this code. It runs check.py, beside this notebook.
+_check = {"__name__": "check"}
+exec(open(f"{folder}/check.py", encoding="utf-8").read(), _check)
+check_now = _check["in_notebook"]
+print(check_now(globals()))
+```
+
+### Finished early?
+
+Optional: cell 8 does not check it.
+
+Move the threshold to 0.7. In cell 9, between the quotes, type the return of the ten that changes cell, and its new cell, such as `205 FN`. Run cell 9. You should see the ten's four counts at 0.5 and at 0.7, and your answer.
+
+Notebook cell 9:
+
+```python
+# 9. Optional: the ten returns at a threshold of 0.7.
+changed = ""  # the return that changes cell, and its new cell
+
+if not changed:
+    print("Type the return that changes cell, then run this cell again.")
+else:
+    change = ten["label"] == "change"
+    for threshold in (0.5, 0.7):
+        on = ten["logistic_score"] >= threshold
+        counted = {"TP": (on & change).sum(), "FP": (on & ~change).sum(), "FN": (~on & change).sum(), "TN": (~on & ~change).sum()}
+        print(f"At {threshold}:", {cell: int(n) for cell, n in counted.items()})
+    print("Yours:", changed)
+```
+
+### Afterwards, together
+
+1. Why is case 905 a false positive, not a finding about a taxpayer?
+2. Which cell does nobody see once the model is in use?
+3. Which two sums show the tool's table is read right?
+
+The answer, after you try: [`answers/exercise-01-four-cells`](../answers/exercise-01-four-cells/).
