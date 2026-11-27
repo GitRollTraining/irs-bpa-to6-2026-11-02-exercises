@@ -1,0 +1,4 @@
+{
+ "late_exams": "\nLabelled data: yes: many past examinations, each labelled on time or late\nCost: training once; then each new examination costs almost nothing to score, every week\nRisk: an examination picked out wrongly moves staff for nothing; a manager reviews each one picked out\nChoice: a trained model\nDecided by: labelled data, because the team holds many past examinations, each with its label, and cost points the same way.\n",
+ "drafts": "\nLabelled data: no: no store of approved answers\nCost: nothing to train; a small cost for each call, one call for each question\nRisk: a draft may state a rule that is not in the form's instructions; the analyst checks each draft against the instructions for the line\nChoice: prompting\nDecided by: labelled data, because there are no approved answers to train on, and the task is writing text.\n"
+}

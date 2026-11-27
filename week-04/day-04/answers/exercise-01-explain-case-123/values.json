@@ -1,0 +1,34 @@
+{
+ "ranked": [
+  "other_income_amt",
+  "tax_to_agi",
+  "wages_amt",
+  "deduction_to_agi",
+  "deduction_amt",
+  "total_tax_amt",
+  "deduction_missing",
+  "taxable_interest_amt",
+  "filing_status",
+  "agi_amt",
+  "total_income",
+  "withholding_amt"
+ ],
+ "chart": {
+  "start": -4.553082873112105,
+  "output": 3.2804718052602633,
+  "score": 0.9637527689794351,
+  "pushes": {
+   "other_income_amt": 3.818420199868141,
+   "deduction_amt": 2.6454274948715715,
+   "tax_to_agi": 1.2374963655730646
+  }
+ },
+ "top_three": [
+  "other_income_amt",
+  "tax_to_agi",
+  "wages_amt"
+ ],
+ "case_id": 123,
+ "guess": 0.6,
+ "sentences": "The model scored case #123 at 0.964, 11th of the 250 returns of model_valid, where a return with average values scores about 0.01. The two largest reasons were its large other income, 28,500 against an average of 7,584, and its large deduction, 42,000 against 19,453; its low tax for its income came third, and all three pushed the score up."
+}
